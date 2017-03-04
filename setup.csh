@@ -1,1 +1,1 @@
-setenv DB_DIR DBASE
+setenv DB_DIR DBASE 
