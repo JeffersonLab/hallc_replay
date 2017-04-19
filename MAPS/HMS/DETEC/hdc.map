@@ -588,38 +588,6 @@ REFINDEX=1
 
 SLOT=16
 REFINDEX=1
-<<<<<<< HEAD
-  98,   9,   1  ! Plane U, wire 1
-  99,   9,   2  ! Plane U, wire 2
- 100,   9,   3  ! Plane U, wire 3
- 101,   9,   4  ! Plane U, wire 4
- 102,   9,   5  ! Plane U, wire 5
- 103,   9,   6  ! Plane U, wire 6
- 104,   9,   7  ! Plane U, wire 7
- 105,   9,   8  ! Plane U, wire 8
- 106,   9,   9  ! Plane U, wire 9
- 107,   9,  10  ! Plane U, wire 10
- 108,   9,  11  ! Plane U, wire 11
- 109,   9,  12  ! Plane U, wire 12
- 110,   9,  13  ! Plane U, wire 13
- 111,   9,  14  ! Plane U, wire 14
- 96,   7, 113  ! Plane X, wire 113
- 112,   9,  15  ! Plane U, wire 15
- 113,   9,  16  ! Plane U, wire 16
- 114,   9,  17  ! Plane U, wire 17
- 115,   9,  18  ! Plane U, wire 18
- 116,   9,  19  ! Plane U, wire 19
- 117,   9,  20  ! Plane U, wire 20
- 118,   9,  21  ! Plane U, wire 21
- 119,   9,  22  ! Plane U, wire 22
- 120,   9,  23  ! Plane U, wire 23
- 121,   9,  24  ! Plane U, wire 24
- 122,   9,  25  ! Plane U, wire 25
- 123,   9,  26  ! Plane U, wire 26
- 124,   9,  27  ! Plane U, wire 27
- 125,   9,  28  ! Plane U, wire 28
- 126,   9,  29  ! Plane U, wire 29
-=======
   98,   12,  3  ! Plane X', wire 3
   99,   12,  4  ! Plane X', wire 4
  100,   12,  5  ! Plane X', wire 5
@@ -634,7 +602,7 @@ REFINDEX=1
  109,   12,  14  ! Plane X', wire 14
  110,   12,  15  ! Plane X', wire 15
  111,   12,  16  ! Plane X', wire 16
- 96,   7, 113  ! Plane X, wire 113
+ 96,    7,  113  ! Plane X, wire 113
  112,   12, 17  ! Plane X', wire 17
  113,   12, 18  ! Plane X', wire 18
  114,   12, 19  ! Plane X', wire 19
@@ -650,7 +618,6 @@ REFINDEX=1
  124,   12, 29  ! Plane X', wire 29
  125,   12, 30  ! Plane X', wire 30
  126,   12, 31  ! Plane X', wire 31
->>>>>>> tracking
 
 SLOT=14
 REFINDEX=1
