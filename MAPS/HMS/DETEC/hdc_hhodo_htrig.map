@@ -2,7 +2,6 @@
 ! HDC_ID=11        ::  TDC
 ! HSCIN_ID=13      ::  ADC+,ADC-,TDC+,TDC-
 
-
 DETECTOR=10
 
 ROC=1
