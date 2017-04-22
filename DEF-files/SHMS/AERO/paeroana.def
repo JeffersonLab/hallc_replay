@@ -13,17 +13,17 @@ TH1F paero_raw_occ_neg 'SHMS Aero- Raw Occupancy; PMT Number; Number of Entries'
 TH1F paero_good_occ_pos 'SHMS Aero+ Good Occupancy; PMT Number; Number of Entries' P.aero.numGoodPosAdcHits 7 0.5 7.5
 TH1F paero_good_occ_neg 'SHMS Aero- Good Occupancy; PMT Number; Number of Entries' P.aero.numGoodNegAdcHits 7 0.5 7.5
 
-TH1F paero_good_mult_pos 'SHMS Aero+ Good Multiplicity; Total Number of Good Pos ADC Hits / PMT; Number of Entries' P.aero.totNumGoodPosAdcHits 7 0.5 7.5
-TH1F paero_good_mult_neg 'SHMS Aero- Good Multiplicity; Total Number of Good Neg ADC Hits / PMT; Number of Entries' P.aero.totNumGoodNegAdcHits 7 0.5 7.5
-TH1F paero_good_mult 'SHMS Aero Good Multiplicity; Total Number of Good ADC Hits / PMT; Number of Entries' P.aero.totnumGoodAdcHits 7 0.5 7.5
+TH1F paero_good_mult_pos 'SHMS Aero+ Good Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits / PMT' P.aero.totNumGoodPosAdcHits 7 0.5 7.5
+TH1F paero_good_mult_neg 'SHMS Aero- Good Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits / PMT' P.aero.totNumGoodNegAdcHits 7 0.5 7.5
+TH1F paero_good_mult 'SHMS Aero Good Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits / PMT' P.aero.totnumGoodAdcHits 14 0.5 14.5
 
 TH1F paero_tot_npe_pos 'SHMS Aero+ Total Number of Photoelectrons; Total Number of Pos Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.aero.posNpeSum 200 0 100 P.aero.posNpeSum>0.0 
 TH1F paero_tot_npe_neg 'SHMS Aero- Total Number of Photoelectrons; Total Number of Neg Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.aero.negNpeSum 200 0 100 P.aero.negNpeSum>0.0 
 TH1F paero_tot_npe 'SHMS Aero Total Number of Photoelectrons; Total Number of Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.aero.npeSum 200 0 100 P.aero.npeSum>0.0 
 
 #2D HISTOGRAMS
-TH2F paero_npe_pos 'SHMS Aero+ Number of Photoelectrons vs. PMT Number; PMT Number; Number of Pos Photoelectrons / PMT' [I] P.aero.posNpe 7 -0.5 6.5 200 0 100 P.aero.posNpe>0.0 
-TH2F paero_npe_neg 'SHMS Aero- Number of Photoelectrons vs. PMT Number; PMT Number; Number of Neg Photoelectrons / PMT' [I] P.aero.negNpe 7 -0.5 6.5 200 0 100 P.aero.negNpe>0.0 
+TH2F paero_npe_pos 'SHMS Aero+ Number of Photoelectrons vs. PMT Number; PMT Number; Number of Photoelectrons / PMT' [I] P.aero.posNpe 7 -0.5 6.5 200 0 100 P.aero.posNpe>0.0 
+TH2F paero_npe_neg 'SHMS Aero- Number of Photoelectrons vs. PMT Number; PMT Number; Number of Photoelectrons / PMT' [I] P.aero.negNpe 7 -0.5 6.5 200 0 100 P.aero.negNpe>0.0 
 
 TH2F paero_good_pped_vs_pmt_pos 'SHMS Aero+ Good Pulse Pedestal vs. PMT Number; PMT Number;  Pulse Pedestal / 1 ADC Units' [I] P.aero.goodPosAdcPed 7 -0.5 6.5 400 300 700  P.aero.goodPosAdcPed>0.0
 TH2F paero_good_pi_vs_pmt_pos 'SHMS Aero+ Good Pulse Integral vs. PMT Number; PMT Number;  Pulse Integral / 50 ADC Units' [I] P.aero.goodPosAdcPulseInt 7 -0.5 6.5 600 0 30000 P.aero.goodPosAdcPulseInt>0.0
@@ -39,9 +39,9 @@ TH2F paero_good_ptime_vs_pmt_neg 'SHMS Aero- Good Pulse Time vs. PMT Number; PMT
 
 
 #1D HISTOGRAMS FOR DEBUGGING
-TH1F paero_raw_mult_pos 'SHMS Aero+ Raw Multiplicity; Total Number of Raw Pos ADC Hits / PMT; Number of Entries' P.aero.totNumPosAdcHits 7 0.5 7.5
-TH1F paero_raw_mult_neg 'SHMS Aero- Raw Multiplicity; Total Number of Raw Neg ADC Hits / PMT; Number of Entries' P.aero.totNumNegAdcHits 7 0.5 7.5
-TH1F paero_raw_mult 'SHMS Aero Raw Multiplicity; Total Number of Raw ADC Hits / PMT; Number of Entries' P.aero.totnumAdcHits 7 0.5 7.5
+TH1F paero_raw_mult_pos 'SHMS Aero+ Raw Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits / PMT' P.aero.totNumPosAdcHits 7 0.5 7.5
+TH1F paero_raw_mult_neg 'SHMS Aero- Raw Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits / PMT; Number of Entries' P.aero.totNumNegAdcHits 7 0.5 7.5
+TH1F paero_raw_mult 'SHMS Aero Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' P.aero.totnumAdcHits 14 0.5 14.5
 
 #2D HISTOGRAMS DEBUGGING
 TH2F paero_raw_pped_vs_pmt_pos 'SHMS Aero+ Raw Pulse Pedestal vs. PMT Number; PMT Number; Raw Pulse Pedestal / 1 ADC Units'  P.aero.posAdcCounter P.aero.posAdcPedRaw 7 0.5 7.5 10000 0 10000

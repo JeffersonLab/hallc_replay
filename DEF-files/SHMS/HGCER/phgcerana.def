@@ -7,7 +7,7 @@ block T.shms.*
 TH1F phgcer_raw_occ 'SHMS Heavy Gas Cherenkov Raw Occupancy; PMT Number; Number of Entries' P.hgcer.adcCounter 4 0.5 4.5
 TH1F phgcer_adcErrFlg 'SHMS Heavy Gas Cherenkov FPGA Error Flag; Error Flag; Number of Entries' P.hgcer.adcErrorFlag 2 -0.5 1.5
 TH1F phgcer_good_occ 'SHMS Heavy Gas Cherenkov Good Occupancy; PMT Number; Number of Entries' P.hgcer.numGoodAdcHits 4 0.5 4.5
-TH1F phgcer_good_mult 'SHMS Heavy Gas Cherenkov Good Multiplicity; Total Number of Good ADC Hits; Number of Entries' P.hgcer.totNumGoodAdcHits 4 0.5 4.5
+TH1F phgcer_good_mult 'SHMS Heavy Gas Cherenkov Good Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits / PMT' P.hgcer.totNumGoodAdcHits 4 0.5 4.5
 TH1F phgcer_tot_npe 'SHMS Heavy Gas Cherenkov Total Number of Photoelectrons; Total Number of Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.hgcer.npeSum 200 0 100 P.hgcer.npeSum>0.0 
 
 #2D HISTOGRAMS  
@@ -20,7 +20,7 @@ TH2F phgcer_good_ptime_vs_pmt 'SHMS Heavy Gas Cherenkov Good Pulse Time vs. PMT 
 
 
 #1D Histos for Debugging 
-TH1F phgcer_raw_mult 'SHMS Heavy Gas Cherenkov Raw Multiplicity; Total Number of ADC Hits; Number of Entries' P.hgcer.totNumAdcHits 4 0.5 4.5
+TH1F phgcer_raw_mult 'SHMS Heavy Gas Cherenkov Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' P.hgcer.totNumAdcHits 4 0.5 4.5
 
 #2d Histos for Debugging 
 TH2F phgcer_raw_pped_vs_pmt 'SHMS Heavy Gas Cherenkov Raw Pulse Pedestal vs. PMT Number; PMT Number; Raw Pulse Pedestal / 1 ADC Units' P.hgcer.adcCounter P.hgcer.adcPedRaw 4 0.5 4.5 10000 0 10000

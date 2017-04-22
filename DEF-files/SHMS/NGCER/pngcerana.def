@@ -7,7 +7,7 @@ block T.shms.*
 TH1F pngcer_raw_occ 'SHMS Noble Gas Cherenkov Raw Occupancy; PMT Number; Number of Entries' P.ngcer.adcCounter 4 0.5 4.5
 TH1F pngcer_adcErrFlg 'SHMS Noble Gas Cherenkov FPGA Error Flag; Error Flag; Number of Entries' P.ngcer.adcErrorFlag 2 -0.5 1.5
 TH1F pngcer_good_occ 'SHMS Noble Gas Cherenkov Good Occupancy; PMT Number; Number of Entries' P.ngcer.numGoodAdcHits 4 0.5 4.5
-TH1F pngcer_good_mult 'SHMS Noble Gas Cherenkov Good Multiplicity; Total Number of Good ADC Hits; Number of Entries' P.ngcer.totNumGoodAdcHits 4 0.5 4.5
+TH1F pngcer_good_mult 'SHMS Noble Gas Cherenkov Good Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits / PMT' P.ngcer.totNumGoodAdcHits 4 0.5 4.5
 TH1F pngcer_tot_npe 'SHMS Noble Gas Cherenkov Total Number of Photoelectrons; Total Number of Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.ngcer.npeSum 200 0 100 P.ngcer.npeSum>0.0 
 
 #2D HISTOGRAMS  
@@ -20,7 +20,7 @@ TH2F pngcer_good_ptime_vs_pmt 'SHMS Noble Gas Cherenkov Good Pulse Time vs. PMT 
 
 
 #1D Histos for Debugging 
-TH1F pngcer_raw_mult 'SHMS Noble Gas Cherenkov Raw Multiplicity; Total Number of ADC Hits; Number of Entries' P.ngcer.totNumAdcHits 4 0.5 4.5
+TH1F pngcer_raw_mult 'SHMS Noble Gas Cherenkov Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' P.ngcer.totNumAdcHits 4 0.5 4.5
 
 #2d Histos for Debugging 
 TH2F pngcer_raw_pped_vs_pmt 'SHMS Noble Gas Cherenkov Raw Pulse Pedestal vs. PMT Number; PMT Number; Raw Pulse Pedestal / 1 ADC Units' P.ngcer.adcCounter P.ngcer.adcPedRaw 4 0.5 4.5 10000 0 10000
