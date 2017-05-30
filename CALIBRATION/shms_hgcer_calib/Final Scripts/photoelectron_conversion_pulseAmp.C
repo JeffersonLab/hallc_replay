@@ -32,8 +32,8 @@ double linear_function(Double_t *x, Double_t *par)
 void photoelectron_conversion_pulseAmp(Int_t RunNumber=0)
 {
   int num_pars = 6;
-  int fit_max = 3500;
-  int fit_min = 100;
+  int fit_max = 2500;
+  int fit_min = 50;
 
   ofstream fout;
   fout.open("../fit_param.txt");
@@ -67,13 +67,13 @@ void photoelectron_conversion_pulseAmp(Int_t RunNumber=0)
 
   gStyle->SetOptFit(111);
 
-  TF1 *f1 = new TF1("f1",multiple_gauss_test,fit_min,fit_max,12);
+  TF1 *f1 = new TF1("f1",multiple_gauss_test,fit_min,fit_max,9);
   f1->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
   f1->SetParName(9, "Amplitude 4");
   f1->SetParName(10, "Mean 4");
   f1->SetParName(11, "Std. Dev. 4");
   
-  TF1 *Gauss5 = new TF1("Gauss5",multiple_gauss_test,300,6000,15);
+  TF1 *Gauss5 = new TF1("Gauss5",multiple_gauss_test,fit_min,2500,15);
   Gauss5->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
   Gauss5->SetParName(9, "Amplitude 4");
   Gauss5->SetParName(10, "Mean 4");
@@ -82,19 +82,19 @@ void photoelectron_conversion_pulseAmp(Int_t RunNumber=0)
   Gauss5->SetParName(13, "Mean 5");
   Gauss5->SetParName(14, "Std. Dev. 5");  
 
-  TF1 *Gauss4 = new TF1("Gauss4",multiple_gauss_test,300,2500,12);
+  TF1 *Gauss4 = new TF1("Gauss4",multiple_gauss_test,fit_min,2000,12);
   Gauss4->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
   Gauss4->SetParName(9, "Amplitude 4");
   Gauss4->SetParName(10, "Mean 4");
   Gauss4->SetParName(11, "Std. Dev. 4");
 
-  TF1 *Gauss3 = new TF1("Gauss3",multiple_gauss_test,300,2000,9);
+  TF1 *Gauss3 = new TF1("Gauss3",multiple_gauss_test,fit_min,1500,9);
   Gauss3->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
 
-  TF1 *Gauss2 = new TF1("Gauss2",multiple_gauss_test,300,1350,6);
+  TF1 *Gauss2 = new TF1("Gauss2",multiple_gauss_test,fit_min,250,6);
   Gauss2->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2");
 
-  TF1 *Gauss1 = new TF1("Gauss1",multiple_gauss_test,300,700,3);
+  TF1 *Gauss1 = new TF1("Gauss1",multiple_gauss_test,fit_min,90,3);
   Gauss1->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1");
 
   TList *list = new TList;
@@ -145,10 +145,10 @@ void photoelectron_conversion_pulseAmp(Int_t RunNumber=0)
 	  x_all[n] = 0, y_all[n] = 0, y_allerr[n] = 0, x_allerr[n] = 0;
 	}
 
-      f1->SetParameters(3586.,139.,33.,1184.,300.,100.,50.,450.,300.);
+      f1->SetParameters(900.,139.,33.,200.,300.,50.,100.,650.,80.);
       f1->SetParameter(9, 198.272);
       f1->SetParameter(10, 600.);
-      f1->SetParameter(11, 200.);
+      f1->SetParameter(11, 100.);
       //f1->SetParLimits(0, 100., 5000.);
       //f1->SetParLimits(3, 100., 5000.);
       //f1->SetParLimits(6, 100., 5000.);
@@ -230,7 +230,7 @@ void photoelectron_conversion_pulseAmp(Int_t RunNumber=0)
       Gauss1->SetParLimits(1, f1->GetParameter(1)- 50, f1->GetParameter(1)+50);
       Gauss1->SetParLimits(0, 5., 5000.);
       Gauss1->SetParLimits(2, 0., 1000.);
-
+      
       TCanvas *c1_k = new TCanvas(Form("c1_%d",k),Form("PMT %d, Electrons & Pions",k+1));
       c1_k->Divide(2,1);
       c1_k->cd(1);
@@ -458,7 +458,7 @@ void photoelectron_conversion_pulseAmp(Int_t RunNumber=0)
       gPad->Update();
 
       TCanvas *on_k = new TCanvas(Form("on_%d",k), Form("PMT %d, Full Focal Plane",k+1));
-      total_k->Fit("Gauss5","REMBQ");
+      total_k->Fit("Gauss3","REMBQ");
       total_k->Draw();
       gPad->Update();
 
