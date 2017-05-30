@@ -33,24 +33,24 @@ TH1F hcal_hC_raw_mult_pos 'HMS hC+ Raw Multiplicity; Number of PMTs Hit; Total N
 TH1F hcal_hD_raw_mult_pos 'HMS hD+ Raw Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits / PMT' H.cal.4ta.totNumPosAdcHits 13 0.5 13.5
 
 #Good Occupancy
-TH1F hcal_hA_good_occ_pos 'HMS hA+ Good Occupancy; PMT Number; Number of Entries' H.cal.1pr.numGoodPosAdcHits 13 0.5 13.5
-TH1F hcal_hA_good_occ_neg 'HMS hA- Good Occupancy; PMT Number; Number of Entries' H.cal.1pr.numGoodNegAdcHits 13 0.5 13.5
+TH1F hcal_hA_good_occ_pos 'HMS hA+ Good Occupancy; PMT Number; Number of Entries' H.cal.1pr.numGoodPosAdcHits 13 0.5 13.5  
+TH1F hcal_hA_good_occ_neg 'HMS hA- Good Occupancy; PMT Number; Number of Entries' H.cal.1pr.numGoodNegAdcHits 13 0.5 13.5 
 TH1F hcal_hB_good_occ_pos 'HMS hB+ Good Occupancy; PMT Number; Number of Entries' H.cal.2ta.numGoodPosAdcHits 13 0.5 13.5
-TH1F hcal_hB_good_occ_neg 'HMS hB- Good Occupancy; PMT Number; Number of Entries' H.cal.2ta.numGoodNegAdcHits 13 0.5 13.5
-TH1F hcal_hC_good_occ_pos 'HMS hC+ Good Occupancy; PMT Number; Number of Entries' H.cal.3ta.numGoodPosAdcHits 13 0.5 13.5
-TH1F hcal_hD_good_occ_pos 'HMS hD+ Good Occupancy; PMT Number; Number of Entries' H.cal.4ta.numGoodPosAdcHits 13 0.5 13.5
+TH1F hcal_hB_good_occ_neg 'HMS hB- Good Occupancy; PMT Number; Number of Entries' H.cal.2ta.numGoodNegAdcHits 13 0.5 13.5 
+TH1F hcal_hC_good_occ_pos 'HMS hC+ Good Occupancy; PMT Number; Number of Entries' H.cal.3ta.numGoodPosAdcHits 13 0.5 13.5 
+TH1F hcal_hD_good_occ_pos 'HMS hD+ Good Occupancy; PMT Number; Number of Entries' H.cal.4ta.numGoodPosAdcHits 13 0.5 13.5 
 
-#Good Multiplicity
-TH1F hcal_hA_raw_mult_pos 'HMS hA+ Raw Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits / PMT' H.cal.1pr.totNumGoodPosAdcHits 13 0.5 13.5
-TH1F hcal_hA_raw_mult_neg 'HMS hA- Raw Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits / PMT' H.cal.1pr.totNumGoodNegAdcHits 13 0.5 13.5
-TH1F hcal_hA_raw_mult 'HMS hA Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' H.cal.1pr.totnumGoodAdcHits 26 0.5 26.5
+#Good Multiplicity 
+TH1F hcal_hA_good_mult_pos 'HMS hA+ Good Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits / PMT' H.cal.1pr.totNumGoodPosAdcHits 13 0.5 13.5
+TH1F hcal_hA_good_mult_neg 'HMS hA- Good Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits / PMT' H.cal.1pr.totNumGoodNegAdcHits 13 0.5 13.5
+TH1F hcal_hA_good_mult 'HMS hA Good Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits / PMT' H.cal.1pr.totnumGoodAdcHits 26 0.5 26.5
 
-TH1F hcal_hB_raw_mult_pos 'HMS hB+ Raw Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits / PMT' H.cal.2ta.totNumGoodPosAdcHits 13 0.5 13.5
-TH1F hcal_hB_raw_mult_neg 'HMS hB- Raw Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits / PMT' H.cal.2ta.totNumGoodNegAdcHits 13 0.5 13.5
-TH1F hcal_hB_raw_mult 'HMS hB Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' H.cal.2ta.totnumGoodAdcHits 26 0.5 26.5
+TH1F hcal_hB_good_mult_pos 'HMS hB+ Good Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits / PMT' H.cal.2ta.totNumGoodPosAdcHits 13 0.5 13.5
+TH1F hcal_hB_good_mult_neg 'HMS hB- Good Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits / PMT' H.cal.2ta.totNumGoodNegAdcHits 13 0.5 13.5
+TH1F hcal_hB_good_mult 'HMS hB Good Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits / PMT' H.cal.2ta.totnumGoodAdcHits 26 0.5 26.5
 
-TH1F hcal_hC_raw_mult_pos 'HMS hC+ Raw Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits / PMT' H.cal.3ta.totNumGoodPosAdcHits 13 0.5 13.5
-TH1F hcal_hD_raw_mult_pos 'HMS hD+ Raw Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits / PMT' H.cal.4ta.totNumGoodPosAdcHits 13 0.5 13.5
+TH1F hcal_hC_good_mult_pos 'HMS hC+ Good Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits / PMT' H.cal.3ta.totNumGoodPosAdcHits 13 0.5 13.5
+TH1F hcal_hD_good_mult_pos 'HMS hD+ Good Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits / PMT' H.cal.4ta.totNumGoodPosAdcHits 13 0.5 13.5
 
 
 #Raw Pulse Pedestals
@@ -147,7 +147,7 @@ TH2F hcal_hA_good_raw_pi_vs_pmt_neg 'HMS hA- Good Raw Pulse Integral vs. PMT Num
 TH2F hcal_hB_good_raw_pi_vs_pmt_pos 'HMS hB+ Good Raw Pulse Integral vs. PMT Number; PMT Number; Good Raw Pulse Integral / 50 ADC Units' [I+1] H.cal.2ta.goodPosAdcPulseIntRaw 13 0.5 13.5 650 0 32500  H.cal.2ta.goodPosAdcPulseIntRaw>0.0
 TH2F hcal_hB_good_raw_pi_vs_pmt_neg 'HMS hB- Good Raw Pulse Integral vs. PMT Number; PMT Number; Good Raw Pulse Integral / 50 ADC Units' [I+1] H.cal.2ta.goodNegAdcPulseIntRaw 13 0.5 13.5 650 0 32500  H.cal.2ta.goodNegAdcPulseIntRaw>0.0
 TH2F hcal_hC_good_raw_pi_vs_pmt_pos 'HMS hC+ Good Raw Pulse Integral vs. PMT Number; PMT Number; Good Raw Pulse Integral / 50 ADC Units' [I+1] H.cal.3ta.goodPosAdcPulseIntRaw 13 0.5 13.5 650 0 32500  H.cal.3ta.goodPosAdcPulseIntRaw>0.0
-TH2F hcal_hD_good_raw_pi_vs_pmt_pos 'HMS hD+ Good Raw Pulse Integral vs. PMT Number; PMT Number; Good Raw Pulse Integral / 50 ADC Units' [I+1] H.cal.4ta.goodNegAdcPulseIntRaw 13 0.5 13.5 650 0 32500  H.cal.4ta.goodNegAdcPulseIntRaw>0.0
+TH2F hcal_hD_good_raw_pi_vs_pmt_pos 'HMS hD+ Good Raw Pulse Integral vs. PMT Number; PMT Number; Good Raw Pulse Integral / 50 ADC Units' [I+1] H.cal.4ta.goodPosAdcPulseIntRaw 13 0.5 13.5 650 0 32500  H.cal.4ta.goodPosAdcPulseIntRaw>0.0
 
 
 #ENERGY DEPOSITION vs. PMT HISTOGRAMS (calib consts (GAIN) are in GeV/ADC units )
