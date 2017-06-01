@@ -32,7 +32,7 @@ double linear_function(Double_t *x, Double_t *par)
 void photoelectron_conversion_pulseInt(Int_t RunNumber=0)
 {
   int num_pars = 6;
-  int fit_max = 2500;
+  int fit_max = 6000;
   int fit_min = 200;
 
   ofstream fout;
@@ -67,13 +67,17 @@ void photoelectron_conversion_pulseInt(Int_t RunNumber=0)
 
   gStyle->SetOptFit(111);
 
-  TF1 *f1 = new TF1("f1",multiple_gauss_test,fit_min,fit_max,12);
+  TF1 *f1 = new TF1("f1",multiple_gauss_test,fit_min,fit_max,15);
   f1->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
   f1->SetParName(9, "Amplitude 4");
   f1->SetParName(10, "Mean 4");
   f1->SetParName(11, "Std. Dev. 4");
+  f1->SetParName(12, "Amplitude 5");
+  f1->SetParName(13, "Mean 5");
+  f1->SetParName(14, "Std. Dev. 5");  
+
   
-  TF1 *Gauss5 = new TF1("Gauss5",multiple_gauss_test,300,6000,15);
+  TF1 *Gauss5 = new TF1("Gauss5",multiple_gauss_test,fit_min,fit_max,15);
   Gauss5->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
   Gauss5->SetParName(9, "Amplitude 4");
   Gauss5->SetParName(10, "Mean 4");
@@ -82,19 +86,19 @@ void photoelectron_conversion_pulseInt(Int_t RunNumber=0)
   Gauss5->SetParName(13, "Mean 5");
   Gauss5->SetParName(14, "Std. Dev. 5");  
 
-  TF1 *Gauss4 = new TF1("Gauss4",multiple_gauss_test,300,2500,12);
+  TF1 *Gauss4 = new TF1("Gauss4",multiple_gauss_test,fit_min,fit_max,12);
   Gauss4->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
   Gauss4->SetParName(9, "Amplitude 4");
   Gauss4->SetParName(10, "Mean 4");
   Gauss4->SetParName(11, "Std. Dev. 4");
 
-  TF1 *Gauss3 = new TF1("Gauss3",multiple_gauss_test,300,2000,9);
+  TF1 *Gauss3 = new TF1("Gauss3",multiple_gauss_test,fit_min,fit_max,9);
   Gauss3->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2","Amplitude 3","Mean 3","Std. Dev. 3");
 
-  TF1 *Gauss2 = new TF1("Gauss2",multiple_gauss_test,300,1350,6);
+  TF1 *Gauss2 = new TF1("Gauss2",multiple_gauss_test,fit_min,fit_max,6);
   Gauss2->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1","Amplitude 2","Mean 2","Std. Dev. 2");
 
-  TF1 *Gauss1 = new TF1("Gauss1",multiple_gauss_test,300,700,3);
+  TF1 *Gauss1 = new TF1("Gauss1",multiple_gauss_test,fit_min,fit_max,3);
   Gauss1->SetParNames("Amplitude 1","Mean 1","Std. Dev. 1");
 
   TList *list = new TList;
@@ -149,10 +153,14 @@ void photoelectron_conversion_pulseInt(Int_t RunNumber=0)
       f1->SetParameter(9, 198.272);
       f1->SetParameter(10, 2000.);
       f1->SetParameter(11, 200.);
+      f1->SetParameter(12, 200);
+      f1->SetParameter(13, 2500);
+      f1->SetParameter(14, 200);
       f1->SetParLimits(0, 100., 5000.);
       f1->SetParLimits(3, 100., 5000.);
       f1->SetParLimits(6, 100., 5000.);
       f1->SetParLimits(9, 100., 5000.);
+      f1->SetParLimits(12, 100., 5000.);
 
       TCanvas *c0_k = new TCanvas(Form("c0_%d",k),Form("PMT %d, Sum over all Off-Diagonal Quadrants",k+1));
       all_k->Fit("f1","REMB");
