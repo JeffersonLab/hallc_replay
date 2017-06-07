@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string>
 
-#define NPLANES 2
+#define NPLANES 12
 #define GROUP 7
 
 void get_tzero_param()
@@ -12,41 +12,84 @@ void get_tzero_param()
 
   
   //TString c[12] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"}; 
-  TString planes[NPLANES] = {"1u1", "1u2"};
+  TString planes[NPLANES] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"};
   
+  int fNWires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
+  int group_size[NPLANES] = {7, 7, 5, 5, 7, 7, 7, 7, 5, 5, 7, 7};
   
   int group;
   int sw;
   int ip;
   
-    //Initialize variables to calculates weighted avg by group
+  
+    Double_t *sum_NUM; 
+    Double_t *sum_DEN; 
+    Double_t *weighted_AVG;
+    Double_t *weighted_AVG_err;
+   
+
+  //Initialize variables to calculates weighted avg by group
     Double_t sum_NUM[NPLANES][GROUP]={0.0}; 
     Double_t sum_DEN[NPLANES][GROUP]={0.0}; 
     Double_t weighted_AVG[NPLANES][GROUP]={0.0};
     Double_t weighted_AVG_err[NPLANES][GROUP]={0.0};
    
-
-    Int_t wire[107]={0};
-    Double_t t0[107]={0.0};
-    Double_t t0_err[107]={0.0};
-    Double_t entries[107]={0};
+    
+    Int_t *wire;
+    Double_t *t0;
+    Double_t *t0_err;
+    Int_t *entries;
   
   //first sense wire in a given group of a given plane
   Int_t dc_group_min[NPLANES][GROUP] = {
     {1, 16, 32, 48, 64, 80, 96},           //plane 0 (1u1)
-    {1, 13, 29, 45, 61, 77, 93}           //pane 1 (1u2)
+    {1, 13, 29, 45, 61, 77, 93},           //pane 1 (1u2)
+    {1, 17, 33, 49, 65},   //plane 2(1x1)
+    {},   //plane 3(1x2)
+    {},   //plane 4(1v1)
+    {},   //plane 5(1v2)
+    {},   //plane 6(2u1)
+    {},   //plane 7(2u2)
+    {},   //plane 8(2x1)
+    {},   //plane 9(2x2)
+    {},   //plane 10(2v1)
+    {}   //plane 11(2v2)
+
   };
   
   //last sense wire in a given group of a given plane
   Int_t dc_group_max[NPLANES][GROUP] = {
     {15, 31, 47, 63, 79, 95, 107},           //plane 0 (1u1)
-    {12, 28, 44, 60, 76, 92, 107}           //pane 1 (1u2)
+    {12, 28, 44, 60, 76, 92, 107},           //pane 1 (1u2)
+    {},   //plane 2(1x1)
+    {},   //plane 3(1x2)
+    {},   //plane 4(1v1)
+    {},   //plane 5(1v2)
+    {},   //plane 6(2u1)
+    {},   //plane 7(2u2)
+    {},   //plane 8(2x1)
+    {},   //plane 9(2x2)
+    {},   //plane 10(2v1)
+    {}   //plane 11(2v2)
+
+
+
+
   };
+
   
   
   //Loop oer each plane
   for(ip=0; ip<NPLANES; ip++) {
     
+
+
+
+    wire = new Int_t[fNWires[ip]];
+    t0 = new Double_t[fNWires[ip]];
+    t0_err = new Double_t[fNWires[ip]];
+    entries = new Int_t[fNWires[ip]];
+
     cout << "******PLANE " << planes[ip] << "*******" << endl;
     
     //open and read each wire tzero file
@@ -119,7 +162,7 @@ void get_tzero_param()
   TString wire_tzero = "./wire_tzero.param";
   ofs.open (wire_tzero);
 
-  int fNWires[NPLANES] = {107, 107};
+  
 
   //loop over planes
   for (ip = 0; ip < NPLANES; ip++) 
