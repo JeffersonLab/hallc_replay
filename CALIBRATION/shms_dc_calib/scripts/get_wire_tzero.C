@@ -328,6 +328,8 @@ void get_wire_tzero()
        
      }
      
+     else { ofs << sensewire << "        " << 0.0 << "       " << 0.0 << "        " << entries << endl;}
+     
    }
    
    
