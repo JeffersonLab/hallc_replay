@@ -33,62 +33,136 @@ Double_t *t0_err;
 Int_t *entries;
 
 Int_t **dc_group_min;
- 
+Int_t **dc_group_max;
 
-//first sense wire in a given group of a given plane
+//dynamic allocation of a 2d array in dim. of plane and groups, (depending on which plane, group size is 5 or 7)
 dc_group_min = new Int_t*[NPLANES];
 for (ip=0; ip<NPLANES; ip++){
-dc_group_min[ip] = new Int_t[group_size[ip]]
+  dc_group_min[ip] = new Int_t[group_size[ip]];
 }
-dc_group_min = {
-    {1, 16, 32, 48, 64, 80, 96},           //plane 0 (1u1)
-    {1, 13, 29, 45, 61, 77, 93},           //pane 1 (1u2)
-    {1, 17, 33, 49, 65},   //plane 2(1x1)
-    {},   //plane 3(1x2)
-    {},   //plane 4(1v1)
-    {},   //plane 5(1v2)
-    {},   //plane 6(2u1)
-    {},   //plane 7(2u2)
-    {},   //plane 8(2x1)
-    {},   //plane 9(2x2)
-    {},   //plane 10(2v1)
-    {}   //plane 11(2v2)
 
-  };
+
+//Fill the 2d array with 1st sensewire corresponding to each group in a given plane
+ for (ip=0; ip<NPLANES; ip++) {
+
+   dc_group_min[ip][0]=1;  //set initial array value to 1st sensewire in the group
+   for (group=1; group < group_size[ip]; group++){
+ 
+     if (ip==2 || ip==8){
+      //dc_group_min[ip][5] = {1, 17, 33, 49, 65};   //plane 2(1x1) or plane 8(2x1)
+       dc_group_min[ip][group] = dc_group_min[ip][group-1] + 16;
+     }     
+       
+     else if (ip==3 || ip==9){
+       //dc_group_min[ip][5] = {{1, 16, 32, 48, 64}};  //plane 3(1x2) or plane 9(2x2)
+       dc_group_min[ip][1]=16;
+       dc_group_min[ip][group+1] = dc_group_min[ip][group] + 16;
+     }
+          
+     else if(ip==0 || ip==4 || ip==6 || ip ==10){
+       // dc_group_min[ip][7] = {{1, 16, 32, 48, 64, 80, 96}}; //planes: 1u1, 1v1, 2u1, 2v1  
+       dc_group_min[ip][1]=16;
+       dc_group_min[ip][group+1] = dc_group_min[ip][group] + 16;
+     }
+     
+     else if(ip==1 || ip==5 || ip==7 || ip==11){
+       // dc_group_min[ip][7] = {{1, 13, 29, 45, 61, 77, 93}}; //planes 1u2, 1v2, 2u2, 2v2
+       dc_group_min[ip][1]=13;
+       dc_group_min[ip][group+1] = dc_group_min[ip][group] + 16;
+     }
+     
+   }//end loop over groups
+   
+   
+ }//end loop over planes
+
+ //****************************************
+
+ //dynamic allocation of a 2d array in dim. of plane and groups, (depending on which plane, group size is 5 or 7)
+dc_group_max = new Int_t*[NPLANES];
+for (ip=0; ip<NPLANES; ip++){
+  dc_group_max[ip] = new Int_t[group_size[ip]];
+}
+
+//Fill the 2d array with 1st sensewire corresponding to each group in a given plane
+ for (ip=0; ip<NPLANES; ip++) {
+
+   
+   for (group=1; group < group_size[ip]; group++){
+ 
+     if (ip==2 || ip==8){
+      //dc_group_max[ip][5] = {16, 32, 48, 64, 79};   //plane 2(1x1) or plane 8(2x1)
+       dc_group_max[ip][0]=16;
+       dc_group_max[ip][group] = dc_group_max[ip][group-1] + 16;
+     }     
+       
+     else if (ip==3 || ip==9){
+       //dc_group_max[ip][5] = {15, 31, 47, 63, 79}; //plane 3(1x2) or plane 9(2x2)
+       dc_group_max[ip][0]=15;
+       dc_group_max[ip][group] = dc_group_max[ip][group-1] + 16;
+     }
+          
+     else if(ip==0 || ip==4 || ip==6 || ip ==10){
+       // dc_group_max[ip][7] = {15, 31, 47, 63, 79, 95, 107}; //planes: 1u1, 1v1, 2u1, 2v1 
+       dc_group_max[ip][0]=15;
+       dc_group_max[ip][group] = dc_group_max[ip][group-1] + 16;
+     }
+     
+     else if(ip==1 || ip==5 || ip==7 || ip==11){
+       // dc_group_max[ip][7] = {12, 28, 44, 60, 76, 92, 107}; //planes 1u2, 1v2, 2u2, 2v2
+       dc_group_max[ip][0]=12;
+       dc_group_max[ip][group] = dc_group_max[ip][group-1] + 16;
+     }
+     
+   }//end loop over groups
+   
+   
+ }//end loop over planes
+
+
+
+
+
+ //*********************************
+ //sanity check to see if arrays were filled properly!
+ // for (int i=0; i<7; i++) {
+ // cout << dc_group_max[1][i] << endl;
+ // }
+ //note: some planes max values exceeded th ephysical max wire, 
+ //but does not pose any problems when setting the limits
+ //*********************************
+ 
+ 
+ 
+
+  //declare a 2d dynamic arrays to store weighted average per group
+  Double_t** weighted_avg = new Double_t*[NPLANES];
+  Double_t** weighted_avg_err = new Double_t*[NPLANES];
+ 
+ for (ip = 0; ip < NPLANES; ip++) {
+    weighted_avg[ip] = new Double_t[group_size[ip]];
+    weighted_avg_err[ip] = new Double_t[group_size[ip]];
+ }
   
-  //last sense wire in a given group of a given plane
-  Int_t dc_group_max[NPLANES][GROUP] = {
-    {15, 31, 47, 63, 79, 95, 107},           //plane 0 (1u1)
-    {12, 28, 44, 60, 76, 92, 107},           //pane 1 (1u2)
-    {},   //plane 2(1x1)
-    {},   //plane 3(1x2)
-    {},   //plane 4(1v1)
-    {},   //plane 5(1v2)
-    {},   //plane 6(2u1)
-    {},   //plane 7(2u2)
-    {},   //plane 8(2x1)
-    {},   //plane 9(2x2)
-    {},   //plane 10(2v1)
-    {}   //plane 11(2v2)
-
-      };
-
+  //initialize a 2d dynamic array
+ for (ip=0; ip<NPLANES; ip++) {
+   for (group=0; group<group_size[ip]; group++) {
+     weighted_avg[ip][group] = 0.0;
+     weighted_avg_err[ip][group] = 0.0;
+    }
+  }
   
-  //Loop oer each plane
-  for(ip=0; ip<NPLANES; ip++) {
-    
-    sum_NUM = new Double_t[NPLANES][group_size[ip]]; 
-    sum_DEN = new Double_t[NPLANES][group_size[ip]]; 
-    weighted_AVG = new Double_t[NPLANES][group_size[ip]];
-    weighted_AVG_err = new Double_t[NPLANES][group_size[ip]];
+
+//Loop over each plane
+ for(ip=0; ip<NPLANES; ip++) {
 
 
+      
     wire = new Int_t[fNWires[ip]];
     t0 = new Double_t[fNWires[ip]];
     t0_err = new Double_t[fNWires[ip]];
     entries = new Int_t[fNWires[ip]];
 
-    cout << "******PLANE " << planes[ip] << "*******" << endl;
     
     //open and read each wire tzero file
     ifstream ifs;
@@ -96,115 +170,104 @@ dc_group_min = {
     
 
 
-    
-    
     if (ifs.is_open()) {
-      cout << "File opened!" << endl;
+      //    cout << "File opened!" << endl;
       ifs.ignore(50000, '\n');    //ignore the first line 
       
-      for (sw=0; sw<107; ++sw) {
+      for (sw=0; sw<fNWires[ip]; ++sw) {
 	ifs >> wire[sw] >> t0[sw] >> t0_err[sw] >> entries[sw];
-	//	cout
-	//  << "wire: " << wire[iw] << "  "
-	//  << "t0: " << t0[iw] << "  "
-	//  << "t0_err: " << t0_err[iw] << "  "
-	//  << "entries: " << entries[iw] << endl;
+	//cout
+	//	  << "wire: " << wire[sw] << "  " << endl;
+	//  << "t0: " << t0[sw] << "  "
+	//  << "t0_err: " << t0_err[sw] << "  "
+	//  << "entries: " << entries[sw] << endl;
       } 
       ifs.close();
     }  // ifstream condition
     else {
       cout << "File not opened!" << endl;
     }
-
-
-
     
     //Loop over each ribbon cable group of wires
     for (group =0; group<group_size[ip]; group++) {
       
-      //  cout << "****GROUP***" << group << endl;
+	//initialize variables
+	double sum_num = 0.0;
+	double sum_den = 0.0;
+	double w_avg = 0.0;
+	double w_avg_err = 0.0;
 
-
-      for (sw = 1; sw<=107; sw++) {
+      for (sw = 1; sw<=fNWires[ip]; sw++) {
 	
-	// cout << "min: " << dc_group_min[ip][group] << endl;
+	// compute the sums if the sense wires lie in a given group
 	if (sw >= dc_group_min[ip][group] && sw <= dc_group_max[ip][group] && t0[sw-1]!=0) {
 	  
 	  //calculate numerator and denominator of weighted average for each group
 	 
-	  sum_NUM[ip][group] = sum_NUM[ip][group] + t0[sw-1]/(t0_err[sw-1]*t0_err[sw-1]);
-	  sum_DEN[ip][group] = sum_DEN[ip][group] + 1.0/(t0_err[sw-1]*t0_err[sw-1]);  
+	  sum_num = sum_num + t0[sw-1]/(t0_err[sw-1]*t0_err[sw-1]);
+	  sum_den = sum_den + 1.0/(t0_err[sw-1]*t0_err[sw-1]);  
+	 
+	  
 	}
-	
+       
       } // end loop over sensewires
-     
-      if (sum_NUM[ip][group]!=0 && sum_DEN[ip][group]!=0) {
-	weighted_AVG[ip][group] = sum_NUM[ip][group] / sum_DEN[ip][group] ;
-	weighted_AVG_err[ip][group] = sqrt( 1.0 / sum_DEN[ip][group] );
+    
+      //compute weighted average per ribbon cable group
+      if (sum_den!=0.0) { 
+	w_avg = sum_num / sum_den;
+	w_avg_err = sqrt( 1.0 / sum_den ); 
+	
+	weighted_avg[ip][group] = w_avg; //write weighted average to an array
+	weighted_avg_err[ip][group] = w_avg_err;
       }
-      else {weighted_AVG[ip][group] = 0.0;}
-
-      //  cout << "W_AVG_group: " << ": " << weighted_AVG[ip][group] << endl;
-
+      
     } //end loop over groups
     
-  } //end loop over planes
-
- 
+ } //end loop over planes
 
 
-  //Write tzero values to a paramete file
-  
-  //Create an output file to store lookup values 
+    
+  //Create an output file to store tzero values values 
   ofstream ofs;
-  TString wire_tzero = "./wire_tzero.param";
+  TString wire_tzero = "./pdc_tzero_per_wire.param";
   ofs.open (wire_tzero);
-
-  
 
   //loop over planes
   for (ip = 0; ip < NPLANES; ip++) 
     {
       //write plane headers
-      ofs << "plane_"+planes[ip] << "=";
+      ofs << "ptzero"+planes[ip] << "=" << endl;
       
-      cout << "****plane:**** " << ip << endl;
       //loop over group
-      for (group = 0; group < GROUP; group++)
+      for (group = 0; group < group_size[ip]; group++)
 	{
-	  cout << "****group:**** " << group << endl;
+	  
 	  //loop over sensewires
-	  for (sw = 1; sw<=107; sw++) {
+	  for (sw = 1; sw<=fNWires[ip]; sw++) {
 	    
 	    if (sw >= dc_group_min[ip][group] && sw <= dc_group_max[ip][group]) 
 	      {
-		
-	
+	       
 		if (sw<fNWires[ip])
 		  {
-		    ofs << setprecision(7) << weighted_AVG[ip][group] << ((sw+1) % 15 ? ", " : "\n") << fixed;
+		    ofs << setprecision(7) << weighted_avg[ip][group] << ((sw+1) % 16 ? ", " : "\n") << fixed;
 		  }
-		else {ofs << setprecision(7) << weighted_AVG[ip][group] << fixed << endl;}
-	
-	    
-		  
-	     
+		else {
+		  ofs << setprecision(7) << weighted_avg[ip][group] << fixed << endl;
+		  ofs << endl;
+		}
 	      }
+	    
 	  } // end loop over sensewires
 	  
-	  
-	} 
-      
-
-    }
-
-
+	}// end loop over groups 
+    
+    }//end loop over planes
 }
 
+
       
-   
       
-    
  
 
     
