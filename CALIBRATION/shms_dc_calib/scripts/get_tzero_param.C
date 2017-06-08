@@ -9,7 +9,15 @@
 void get_tzero_param()
 {
 
-//TString c[12] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"}; 
+ //read run number from input file
+  int run_NUM;
+  TString f0 = "input_RUN.txt";
+  ifstream infile(f0);
+  infile >> run_NUM;   
+
+  TString run = Form("run%d", run_NUM);
+
+
 TString planes[NPLANES] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"};
 
 int fNWires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
@@ -166,7 +174,7 @@ for (ip=0; ip<NPLANES; ip++){
     
     //open and read each wire tzero file
     ifstream ifs;
-    ifs.open("../data_files/run488/hdc_"+planes[ip]+"tzero_run488_updated.txt");
+    ifs.open(Form("../data_files/run%d/hdc_"+planes[ip]+"tzero_run%d_updated.txt", run_NUM, run_NUM ) );
     
 
 
@@ -185,7 +193,7 @@ for (ip=0; ip<NPLANES; ip++){
       ifs.close();
     }  // ifstream condition
     else {
-      cout << "File not opened!" << endl;
+      // cout << "File not opened!" << endl;
     }
     
     //Loop over each ribbon cable group of wires
@@ -229,7 +237,7 @@ for (ip=0; ip<NPLANES; ip++){
     
   //Create an output file to store tzero values values 
   ofstream ofs;
-  TString wire_tzero = "./pdc_tzero_per_wire.param";
+  TString wire_tzero = Form("./pdc_tzero_per_wire_run%d.param", run_NUM);
   ofs.open (wire_tzero);
 
   //loop over planes
