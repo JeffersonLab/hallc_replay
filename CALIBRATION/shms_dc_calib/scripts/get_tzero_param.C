@@ -4,44 +4,43 @@
 #include <string>
 
 #define NPLANES 12
-#define GROUP 7
+
 
 void get_tzero_param()
 {
 
+//TString c[12] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"}; 
+TString planes[NPLANES] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"};
+
+int fNWires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
+int group_size[NPLANES] = {7, 7, 5, 5, 7, 7, 7, 7, 5, 5, 7, 7};
+
+int group;
+int sw;
+int ip;
+
 
   
-  //TString c[12] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"}; 
-  TString planes[NPLANES] = {"1u1","1u2","1x1","1x2","1v1","1v2","2u1","2u2","2x1","2x2","2v1","2v2"};
-  
-  int fNWires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
-  int group_size[NPLANES] = {7, 7, 5, 5, 7, 7, 7, 7, 5, 5, 7, 7};
-  
-  int group;
-  int sw;
-  int ip;
-  
-  
-    Double_t *sum_NUM; 
-    Double_t *sum_DEN; 
-    Double_t *weighted_AVG;
-    Double_t *weighted_AVG_err;
-   
+//allocate space for calc. of  weighted avg of cable group
+Double_t *sum_NUM; 
+Double_t *sum_DEN; 
+Double_t *weighted_AVG;
+Double_t *weighted_AVG_err;
 
-  //Initialize variables to calculates weighted avg by group
-    Double_t sum_NUM[NPLANES][GROUP]={0.0}; 
-    Double_t sum_DEN[NPLANES][GROUP]={0.0}; 
-    Double_t weighted_AVG[NPLANES][GROUP]={0.0};
-    Double_t weighted_AVG_err[NPLANES][GROUP]={0.0};
-   
-    
-    Int_t *wire;
-    Double_t *t0;
-    Double_t *t0_err;
-    Int_t *entries;
-  
-  //first sense wire in a given group of a given plane
-  Int_t dc_group_min[NPLANES][GROUP] = {
+Int_t *wire;
+Double_t *t0;
+Double_t *t0_err;
+Int_t *entries;
+
+Int_t **dc_group_min;
+ 
+
+//first sense wire in a given group of a given plane
+dc_group_min = new Int_t*[NPLANES];
+for (ip=0; ip<NPLANES; ip++){
+dc_group_min[ip] = new Int_t[group_size[ip]]
+}
+dc_group_min = {
     {1, 16, 32, 48, 64, 80, 96},           //plane 0 (1u1)
     {1, 13, 29, 45, 61, 77, 93},           //pane 1 (1u2)
     {1, 17, 33, 49, 65},   //plane 2(1x1)
@@ -72,17 +71,16 @@ void get_tzero_param()
     {},   //plane 10(2v1)
     {}   //plane 11(2v2)
 
+      };
 
-
-
-  };
-
-  
   
   //Loop oer each plane
   for(ip=0; ip<NPLANES; ip++) {
     
-
+    sum_NUM = new Double_t[NPLANES][group_size[ip]]; 
+    sum_DEN = new Double_t[NPLANES][group_size[ip]]; 
+    weighted_AVG = new Double_t[NPLANES][group_size[ip]];
+    weighted_AVG_err = new Double_t[NPLANES][group_size[ip]];
 
 
     wire = new Int_t[fNWires[ip]];
@@ -122,7 +120,7 @@ void get_tzero_param()
 
     
     //Loop over each ribbon cable group of wires
-    for (group =0; group<GROUP; group++) {
+    for (group =0; group<group_size[ip]; group++) {
       
       //  cout << "****GROUP***" << group << endl;
 
