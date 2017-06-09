@@ -58,17 +58,51 @@ void get_pdc_time_histo_tzero_corrected()
      h[ip] = new TH1F(drift_time_histo, title, 200, -50, 350);  //set time to 400 ns/200 bins = 2ns/bin
 }
 	
-	
-	//open and read tzero data file
-    ifstream ifs;
-    ifs.open("../data_files/" + run + "/tzero.dat");
-    
-	double t_zero_offsets[NPLANES];
 
-     for (ip=0; ip < 12; ip++) {	 
-	 ifs >> t_zero_offsets[ip];  //add tzero offsets to array
-   }
+    
+    int tot_wires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
+
+    
+    //   Double_t** t_zero_offsets = new Double_t*[NPLANES];
+    // for (ip = 0; ip < NPLANES; ip++) {
+    //  t_zero_offsets[ip] = new Double_t[tot_wires[ip]];
+    // }
+    
+    //initialize a 2d dynamic array
+    //  for (ip=0; ip<NPLANES; ip++) {
+    //  for (int sw=1; sw<tot_wires[ip]; sw++) {
+    //	t_zero_offsets[ip][sw-1] = 10.0;
+    //  }
+    // }
+
+    int* t_zero_offsets = new int[1000]; 
+  
+
+    //open and read tzero data file
+    ifstream file;
+    file.open("../data_files/" + run + "/tzero_group.dat");
+    string line;
+
+	 
+     for (ip=0; ip < 12; ip++) {
+     
+       if (file.is_open()) {
+	 if (line[0] == '#') continue;
+       for(sw=1; sw<=tot_wires[ip]; sw++) {
    
+	
+	 file >> t_zero_offsets[sw-1];  //add tzero offsets to array
+	 
+	 cout << t_zero_offsets[sw-1] << endl;
+	     
+       }
+       
+       }
+    
+     }
+	   
+   
+     /*
     //Declare number of entries in the tree
     Long64_t nentries = tree->GetEntries(); //number of triggers (particles that passed through all 4 hodo planes)
 
@@ -103,5 +137,5 @@ void get_pdc_time_histo_tzero_corrected()
 g->Write();
 
 
-
+     */
 }
