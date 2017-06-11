@@ -127,7 +127,7 @@ void get_pdc_time_histo_tzero_corrected()
    f[ip] = new TFile(root_file, "READ");
    
 
-   h_add[ip] =new TH1F(Form("all_wires_"+plane_names[ip], ip), "", nbins, -50, 350);
+   h_add[ip] =new TH1F("all_wires_"+plane_names[ip], "", nbins, -50, 350);
 
 
    TH1F *cell_dt[tot_wires[ip]];
