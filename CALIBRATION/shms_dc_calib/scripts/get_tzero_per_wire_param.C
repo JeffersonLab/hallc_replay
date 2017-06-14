@@ -68,7 +68,7 @@ Double_t **t0 = new Double_t*[NPLANES];
 	  if (line != '#')
 	    {	     
 	      input >> nwire >> nt0 >> nt0_err >> nentries;
-	      //cout << nwire << " :: " << nt0 <<  endl;		       
+	     // cout << nwire << " :: " << nt0 <<  endl;		       
 	      //cout << ip << " :: " << sw << endl;
 	   
 	      t0[ip][nwire-1] = nt0;
@@ -101,11 +101,11 @@ Double_t **t0 = new Double_t*[NPLANES];
    out << "#PLANE: " << planes[ip] << endl;
 
    for (sw=0; sw<fNWires[ip]; sw++) {
-   
+
      out << setprecision(3) << t0[ip][sw] << endl;
      
      if (sw <= 10) 
-       {
+       { 
 	 ofs << setprecision(3) << t0[ip][sw] << fixed << ",";
        }
      else if (sw>10 && sw <(fNWires[ip]-1))
