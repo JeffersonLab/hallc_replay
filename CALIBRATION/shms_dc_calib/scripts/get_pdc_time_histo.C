@@ -8,7 +8,7 @@ void get_pdc_time_histo()
 
   //Read Run Number from txt file
   int run_NUM;
-  int num_evts;        //added
+  Long64_t num_evts;        //added
   string input_file;   //added
 
   TString f0 = "input_RUN.txt";
