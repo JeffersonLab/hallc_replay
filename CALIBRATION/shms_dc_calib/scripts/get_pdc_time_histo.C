@@ -58,6 +58,8 @@ void get_pdc_time_histo()
   
     //Create Histograms
     h[ip] = new TH1F(drift_time_histo, title, 200, -50, 350);  //set time to 400 ns/200 bins = 2ns/bin
+    h[ip]->GetXaxis()->SetTitle("Drift Time (ns)");
+    h[ip]->GetYaxis()->SetTitle("Number of Entries / 2 ns");
   }
  
 
