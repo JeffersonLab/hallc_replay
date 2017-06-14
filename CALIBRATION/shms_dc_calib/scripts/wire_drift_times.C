@@ -60,7 +60,7 @@ void wire_drift_times::Loop()
   for (int ip = 0; ip < NPLANES; ip++){
 
     //Initialize a root file array to store individual DC cell drift times
-    root_file[ip] = "../root_files/" + run + "/shms_DC_"+plane_names[ip]+Form("_%d.root", run_NUM);
+    root_file[ip] = "../root_files/" + run + "/shms_DC_"+plane_names[ip]+Form("_%d_wire_histos.root", run_NUM);
     g[ip] = new TFile(root_file[ip], "RECREATE");
     g[ip]->cd();
 
