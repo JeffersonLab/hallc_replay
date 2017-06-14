@@ -233,9 +233,9 @@ void get_wire_tzero()
      t_zero = - y_int/m;
      t_zero_err = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
      entries = cell_dt[sensewire-1]->GetEntries();  //number of entries (triggers) per wire
-     
+     //cout << "y_int: " << y_int << " :: " << "m: " << m << " :: " << "t0: " << setprecision(6) << -y_int/m << endl;
      //Write "t0" values to file
-     ofs << sensewire << "          " << t_zero << "          " << t_zero_err << "          " << entries << endl;
+     ofs << sensewire << "          " << setprecision(6) << -y_int/m << "          " <<  t_zero_err << "          " << entries << endl;
      
      //Change to output root file and write fitted histos to file
      g->cd();
@@ -243,7 +243,7 @@ void get_wire_tzero()
      
    }
    
-   // Make Plot of t0 versus Wire Number 
+   /*    // Make Plot of t0 versus Wire Number 
    
    TCanvas *t = new TCanvas("t", "", 2000,500);
    t->SetGrid();
@@ -266,12 +266,12 @@ void get_wire_tzero()
    t->Write(title);   //write to a root file
    
    //close dat file
-   ofs.close();
+   
    //save plots
    //TString tzero_plots = "plots/"+run_NUM +"/hdc"+plane_names[ip]+Form("TESTING_tzero_v_wire_%d.eps", run);
    //t->SaveAs(tzero_plots);
-   
-   
+   */
+   ofs.close();
    //*****************************************************************************************//
    //        CALCULATE THE "t0s" WEIGHTED AVERAGE FOR WIRE DRIFT TIMES WITH ENTRIES > = 300   //
    //*****************************************************************************************//
@@ -293,6 +293,8 @@ void get_wire_tzero()
    double weighted_AVG;
    double weighted_AVG_err; 
   
+   double t0_corr;
+   double t0_corr_err;
    //set them to zero to start sum inside while loop 
    sum_NUM = 0.0;
    sum_DEN = 0.0;
@@ -306,15 +308,16 @@ void get_wire_tzero()
        continue;
      //	sensewire = 0, t_zero = 0.0, t_zero_err = 0.0, entries = 0 ; //set values to zero
      
-     sscanf(line.c_str(), "%d %d %lf %d", &sensewire, &t_zero, &t_zero_err, &entries); //assign each of the variables above a data in the t_zero_file
-     
+     //sscanf(line.c_str(), "%d %d %lf %d", &sensewire, &t_zero, &t_zero_err, &entries); //assign each of the variables above a data in the t_zero_file
+     ifs >> sensewire >> t0_corr >> t0_corr_err >> entries;
+     //  cout  << t0_corr << endl;
      //Check if entries for each sensewire exceeds a certain number of events
      
      if (entries>300 && t_zero < 30) {
 	
        //Calculate the weighted average of t0s
-       sum_NUM = sum_NUM + t_zero/(t_zero_err*t_zero_err);
-       sum_DEN = sum_DEN + 1.0/(t_zero_err*t_zero_err);      
+       sum_NUM = sum_NUM + t0_corr/(t0_corr_err*t0_corr_err);
+       sum_DEN = sum_DEN + 1.0/(t0_corr_err*t0_corr_err);      
        
        //cout << "sum_NUM : " << sum_NUM << endl;  
        //cout << "sum_DEN : " << sum_DEN << endl;  
@@ -322,8 +325,8 @@ void get_wire_tzero()
     
 
 
-       ofs << sensewire << "        " << t_zero << "        " << t_zero_err << "        " << entries << endl;
-
+       ofs << sensewire << "        " << t0_corr << "        " << t0_corr_err << "        " << entries << endl;
+       //cout << "TZERO: " << t_zero << endl;
        
        
      }
@@ -355,8 +358,8 @@ void get_wire_tzero()
    
    ifs.close();
 
-   // Make Plot of t0 versus Wire Number for entries > 300 events
-
+    // Make Plot of t0 versus Wire Number for entries > 300 events
+   /*
    TCanvas *t1 = new TCanvas("t1", "", 2000,500);
    t1->SetGrid();
 
@@ -388,9 +391,9 @@ void get_wire_tzero()
    ltx1->DrawLatex(t1->GetUxmax()*0.75,40, Form("Weighted Average = %lf #pm %lf ns", weighted_AVG, weighted_AVG_err) );
    
    t1->Write(title1);   //write canvas to a root file
-   
+   */
    ofs.close();  //close data file
-
+   
    
 
 
