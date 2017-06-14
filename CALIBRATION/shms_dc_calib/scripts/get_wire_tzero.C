@@ -29,6 +29,7 @@ void get_wire_tzero()
 
  //Declare plane names to loop over
  TString plane_names[NPLANES]={"1u1", "1u2", "1x1", "1x2", "1v1", "1v2", "2v2", "2v1", "2x2", "2x1", "2u2", "2u1"};
+ int fNWires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
 
  //Declare a root file array to store individual DC cell drift times
  TString root_file;
@@ -293,8 +294,9 @@ void get_wire_tzero()
    double weighted_AVG;
    double weighted_AVG_err; 
   
-   double t0_corr;
-   double t0_corr_err;
+    int counter;
+    double t0_corr;
+    double t0_corr_err;
    //set them to zero to start sum inside while loop 
    sum_NUM = 0.0;
    sum_DEN = 0.0;
@@ -302,19 +304,24 @@ void get_wire_tzero()
    weighted_AVG =0.0 ;
    weighted_AVG_err= 0.0; 
    
+   counter = 0;
    //read line bt line the t_zero_file
    while(getline(ifs, line)) {
-     if(!line.length()|| line[0] == '#')
-       continue;
-     //	sensewire = 0, t_zero = 0.0, t_zero_err = 0.0, entries = 0 ; //set values to zero
-     
-     //sscanf(line.c_str(), "%d %d %lf %d", &sensewire, &t_zero, &t_zero_err, &entries); //assign each of the variables above a data in the t_zero_file
-     ifs >> sensewire >> t0_corr >> t0_corr_err >> entries;
-     //  cout  << t0_corr << endl;
+
+     if(line!='#') {
+       
+       sscanf(line.c_str(), "%d %lf %lf %d", &sensewire, &t0_corr, &t0_corr_err, &entries); //assign each of the variables above a data in the t_zero_file
+ 
+       if(sensewire<=fNWires[ip]){
+	
+
      //Check if entries for each sensewire exceeds a certain number of events
      
-     if (entries>300 && t_zero < 30) {
+     if (entries>300 && t_zero < 30) 
+{
+
 	
+     	
        //Calculate the weighted average of t0s
        sum_NUM = sum_NUM + t0_corr/(t0_corr_err*t0_corr_err);
        sum_DEN = sum_DEN + 1.0/(t0_corr_err*t0_corr_err);      
@@ -332,7 +339,8 @@ void get_wire_tzero()
      }
      
      else { ofs << sensewire << "        " << 0.0 << "       " << 0.0 << "        " << entries << endl;}
-     
+       }
+     } //end if statement
    }
    
    
