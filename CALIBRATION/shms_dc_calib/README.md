@@ -82,7 +82,7 @@ Brief decription of code
 	   	-- outputs root_file: 'shms_tzero_corr_histos.root'
 		-- contains list of "t0-corrected" wire drift times, and their respective plane drift times.
 
-	**  get_LookUp_Values.C
+	** get_LookUp_Values.C
 	        -- outputs param_file: /hallc_replay/PARAM/SHMS/DC/pdriftmap_new.param
  		-- contains scaling factors calculated from the corrected plane drift times on a bin-by-in basis. These values get read by the source code
 		   which will be used to scale the drift distance histograms. 
