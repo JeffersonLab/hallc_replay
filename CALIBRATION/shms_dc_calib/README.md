@@ -1,17 +1,15 @@
 SHMS Drift Chambers Calibration
 ============================================
-This is directory contains the code for calibrating the 
-pair of SHMS drift chambers.
+This directory contains the code for calibrating the pair of SHMS drift chambers.
 
 
 
 Directory structure
 ----------------------
-* run_Cal.C   : steering script that executes all scripts in the
-  	      	'scripts' directory
-* scripts  : all scripts necessary to do calibration
-* root_files : all root files produced by the calibration are here
-* data_files : all data files produced by the calibration are here
+* hallc_replay/CALIBRATION/shms_dc_calib/run_Cal.C   : steering C++ code that executes all codes in the 'scripts' directory
+* hallc_replay/CALIBRATION/shms_dc_calib/scripts  : all scripts necessary to do calibration lie in this directory
+* hallc_replay/CALIBRATION/shms_dc_calib/root_files : all root files produced by the calibration are in this directory
+* hallc_replay/CALIBRATION/shms_dc_calib/data_files : all data files produced by the calibration are in this directory
 
 
 
@@ -24,15 +22,15 @@ Running code
 * Replay the data to produce the uncalibrated root file to be used as input in the calibration
   * From the hallc_replay execute: ./hcana SCRIPTS/SHMS/replay_shms.C
 
-* From this directory execute: root -l run_Cal.C
+* From THIS! directory execute: root -l run_Cal.C
 
 * From the calibration results, two parameter files will be produced in:
   * hallc_replay/PARAM/SHMS/DC/pdc_tzero_per_wire_run%d_NEW.param. %d=run_number
   * hallc_replay/PARAM/SHMS/DC/pdriftmap_new.param
 
 * Rename the new parameter files as follows:
-  * cp pdc_tzero_per_wire_run%d_NEW.param pdc_tzero_per_wire.param
-  * cp pdriftmap_new.param pdriftmap.param
+  * copy: pdc_tzero_per_wire_run%d_NEW.param to pdc_tzero_per_wire.param
+  * copy: pdriftmap_new.param to pdriftmap.param
 
 * Before replaying the data again, set the parameter 'p_using_tzero_per_wire = 1' to 
   allow the source code (hcana) to read the parameter values during the replay.
@@ -40,23 +38,51 @@ Running code
 * Replay the data with the updated parameters to produce the new calibrated root files
   with the corrected drift times and drift distances.
 
+* Compare the calibrated and uncalibrated root files to verify the calibration was done properly.
+
+
 
 Brief decription of code
 ------------------------
-* The code determines the tzero offsets on a wire-by-wire basis. 
-* Uses paddle 10 positive PMT on plane 1 as the reference PMT ( offset fixed at 0)
-* To get data file name. Reads-in the input file: tofcal.inp 
-* Opens data file
-    * "0" line separates events
-    * Should have pair of neg and pos PMTs for each paddle
-    * Format is : iside  ipl ipad tdcval_uncorr pathl zcor tdcval_corr adcval
-        * iside = 1,2 for pos and neg PMT
-        * ipl = plane number
-        * tdcval_uncorr = raw time in ns. The program uses this in optimization.
-        * pathl = distance for focal plane to the paddle using the track
-        * zcor = time (ns) for the particle to go from focal plane to paddle. Correction subtracted from tdcval_uncrr
-        * tdcval_corr = the corrected time in ns. Not used by program. Just gives the initial chi2.
-        * adcval = ADC value used in fit
-* Loops through data determines the number of hits in each PMT. Will only include PMT if the number of hits > 100.
-* Again loops through the data filling array with time difference between all pairs PMTs, pathl and adcval.
-* Use the CERNLIB routine deqn to invert the matrix and determine the fit parameters.
+* Overview: The code determines the tzero offsets on a wire-by-wire basis. These offsets are 
+            corrections by which each wire drift time spectrum must be shifted to align it with a 
+            drift time of "0 ns". This time corresponds to when the electrons from the ionized gas inside
+            the chamber are in contact with the sense wire, hence a drift time of "0 ns". 
+
+* Brief Description of the scripts in the '/scripts' directory
+  *** to run the scripts independenlty, open the input_RUN.txt files and write the filen_ame, run_number and number of events in this order: root_file.root   run_number   events 
+
+  	** get_pdc_time_histo.C : 
+	  	-- outputs root_file: 'shms_dc_time_%d.root', (%d=run_number)
+		-- contains re-binned per-plane drift time histograms
+	
+	** wire_drift_times.C (and wire_drift_times.h) - See instructions in wire_drift_times.C on how to execute independently 
+	   	-- outputs root_file: 'shms_DC_plane_%d_wire_histos.root' 
+		-- contains a 2-D histo of "drift time vs. Wire Number" and drift time spectra for all wires in the plane
+
+	** get_wire_tzero.C 
+	        -- outputs root_file: 'shms_DC_plane_%d_fitted_histos.root'
+		-- contains line-fitted wire drift time histos. The extrapolation of the fit to the x-axis is defined as "tzero" 
+		   Also contains two "tzero vs. wirenumber" plots: one for all wires, and the other is after setting tzero=0 for
+                   wires that did not have enough statistics for a good quality fit, a weighted average was calculated for the latter.  
+		   
+		-- outputs data_file: 'shms_dc_planetzero_run%d.dat'         -> contains list of "tzero" values for all wires  	
+		   	   	      'shms_dc_planetzero_run%d_updated.dat' -> contains list of "tzero" values for all wires that
+				      					     	had a good fit. The remaining tzeros are set to 0.
+				      'tzero_weighted_avg_run%d.dat          -> contains weighted tzero values per plane 
+
+	** get_tzero_per_wire_param.C
+		-- outputs data_file: 'tzero_values_per_wire.dat'
+		-- contains list of tzero values for all wires in all planes 
+
+		-- outputs param_file: /hallc_replay/PARAM/SHMS/DC/pdc_tzero_per_wire_run%d_NEW.param, where %d=run_number
+                -- contains tzero values for all wires in all planes, but the file is formatted so that the values may be read by the source code (hcana)
+	  
+	** get_pdc_time_histo_tzero_corrected.C  	  	
+	   	-- outputs root_file: 'shms_tzero_corr_histos.root'
+		-- contains list of "t0-corrected" wire drift times, and their respective plane drift times.
+
+	**  get_LookUp_Values.C
+	        -- outputs param_file: /hallc_replay/PARAM/SHMS/DC/pdriftmap_new.param
+ 		-- contains scaling factors calculated from the corrected plane drift times on a bin-by-in basis. These values get read by the source code
+		   which will be used to scale the drift distance histograms. 
