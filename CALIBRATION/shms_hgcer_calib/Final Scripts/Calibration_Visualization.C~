@@ -1,0 +1,19 @@
+void Calibration_Visualization(Int_t RunNumber=0)
+{
+  if (RunNumber == 0)
+    {
+      cout << "Enter a Run Number (-1 to exit): ";
+      cin >> RunNumber;
+      if (RunNumber <= 0) return;
+      else TFile *F = new TFile(Form("../root_files/shms_calibration_%d.root", RunNumber));
+      //Need to be more careful with file location
+    }
+  
+  TH1F *hgc_e[4][4]; //[quadrant][pmt]
+  TH1F *hgc_pi[4][4];
+  TH1F *hgc_sum[4][4];
+
+
+
+
+}
