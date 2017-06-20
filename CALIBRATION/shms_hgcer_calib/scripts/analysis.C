@@ -1474,7 +1474,7 @@ void analysis(Int_t RunNumber=0)
 	      pngc_NPE += pngc_pulseInt[ipmt]*ngc_adc2npe[ipmt];
 
 	      //Basic Quantities
-	      /*
+	      ///*
 	      h_pngc_adcPulseInt[ipmt]->Fill(pngc_pulseInt[ipmt]);
 	      h_pngc_adcPulseAmp[ipmt]->Fill(pngc_pulseAmp[ipmt]);
 	      h_pngc_adcPulseTimeRaw[ipmt]->Fill(pngc_pulseTimeRaw[ipmt]*clk2adc); //*/
@@ -1486,7 +1486,7 @@ void analysis(Int_t RunNumber=0)
 	      //*/
 	       
 	       //Generating histos for Quadrants vs PMT
-	       /*
+	       ///*
 	     
 	       if (trk_y[0] + trk_phi[0] * nngc_z >= 0.0 && trk_x[0] + trk_theta[0] * nngc_z >= 0.0)
 		 {
@@ -1570,7 +1570,7 @@ void analysis(Int_t RunNumber=0)
 	      phgc_NPE += phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]; //Remove pedistal from other PMTs?
 
 	      //Basic Quantities
-	      ///*
+	      /*
 	      h_phgc_adcPulseInt[ipmt]->Fill(phgc_pulseInt[ipmt]);
 	      //h_phgc_adcPulseAmp[ipmt]->Fill(phgc_pulseAmp[ipmt]);
 	      //h_phgc_adcPulseTimeRaw[ipmt]->Fill(phgc_pulseTimeRaw[ipmt]*clk2adc); //*/
@@ -1666,7 +1666,7 @@ void analysis(Int_t RunNumber=0)
 	      
 	      
 	      //Generating histos for Quadrants vs PMT
-	      ///*
+	      /*
 	     
 	      if (trk_y[0] + trk_phi[0] * nhgc_z >= 4.6 && trk_x[0] + trk_theta[0] * nhgc_z >= 9.4)
 		{
@@ -1852,6 +1852,7 @@ void analysis(Int_t RunNumber=0)
 	    }
 	  //*/
 	  //Cut on Shower and HGC for Particle ID
+	  /*
 	  if (phgc_NPE != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0)
 	    {
 	      if ((ppshwr_adcPulseInt + pshwr_adcPulseInt) > shwr_hgc_id->Eval(phgc_NPE))
@@ -1862,7 +1863,7 @@ void analysis(Int_t RunNumber=0)
 		{
 		  h2_pshwr_vs_phgc_picut->Fill(phgc_NPE, pshwr_adcPulseInt + ppshwr_adcPulseInt);
 		}
-	    }
+	    }//*/
 
 
 	  //End Loop over Combination of Detectors

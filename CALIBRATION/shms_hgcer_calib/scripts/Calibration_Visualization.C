@@ -17,6 +17,7 @@ void Calibration_Visualization(Int_t RunNumber=0)
   TH1F *hgc_e_npe[4][4];
   TH1F *hgc_pi[4][4];
   TH1F *hgc_pi_npe[4][4];
+
   for (Int_t i=0; i<4; i++)
     {
       for (Int_t j=0; j<4; j++)
@@ -68,6 +69,15 @@ void Calibration_Visualization(Int_t RunNumber=0)
   all_pi3->Add(hgc_pi[0][2]), all_pi3->Add(hgc_pi[1][2]), all_pi3->Add(hgc_pi[2][2]), all_pi3->Add(hgc_pi[3][2]);
   TList *all_pi4 = new TList;
   all_pi4->Add(hgc_pi[0][3]), all_pi4->Add(hgc_pi[1][3]), all_pi4->Add(hgc_pi[2][3]), all_pi4->Add(hgc_pi[3][3]);
+
+  TList *full = new TList;
+  for (Int_t i=0; i<4; i++)
+    {
+      for (Int_t j=0; j<4; j++)
+	{
+	  full->Add(hgc_e[i][j]), full->Add(hgc_pi[i][j]);
+	}
+    }
 
   TH1F *offd_e1 = (TH1F*)hgc_e[0][0]->Clone("offd_e1");
   offd_e1->Reset();
@@ -132,6 +142,10 @@ void Calibration_Visualization(Int_t RunNumber=0)
   TH1F *alld_pi4 = (TH1F*)hgc_pi[0][3]->Clone("alld_pi4");
   alld_pi4->Reset();
   alld_pi4->Merge(all_pi4);
+
+  TH1F *alld_full = (TH1F*)hgc_e[0][0]->Clone("alld_full");
+  alld_full->Reset();
+  alld_full->Merge(full);
 
   TH1F *offd_e1_npe, *offd_pi1_npe;
   TH1F *offd_e2_npe, *offd_pi2_npe;
