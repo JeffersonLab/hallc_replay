@@ -5,13 +5,13 @@
 a certain number of bins and this fit is extrapolated to y=0(x-axis). The extrapolated value is take to be t0*/
 
 #include <vector>
-#include <TMath>
+#include "TMath.h"
 
 #define NPLANES 12
-
+  using namespace std;
 void get_wire_tzero()
 {
-  using namespace std;
+ 
 
   int run_NUM;
   TString f0 = "input_RUN.txt";
@@ -29,12 +29,13 @@ void get_wire_tzero()
 
  //Declare plane names to loop over
  TString plane_names[NPLANES]={"1u1", "1u2", "1x1", "1x2", "1v1", "1v2", "2v2", "2v1", "2x2", "2x1", "2u2", "2u1"};
+ int fNWires[NPLANES] = {107, 107, 79, 79, 107, 107, 107, 107, 79, 79, 107, 107};
 
  //Declare a root file array to store individual DC cell drift times
  TString root_file;
  TFile *f[NPLANES];
    
- int total_wires;  //integer to store total sense wires for a plane chosen by the user
+ // int total_wires;  //integer to store total sense wires for a plane chosen by the user
         
  //Loop over all planes
  for (int ip = 0; ip < NPLANES; ip++){
@@ -57,40 +58,61 @@ void get_wire_tzero()
 
    f[ip]->cd();  //change to file containing the wire drift times histos
  
-   int total_wires;  //integer to store total sense wires for a plane chosen by the user
-   
+   //   int total_wires;  //integer to store total sense wires for a plane chosen by the user
+
+   //INITIALIZE VARIABLES
+   int total_wires;
+   int sensewire;
+   TH1F *cell_dt[107];
+   Int_t *bin_max;
+   Int_t *bin_maxContent;
+   Double_t *time_max;
+   Double_t *twenty_perc_maxContent;
+   Double_t *ref_time;
+
+
+
+     //Declarations
+     int time_init;           //start fit value 
+     int time_final;          //end fit value
+     int t_zero;
+     int entries;             //entries for each wire
+     
+     double m;                //slope
+     double y_int;            //y-intercept
+     double m_err;
+     double y_int_err;
+     double t_zero_err;
+
    //Set variables depending on which plane is being studied
    if(ip == 0 || ip == 1 || ip == 4 || ip == 5 || ip == 6 || ip == 7 || ip == 10 || ip == 11) {
-     TH1F *cell_dt[107]; //declare array of histos to store drift times     
+     //declare array of histos to store drift times     
      total_wires=107; 
 
      //Declare bin properties for given sense wires in a plane
 
-     int bin_max[107];                    /*Array to store the bin number corresponding to the drift time distribution peak*/
-     int bin_maxContent[107];             /*Array to store the content (# events) corresponding to the bin with maximum content*/
-     double time_max[107];                /*Array to store the x-axis(drift time (ns)) corresponding to bin_max*/
-     double twenty_perc_maxContent[107];  /*Array to store 20% of maximum bin content (peak)*/						     
-     double ref_time[107];               /*Array to store reference times for each sense wire*/
+     bin_max = new Int_t[total_wires];                    /*Array to store the bin number corresponding to the drift time distribution peak*/
+     bin_maxContent= new Int_t[total_wires];             /*Array to store the content (# events) corresponding to the bin with maximum content*/
+     time_max= new Double_t[total_wires];                /*Array to store the x-axis(drift time (ns)) corresponding to bin_max*/
+     twenty_perc_maxContent= new Double_t[total_wires];  /*Array to store 20% of maximum bin content (peak)*/						     
+     ref_time= new Double_t[total_wires];               /*Array to store reference times for each sense wire*/
 
    }
-
-   else if(ip == 2 || ip == 3 || ip == 8 || ip == 9) {
-     TH1F *cell_dt[79];
-     total_wires=79;      
    
-     int bin_max[79];                                 
-     int bin_maxContent[79];                           
-     double time_max[79];                               
-     double twenty_perc_maxContent[79];                
-     double ref_time[79];          
-
+   else if(ip == 2 || ip == 3 || ip == 8 || ip == 9) {
+     total_wires=79;      
+     bin_max = new Int_t[total_wires];                               
+     bin_maxContent= new Int_t[total_wires]; 
+     time_max= new Double_t[total_wires];
+     twenty_perc_maxContent= new Double_t[total_wires];
+     ref_time= new Double_t[total_wires];
    }	   
    
  	
    /*Get wire histos from root file and loop over each 
      sense wire of a plane in shms Drift Chambers (DC1 or DC2)*/
  
-   for (int sensewire=1; sensewire<=total_wires; sensewire++){
+   for (sensewire=1; sensewire<=total_wires; sensewire++){
 
      //Get title of histos in root file
      TString drift_time_histo = Form("wire_%d", sensewire); 
@@ -153,7 +175,7 @@ void get_wire_tzero()
 	 // Loop over 2 bin contents stored in array content
 	 for (j=0; j<2; j++){
 	   
-	   if(content[j] > =  twenty_perc_maxContent[sensewire-1]){
+	   if(content[j] >=  twenty_perc_maxContent[sensewire-1]){
 	     counts = counts+1;
              
 	     if(counts >= 2) { goto stop;}
@@ -184,17 +206,7 @@ void get_wire_tzero()
      //*******Extract the "t0" Using a Fitting Procedure********//
      //*********************************************************//
      
-     //Declarations
-     int time_init;           //start fit value 
-     int time_final;          //end fit value
-     int t_zero;
-     int entries;             //entries for each wire
-     
-     double m;                //slope
-     double y_int;            //y-intercept
-     double m_err;
-     double y_int_err;
-     double t_zero_err;
+
      
      //Get time corresponding to bin (fit range) 
      time_init = cell_dt[sensewire-1] -> GetXaxis() -> GetBinCenter(bin_num[0]-5); //choose bin range over which to fit
@@ -222,9 +234,9 @@ void get_wire_tzero()
      t_zero = - y_int/m;
      t_zero_err = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
      entries = cell_dt[sensewire-1]->GetEntries();  //number of entries (triggers) per wire
-     
+     //cout << "y_int: " << y_int << " :: " << "m: " << m << " :: " << "t0: " << setprecision(6) << -y_int/m << endl;
      //Write "t0" values to file
-     ofs << sensewire << "          " << t_zero << "          " << t_zero_err << "          " << entries << endl;
+     ofs << sensewire << "          " << setprecision(6) << -y_int/m << "          " <<  t_zero_err << "          " << entries << endl;
      
      //Change to output root file and write fitted histos to file
      g->cd();
@@ -232,7 +244,7 @@ void get_wire_tzero()
      
    }
    
-   // Make Plot of t0 versus Wire Number 
+   /*    // Make Plot of t0 versus Wire Number 
    
    TCanvas *t = new TCanvas("t", "", 2000,500);
    t->SetGrid();
@@ -255,12 +267,12 @@ void get_wire_tzero()
    t->Write(title);   //write to a root file
    
    //close dat file
-   ofs.close();
+   
    //save plots
    //TString tzero_plots = "plots/"+run_NUM +"/hdc"+plane_names[ip]+Form("TESTING_tzero_v_wire_%d.eps", run);
    //t->SaveAs(tzero_plots);
-   
-   
+   */
+   ofs.close();
    //*****************************************************************************************//
    //        CALCULATE THE "t0s" WEIGHTED AVERAGE FOR WIRE DRIFT TIMES WITH ENTRIES > = 300   //
    //*****************************************************************************************//
@@ -282,28 +294,37 @@ void get_wire_tzero()
    double weighted_AVG;
    double weighted_AVG_err; 
   
+    int counter;
+    double t0_corr;
+    double t0_corr_err;
    //set them to zero to start sum inside while loop 
    sum_NUM = 0.0;
    sum_DEN = 0.0;
    
-   weighted_AVG;
-   weighted_AVG_err; 
+   weighted_AVG =0.0 ;
+   weighted_AVG_err= 0.0; 
    
+   counter = 0;
    //read line bt line the t_zero_file
    while(getline(ifs, line)) {
-     if(!line.length()|| line[0] == '#')
-       continue;
-     //	sensewire = 0, t_zero = 0.0, t_zero_err = 0.0, entries = 0 ; //set values to zero
-     
-     sscanf(line.c_str(), "%d %d %lf %d", &sensewire, &t_zero, &t_zero_err, &entries); //assign each of the variables above a data in the t_zero_file
-     
+
+     if(line!='#') {
+       
+       sscanf(line.c_str(), "%d %lf %lf %d", &sensewire, &t0_corr, &t0_corr_err, &entries); //assign each of the variables above a data in the t_zero_file
+ 
+       if(sensewire<=fNWires[ip]){
+	
+
      //Check if entries for each sensewire exceeds a certain number of events
      
-     if (entries>300 && t_zero < 30) {
+     if (entries>300 && t_zero < 30) 
+{
+
 	
+     	
        //Calculate the weighted average of t0s
-       sum_NUM = sum_NUM + t_zero/(t_zero_err*t_zero_err);
-       sum_DEN = sum_DEN + 1.0/(t_zero_err*t_zero_err);      
+       sum_NUM = sum_NUM + t0_corr/(t0_corr_err*t0_corr_err);
+       sum_DEN = sum_DEN + 1.0/(t0_corr_err*t0_corr_err);      
        
        //cout << "sum_NUM : " << sum_NUM << endl;  
        //cout << "sum_DEN : " << sum_DEN << endl;  
@@ -311,12 +332,15 @@ void get_wire_tzero()
     
 
 
-       ofs << sensewire << "        " << t_zero << "        " << t_zero_err << "        " << entries << endl;
-
+       ofs << sensewire << "        " << t0_corr << "        " << t0_corr_err << "        " << entries << endl;
+       //cout << "TZERO: " << t_zero << endl;
        
        
      }
      
+     else { ofs << sensewire << "        " << 0.0 << "       " << 0.0 << "        " << entries << endl;}
+       }
+     } //end if statement
    }
    
    
@@ -342,8 +366,8 @@ void get_wire_tzero()
    
    ifs.close();
 
-   // Make Plot of t0 versus Wire Number for entries > 300 events
-
+    // Make Plot of t0 versus Wire Number for entries > 300 events
+   /*
    TCanvas *t1 = new TCanvas("t1", "", 2000,500);
    t1->SetGrid();
 
@@ -375,9 +399,9 @@ void get_wire_tzero()
    ltx1->DrawLatex(t1->GetUxmax()*0.75,40, Form("Weighted Average = %lf #pm %lf ns", weighted_AVG, weighted_AVG_err) );
    
    t1->Write(title1);   //write canvas to a root file
-   
+   */
    ofs.close();  //close data file
-
+   
    
 
 

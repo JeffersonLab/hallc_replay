@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2013.9.19)  1 JUN 2017 15:07
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2013.9.19)  16 JUN 2017 12:27
 entering extended mode
  %&-line parsing enabled.
 **\nonstopmode\input Calibration_Description.tex
@@ -217,17 +217,44 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 18.
 
 (/usr/share/texmf/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2002/01/19 v2.2g AMS font definitions
-) [1
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 25.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 25.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 25.
+
+Underfull \hbox (badness 10000) in paragraph at lines 25--26
+
+ []
+
+[1
 
 ]
-(./Calibration_Description.aux) ) 
-Here is how much of TeX's memory you used:
- 1767 strings out of 256217
- 20613 string characters out of 1917095
- 64248 words of memory out of 1500000
- 5040 multiletter control sequences out of 10000+200000
- 32329 words of font info for 37 fonts, out of 1200000 for 2000
- 645 hyphenation exceptions out of 8191
- 27i,6n,24p,258b,197s stack positions out of 5000i,500n,6000p,200000b,15000s
+Overfull \hbox (26.44315pt too wide) in paragraph at lines 27--28
+\T1/lmr/m/n/12 re-play script. The leaves of in-ter-est are ``P.hgcer.goodAdcPu
+lseInt'', ``P.hgcer.goodAdcPulseAmp'',
+ []
 
-Output written on Calibration_Description.dvi (1 page, 636 bytes).
+
+Underfull \hbox (badness 10000) in paragraph at lines 27--28
+
+ []
+
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 39--40
+
+ []
+
+[3] [4] (./Calibration_Description.aux) ) 
+Here is how much of TeX's memory you used:
+ 1799 strings out of 256217
+ 20942 string characters out of 1917095
+ 67256 words of memory out of 1500000
+ 5060 multiletter control sequences out of 10000+200000
+ 50552 words of font info for 54 fonts, out of 1200000 for 2000
+ 645 hyphenation exceptions out of 8191
+ 27i,8n,24p,1091b,197s stack positions out of 5000i,500n,6000p,200000b,15000s
+
+Output written on Calibration_Description.dvi (4 pages, 7892 bytes).
