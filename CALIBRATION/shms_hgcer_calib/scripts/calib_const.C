@@ -212,7 +212,7 @@ void calib_const(Int_t RunNumber=0, Int_t EventNumber=-1)
       for (Int_t n = 0; n < 6; n++)
 	{
 	  if (mean_1[n] == 0.0) continue;
-	  cout << mean_1[n] << endl;
+	  //cout << mean_1[n] << endl;
 	  xscale += mean_1[n];
 	  m += 1.0;
 	}
