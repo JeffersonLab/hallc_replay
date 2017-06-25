@@ -1,15 +1,17 @@
 //Note: to use this script the calibration constants need to be entered manually
 
 
-void Calibration_Visualization(Int_t RunNumber=0)
+void Calibration_Visualization(Int_t RunNumber=0, Int_t EventNumber=-1)
 {
   if (RunNumber == 0)
     {
       cout << "Enter a Run Number (-1 to exit): ";
       cin >> RunNumber;
       if (RunNumber <= 0) return;
-      else TFile *F = new TFile(Form("../root_files/shms_calibration_%d.root", RunNumber));
+      cout << "Enter number of events: ";
+      cin >> EventNumber;
     }
+  TFile *F = new TFile(Form("../root_files/shms_calibration_%d_%d.root", RunNumber, EventNumber));
   //Enter Calibration constants here
   Double_t xscale[4] = {541.092, 432.955, 377.598, 488.450};
 
@@ -245,12 +247,12 @@ void Calibration_Visualization(Int_t RunNumber=0)
   hgc_e_npe[2][2]->Draw("same");
   hgc_e_npe[3][3]->Draw("same");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.9);
-  legend->AddEntry("hgc_e_npe_quad1_e1","PMT 1","ep");
-  legend->AddEntry("hgc_e_npe_quad2_e2","PMT 2","ep");
-  legend->AddEntry("hgc_e_npe_quad3_e3","PMT 3","ep");
-  legend->AddEntry("hgc_e_npe_quad4_e4","PMT 4","ep");
-  legend->Draw();
+  auto legend1 = new TLegend(0.5,0.7,0.7,0.9);
+  legend1->AddEntry("hgc_e_npe_quad1_e1","PMT 1","ep");
+  legend1->AddEntry("hgc_e_npe_quad2_e2","PMT 2","ep");
+  legend1->AddEntry("hgc_e_npe_quad3_e3","PMT 3","ep");
+  legend1->AddEntry("hgc_e_npe_quad4_e4","PMT 4","ep");
+  legend1->Draw();
   gPad->Modified();
 
   one->cd(2);
@@ -265,12 +267,12 @@ void Calibration_Visualization(Int_t RunNumber=0)
   hgc_pi_npe[2][2]->Draw("same");
   hgc_pi_npe[3][3]->Draw("same");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.9);
-  legend->AddEntry("hgc_pi_npe_quad1_pi1","PMT 1","ep");
-  legend->AddEntry("hgc_pi_npe_quad2_pi2","PMT 2","ep");
-  legend->AddEntry("hgc_pi_npe_quad3_pi3","PMT 3","ep");
-  legend->AddEntry("hgc_pi_npe_quad4_pi4","PMT 4","ep");
-  legend->Draw();
+  auto legend2 = new TLegend(0.5,0.7,0.7,0.9);
+  legend2->AddEntry("hgc_pi_npe_quad1_pi1","PMT 1","ep");
+  legend2->AddEntry("hgc_pi_npe_quad2_pi2","PMT 2","ep");
+  legend2->AddEntry("hgc_pi_npe_quad3_pi3","PMT 3","ep");
+  legend2->AddEntry("hgc_pi_npe_quad4_pi4","PMT 4","ep");
+  legend2->Draw();
   gPad->Modified();
 
   TCanvas *diagonal = new TCanvas("diagonal","NPE for electrons and pions off diagonals");
@@ -286,12 +288,12 @@ void Calibration_Visualization(Int_t RunNumber=0)
   offd_e3_npe->Draw("same");
   offd_e4_npe->Draw("same");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.9);
-  legend->AddEntry("offd_e1_npe","PMT 1","ep");
-  legend->AddEntry("offd_e2_npe","PMT 2","ep");
-  legend->AddEntry("offd_e3_npe","PMT 3","ep");
-  legend->AddEntry("offd_e4_npe","PMT 4","ep");
-  legend->Draw();
+  auto legend3 = new TLegend(0.5,0.7,0.7,0.9);
+  legend3->AddEntry("offd_e1_npe","PMT 1","ep");
+  legend3->AddEntry("offd_e2_npe","PMT 2","ep");
+  legend3->AddEntry("offd_e3_npe","PMT 3","ep");
+  legend3->AddEntry("offd_e4_npe","PMT 4","ep");
+  legend3->Draw();
   gPad->Modified();
 
   diagonal->cd(2);
@@ -305,12 +307,12 @@ void Calibration_Visualization(Int_t RunNumber=0)
   offd_pi3_npe->Draw("same");
   offd_pi4_npe->Draw("same");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.9);
-  legend->AddEntry("offd_pi1_npe","PMT 1","ep");
-  legend->AddEntry("offd_pi2_npe","PMT 2","ep");
-  legend->AddEntry("offd_pi3_npe","PMT 3","ep");
-  legend->AddEntry("offd_pi4_npe","PMT 4","ep");
-  legend->Draw();
+  auto legend4 = new TLegend(0.5,0.7,0.7,0.9);
+  legend4->AddEntry("offd_pi1_npe","PMT 1","ep");
+  legend4->AddEntry("offd_pi2_npe","PMT 2","ep");
+  legend4->AddEntry("offd_pi3_npe","PMT 3","ep");
+  legend4->AddEntry("offd_pi4_npe","PMT 4","ep");
+  legend4->Draw();
   gPad->Modified();
 
   TCanvas *all = new TCanvas("all","NPE for electrons and pions everything");
@@ -326,12 +328,12 @@ void Calibration_Visualization(Int_t RunNumber=0)
   alld_e3_npe->Draw("same");
   alld_e4_npe->Draw("same");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.9);
-  legend->AddEntry("alld_e1_npe","PMT 1","ep");
-  legend->AddEntry("alld_e2_npe","PMT 2","ep");
-  legend->AddEntry("alld_e3_npe","PMT 3","ep");
-  legend->AddEntry("alld_e4_npe","PMT 4","ep");
-  legend->Draw();
+  auto legend5 = new TLegend(0.5,0.7,0.7,0.9);
+  legend5->AddEntry("alld_e1_npe","PMT 1","ep");
+  legend5->AddEntry("alld_e2_npe","PMT 2","ep");
+  legend5->AddEntry("alld_e3_npe","PMT 3","ep");
+  legend5->AddEntry("alld_e4_npe","PMT 4","ep");
+  legend5->Draw();
   gPad->Modified();
 
   all->cd(2);
@@ -345,12 +347,12 @@ void Calibration_Visualization(Int_t RunNumber=0)
   alld_pi3_npe->Draw("same");
   alld_pi4_npe->Draw("same");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.9);
-  legend->AddEntry("alld_pi1_npe","PMT 1","ep");
-  legend->AddEntry("alld_pi2_npe","PMT 2","ep");
-  legend->AddEntry("alld_pi3_npe","PMT 3","ep");
-  legend->AddEntry("alld_pi4_npe","PMT 4","ep");
-  legend->Draw();
+  auto legend6 = new TLegend(0.5,0.7,0.7,0.9);
+  legend6->AddEntry("alld_pi1_npe","PMT 1","ep");
+  legend6->AddEntry("alld_pi2_npe","PMT 2","ep");
+  legend6->AddEntry("alld_pi3_npe","PMT 3","ep");
+  legend6->AddEntry("alld_pi4_npe","PMT 4","ep");
+  legend6->Draw();
   gPad->Modified();
 
 }

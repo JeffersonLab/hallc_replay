@@ -6,6 +6,8 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TFile.h"
+#include "TSpectrum.h"
+#include "TPolyMarker.h"
 
 Double_t poisson(Double_t *x, Double_t *par)
 {
@@ -29,16 +31,17 @@ Double_t linear(Double_t *x, Double_t *par)
   return result1;
 }
 
-void calib_const(Int_t RunNumber=0)
+void calib_const(Int_t RunNumber=0, Int_t EventNumber=-1)
 {
   if (RunNumber == 0)
     {
       cout << "Enter a Run Number (-1 to exit): ";
       cin >> RunNumber;
+      cout << "Enter number of events (default is -1): ";
+      cin >> EventNumber;
       if (RunNumber <= 0) return;
-      else TFile *F = new TFile(Form("../root_files/shms_calibration_%d.root", RunNumber));
     }
-  else TFile *F = new TFile(Form("root_files/shms_calibration_%d.root", RunNumber));
+  TFile *F = new TFile(Form("root_files/shms_calibration_%d_%d.root", RunNumber, EventNumber));
 
   int num_pars = 6;
   int fit_max = 10000;
@@ -65,6 +68,8 @@ void calib_const(Int_t RunNumber=0)
       hgc_full[i] = (TH1F*)F->Get(Form("phgc_adcPulseInt%d", i+1));
       hgc_full[i]->Rebin(10);
     }
+
+  
   TF1 *l1 = new TF1("l1",linear,0,4,2);
   l1->SetParNames("Slope", "Intercept");
 
@@ -89,7 +94,11 @@ void calib_const(Int_t RunNumber=0)
   Double_t calibration[4], calibration_mk2[4];
   
   TSpectrum *s = new TSpectrum(2);
+  Double_t *xpeaks;
 
+  TPolyMarker *pm = new TPolyMarker();
+  TList *functions = new TList();
+  
   gStyle->SetOptFit(111);
 
 
@@ -115,9 +124,9 @@ void calib_const(Int_t RunNumber=0)
 
 	  //Peak Finder for parameter guesses
 	  s->Search(hgc_e[j][i], 2.5, "nobackground", 0.001);
-	  TList *functions = hgc_e[j][i]->GetListOfFunctions();
-	  TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
-	  Double_t *xpeaks = pm->GetX();
+	  functions = hgc_e[j][i]->GetListOfFunctions();
+	  pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
+	  xpeaks = pm->GetX();
 
 	  //Fit the Pedistal
 	  /*
@@ -148,7 +157,7 @@ void calib_const(Int_t RunNumber=0)
 	  Gauss1->SetRange(Gauss1->GetParameter(1)-1.5*Gauss1->GetParameter(2), Gauss1->GetParameter(1)+1.5*Gauss1->GetParameter(2));
 	  //Gauss1->SetRange(Gauss1->GetParameter(1)-1.0*Gauss1->GetParameter(2), Gauss1->GetParameter(1)+1.0*Gauss1->GetParameter(2));
 	  hgc_e[j][i]->Fit("Gauss1","RQ");
-	  if (xpeaks[1] != 0.0 && hgc_e[j][i]->GetBinContent(hgc_e[j][i]->GetXaxis()->FindBin(xpeaks[1])) > 90) mean_1[(k/2)] = Gauss1->GetParameter(1);
+	  if (xpeaks[1] != 0.0 && hgc_e[j][i]->GetBinContent(hgc_e[j][i]->GetXaxis()->FindBin(xpeaks[1])) > 100) mean_1[(k/2)] = Gauss1->GetParameter(1);
 	  if (xpeaks[1] != 0.0 && hgc_e[j][i]->GetBinContent(hgc_e[j][i]->GetXaxis()->FindBin(xpeaks[1])) > 15) mean_2[(k/2)] = Gauss1->GetParameter(1);
 	  gPad->Update();
 
@@ -158,9 +167,9 @@ void calib_const(Int_t RunNumber=0)
 
 	  //Peak finder for parameter guess
 	  s->Search(hgc_pi[j][i], 2.5, "nobackground", 0.001);
-	  TList *functions = hgc_pi[j][i]->GetListOfFunctions();
-	  TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
-	  Double_t *xpeaks = pm->GetX();
+	  functions = hgc_pi[j][i]->GetListOfFunctions();
+	  pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
+	  xpeaks = pm->GetX();
 
 	  //Fit the Pedistal
 	  /*
@@ -203,7 +212,7 @@ void calib_const(Int_t RunNumber=0)
       for (Int_t n = 0; n < 6; n++)
 	{
 	  if (mean_1[n] == 0.0) continue;
-	  //cout << mean_1[n] << endl;
+	  cout << mean_1[n] << endl;
 	  xscale += mean_1[n];
 	  m += 1.0;
 	}
@@ -221,9 +230,9 @@ void calib_const(Int_t RunNumber=0)
 	  ///*
 	  TCanvas *low_stats_i = new TCanvas(Form("low_stats_%d",i),Form("Low stats analysis for PMT%d",i+1));
 	  s->Search(hgc_full[i], 2.0, "nobackground", 0.001);
-	  TList *functions = hgc_full[i]->GetListOfFunctions();
-	  TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
-	  Double_t *xpeaks = pm->GetX();
+	  functions = hgc_full[i]->GetListOfFunctions();
+	  pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
+	  xpeaks = pm->GetX();
 	  Gauss1->SetRange(xpeaks[1]-100, xpeaks[1]+100);
 	  Gauss1->SetParameter(1, xpeaks[1]);
 	  Gauss1->SetParameter(2, 200.);
@@ -245,10 +254,10 @@ void calib_const(Int_t RunNumber=0)
       //And normalize the heights
       hgc_conv[i]->Scale(1.0/hgc_conv[i]->Integral(), "width");
 
-      //TCanvas *ADCspectra_i = new TCanvas(Form("ADCspectra_%d",i), Form("Scaled ADC pulseInt spectra for PMT%d",i+1));
+      TCanvas *ADCspectra_i = new TCanvas(Form("ADCspectra_%d",i), Form("Scaled ADC pulseInt spectra for PMT%d",i+1));
       p1->SetParameter(0, 5.5);
       p1->SetParameter(1, 0.25);
-      hgc_conv[i]->Fit("p1","RQN");
+      hgc_conv[i]->Fit("p1","RQ");
       gPad->Update();
 
       hgc_background[i] = new TH1F(Form("hgc_background_%d", i+1), Form("Scaled ADC spectra background for PMT%d",i+1), nbins, hgc_full[i]->GetXaxis()->GetXmin()/xscale,hgc_full[i]->GetXaxis()->GetXmax()/xscale);
@@ -280,7 +289,7 @@ void calib_const(Int_t RunNumber=0)
       y_npe[0] = f1->GetParameter(1), y_npe[1] = f1->GetParameter(4), y_npe[2] = f1->GetParameter(7);
       y_err[0] = f1->GetParError(1), y_err[1] = f1->GetParError(4), y_err[2] = f1->GetParError(7);
       x_npe[0] = 1, x_npe[1] = 2, x_npe[2] = 3;
-      gr_npe = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
+      TGraphErrors *gr_npe = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
       //TCanvas *Linear_i = new TCanvas(Form("Linear_%d",i), Form("Verification of Linear Relationship for PMT%d",i+1));
       Final_Spectra_i->cd(2);
       l1->SetParameters(1.0, 0.0);
@@ -338,7 +347,7 @@ void calib_const(Int_t RunNumber=0)
       y_npe[0] = f1->GetParameter(1), y_npe[1] = f1->GetParameter(4), y_npe[2] = f1->GetParameter(7);
       y_err[0] = f1->GetParError(1), y_err[1] = f1->GetParError(4), y_err[2] = f1->GetParError(7);
       x_npe[0] = 1, x_npe[1] = 2, x_npe[2] = 3;
-      gr_npe_mk2 = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
+      TGraphErrors *gr_npe_mk2 = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
       Final_Spectra_mk2_i->cd(2);
       l1->SetParameters(1.0, 0.0);
       gr_npe_mk2->Fit("l1","RQ");
