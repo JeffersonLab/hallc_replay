@@ -25,4 +25,5 @@ CALIBRATION/hms_cal_calib/hcal_calib_cpp_ACLiC_dict_rdict.pcm
 CALIBRATION/shms_cal_calib/pcal_calib_cpp_ACLiC_dict_rdict.pcm
 CALIBRATION/*/data_files/*		
 CALIBRATION/*/root_files/*
+onlineGUI/onlineGUI_v1.2.1/onlineDict_rdict.pcm
 
