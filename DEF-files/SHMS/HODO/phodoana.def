@@ -3,119 +3,130 @@
 block P.hod.*
 block T.shms.*
 
-#Raw ADC Multiplicities
-TH1F phodo_1x_raw_adc_mult_pos 'SHMS 1X+ Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumPosAdcHits 13 0.5 13.5
-TH1F phodo_1y_raw_adc_mult_pos 'SHMS 1Y+ Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumPosAdcHits 13 0.5 13.5
-TH1F phodo_2x_raw_adc_mult_pos 'SHMS 2X+ Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumPosAdcHits 14 0.5 14.5
-TH1F phodo_2y_raw_adc_mult_pos 'SHMS 2Y+ Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumPosAdcHits 21 0.5 21.5
+#SHMS Hodo Error Flags
+TH1F phodo_1x_pos_adcErrFlg 'SHMS 1X+ FPGA Error Flag; Error Flag; Number of Entries' P.hod.1x.posAdcErrorFlag 2 -0.5 1.5
+TH1F phodo_1y_pos_adcErrFlg 'SHMS 1Y+ FPGA Error Flag; Error Flag; Number of Entries' P.hod.1y.posAdcErrorFlag 2 -0.5 1.5
+TH1F phodo_2x_pos_adcErrFlg 'SHMS 2X+ FPGA Error Flag; Error Flag; Number of Entries' P.hod.2x.posAdcErrorFlag 2 -0.5 1.5
+TH1F phodo_2y_pos_adcErrFlg 'SHMS 2Y+ FPGA Error Flag; Error Flag; Number of Entries' P.hod.2y.posAdcErrorFlag 2 -0.5 1.5
 
-TH1F phodo_1x_raw_adc_mult_neg 'SHMS 1X- Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumNegAdcHits 13 0.5 13.5
-TH1F phodo_1y_raw_adc_mult_neg 'SHMS 1Y- Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumNegAdcHits 13 0.5 13.5
-TH1F phodo_2x_raw_adc_mult_neg 'SHMS 2X- Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumNegAdcHits 14 0.5 14.5
-TH1F phodo_2y_raw_adc_mult_neg 'SHMS 2Y- Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumNegAdcHits 21 0.5 21.5
+TH1F phodo_1x_neg_adcErrFlg 'SHMS 1X- FPGA Error Flag; Error Flag; Number of Entries' P.hod.1x.negAdcErrorFlag 2 -0.5 1.5
+TH1F phodo_1y_neg_adcErrFlg 'SHMS 1Y- FPGA Error Flag; Error Flag; Number of Entries' P.hod.1y.negAdcErrorFlag 2 -0.5 1.5
+TH1F phodo_2x_neg_adcErrFlg 'SHMS 2X- FPGA Error Flag; Error Flag; Number of Entries' P.hod.2x.negAdcErrorFlag 2 -0.5 1.5
+TH1F phodo_2y_neg_adcErrFlg 'SHMS 2Y- FPGA Error Flag; Error Flag; Number of Entries' P.hod.2y.negAdcErrorFlag 2 -0.5 1.5
 
-TH1F phodo_1x_raw_adc_mult 'SHMS 1X Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumAdcHits 13 0.5 13.5
-TH1F phodo_1y_raw_adc_mult 'SHMS 1Y Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumAdcHits 13 0.5 13.5
-TH1F phodo_2x_raw_adc_mult 'SHMS 2X Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumAdcHits 14 0.5 14.5
-TH1F phodo_2y_raw_adc_mult 'SHMS 2Y Raw ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumAdcHits 21 0.5 21.5
+
+#SHMS Hodo Raw ADC Multiplicities
+TH1F phodo_1x_raw_adc_mult_pos 'SHMS 1X+ Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits' P.hod.1x.totNumPosAdcHits 13 0.5 13.5
+TH1F phodo_1y_raw_adc_mult_pos 'SHMS 1Y+ Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits' P.hod.1y.totNumPosAdcHits 13 0.5 13.5
+TH1F phodo_2x_raw_adc_mult_pos 'SHMS 2X+ Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits' P.hod.2x.totNumPosAdcHits 14 0.5 14.5
+TH1F phodo_2y_raw_adc_mult_pos 'SHMS 2Y+ Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw +ADC Hits' P.hod.2y.totNumPosAdcHits 21 0.5 21.5
+
+TH1F phodo_1x_raw_adc_mult_neg 'SHMS 1X- Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits' P.hod.1x.totNumNegAdcHits 13 0.5 13.5
+TH1F phodo_1y_raw_adc_mult_neg 'SHMS 1Y- Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits' P.hod.1y.totNumNegAdcHits 13 0.5 13.5
+TH1F phodo_2x_raw_adc_mult_neg 'SHMS 2X- Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits' P.hod.2x.totNumNegAdcHits 14 0.5 14.5
+TH1F phodo_2y_raw_adc_mult_neg 'SHMS 2Y- Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw -ADC Hits' P.hod.2y.totNumNegAdcHits 21 0.5 21.5
+
+TH1F phodo_1x_raw_adc_mult 'SHMS 1X Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits' P.hod.1x.totNumAdcHits 13 0.5 13.5
+TH1F phodo_1y_raw_adc_mult 'SHMS 1Y Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits' P.hod.1y.totNumAdcHits 13 0.5 13.5
+TH1F phodo_2x_raw_adc_mult 'SHMS 2X Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits' P.hod.2x.totNumAdcHits 14 0.5 14.5
+TH1F phodo_2y_raw_adc_mult 'SHMS 2Y Raw ADC Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits' P.hod.2y.totNumAdcHits 21 0.5 21.5
 
 #Raw TDC Multiplicities
-TH1F phodo_1x_raw_tdc_mult_pos 'SHMS 1X+ Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumPosTdcHits 13 0.5 13.5
-TH1F phodo_1y_raw_tdc_mult_pos 'SHMS 1Y+ Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumPosTdcHits 13 0.5 13.5
-TH1F phodo_2x_raw_tdc_mult_pos 'SHMS 2X+ Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumPosTdcHits 14 0.5 14.5
-TH1F phodo_2y_raw_tdc_mult_pos 'SHMS 2Y+ Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumPosTdcHits 21 0.5 21.5
+TH1F phodo_1x_raw_tdc_mult_pos 'SHMS 1X+ Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw +TDC Hits' P.hod.1x.totNumPosTdcHits 13 0.5 13.5
+TH1F phodo_1y_raw_tdc_mult_pos 'SHMS 1Y+ Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw +TDC Hits' P.hod.1y.totNumPosTdcHits 13 0.5 13.5
+TH1F phodo_2x_raw_tdc_mult_pos 'SHMS 2X+ Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw +TDC Hits' P.hod.2x.totNumPosTdcHits 14 0.5 14.5
+TH1F phodo_2y_raw_tdc_mult_pos 'SHMS 2Y+ Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw +TDC Hits' P.hod.2y.totNumPosTdcHits 21 0.5 21.5
 
-TH1F phodo_1x_raw_tdc_mult_neg 'SHMS 1X- Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumNegTdcHits 13 0.5 13.5
-TH1F phodo_1y_raw_tdc_mult_neg 'SHMS 1Y- Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumNegTdcHits 13 0.5 13.5
-TH1F phodo_2x_raw_tdc_mult_neg 'SHMS 2X- Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumNegTdcHits 14 0.5 14.5
-TH1F phodo_2y_raw_tdc_mult_neg 'SHMS 2Y- Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumNegTdcHits 21 0.5 21.5
+TH1F phodo_1x_raw_tdc_mult_neg 'SHMS 1X- Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw -TDC Hits' P.hod.1x.totNumNegTdcHits 13 0.5 13.5
+TH1F phodo_1y_raw_tdc_mult_neg 'SHMS 1Y- Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw -TDC Hits' P.hod.1y.totNumNegTdcHits 13 0.5 13.5
+TH1F phodo_2x_raw_tdc_mult_neg 'SHMS 2X- Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw -TDC Hits' P.hod.2x.totNumNegTdcHits 14 0.5 14.5
+TH1F phodo_2y_raw_tdc_mult_neg 'SHMS 2Y- Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw -TDC Hits' P.hod.2y.totNumNegTdcHits 21 0.5 21.5
 
-TH1F phodo_1x_raw_tdc_mult 'SHMS 1X Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumTdcHits 13 0.5 13.5
-TH1F phodo_1y_raw_tdc_mult 'SHMS 1Y Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumTdcHits 13 0.5 13.5
-TH1F phodo_2x_raw_tdc_mult 'SHMS 2X Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumTdcHits 14 0.5 14.5
-TH1F phodo_2y_raw_tdc_mult 'SHMS 2Y Raw TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumTdcHits 21 0.5 21.5
+TH1F phodo_1x_raw_tdc_mult 'SHMS 1X Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw TDC Hits' P.hod.1x.totNumTdcHits 13 0.5 13.5
+TH1F phodo_1y_raw_tdc_mult 'SHMS 1Y Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw TDC Hits' P.hod.1y.totNumTdcHits 13 0.5 13.5
+TH1F phodo_2x_raw_tdc_mult 'SHMS 2X Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw TDC Hits' P.hod.2x.totNumTdcHits 14 0.5 14.5
+TH1F phodo_2y_raw_tdc_mult 'SHMS 2Y Raw TDC Multiplicity; Number of PMTs Hit; Total Number of Raw TDC Hits' P.hod.2y.totNumTdcHits 21 0.5 21.5
 
 
+#RAW ADC OCCUPANCIES 
+TH1F phodo_1x_raw_adc_occ_pos 'SHMS 1X+ Raw ADC Occupancy; PMT Number; Number of Raw +ADC Hits' P.hod.1x.posAdcCounter 13 0.5 13.5
+TH1F phodo_1y_raw_adc_occ_pos 'SHMS 1Y+ Raw ADC Occupancy; PMT Number; Number of Raw +ADC Hits' P.hod.1y.posAdcCounter 13 0.5 13.5 
+TH1F phodo_2x_raw_adc_occ_pos 'SHMS 2X+ Raw ADC Occupancy; PMT Number; Number of Raw +ADC Hits' P.hod.2x.posAdcCounter 14 0.5 14.5
+TH1F phodo_2y_raw_adc_occ_pos 'SHMS 2Y+ Raw ADC Occupancy; PMT Number; Number of Raw +ADC Hits' P.hod.2y.posAdcCounter 21 0.5 21.5
 
-#RAW ADC OCCUPANCIES
-TH1F phodo_1x_raw_adc_occ_pos 'SHMS 1X+ Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.1x.posAdcCounter 13 0.5 13.5
-TH1F phodo_1y_raw_adc_occ_pos 'SHMS 1Y+ Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.1y.posAdcCounter 13 0.5 13.5 
-TH1F phodo_2x_raw_adc_occ_pos 'SHMS 2X+ Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.2x.posAdcCounter 14 0.5 14.5
-TH1F phodo_2y_raw_adc_occ_pos 'SHMS 2Y+ Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.2y.posAdcCounter 21 0.5 21.5
+TH1F phodo_1x_raw_adc_occ_neg 'SHMS 1X- Raw ADC Occupancy; PMT Number; Number of Raw -ADC Hits' P.hod.1x.negAdcCounter 13 0.5 13.5
+TH1F phodo_1y_raw_adc_occ_neg 'SHMS 1Y- Raw ADC Occupancy; PMT Number; Number of Raw -ADC Hits' P.hod.1y.negAdcCounter 13 0.5 13.5 
+TH1F phodo_2x_raw_adc_occ_neg 'SHMS 2X- Raw ADC Occupancy; PMT Number; Number of Raw -ADC Hits' P.hod.2x.negAdcCounter 14 0.5 14.5
+TH1F phodo_2y_raw_adc_occ_neg 'SHMS 2Y- Raw ADC Occupancy; PMT Number; Number of Raw -ADC Hits' P.hod.2y.negAdcCounter 21 0.5 21.5
 
-TH1F phodo_1x_raw_adc_occ_neg 'SHMS 1X- Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.1x.negAdcCounter 13 0.5 13.5
-TH1F phodo_1y_raw_adc_occ_neg 'SHMS 1Y- Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.1y.negAdcCounter 13 0.5 13.5 
-TH1F phodo_2x_raw_adc_occ_neg 'SHMS 2X- Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.2x.negAdcCounter 14 0.5 14.5
-TH1F phodo_2y_raw_adc_occ_neg 'SHMS 2Y- Raw ADC Occupancy; PMT Number; Number of Hits' P.hod.2y.negAdcCounter 21 0.5 21.5
+#RAW TDC OCCUPANCIES 
+TH1F phodo_1x_raw_tdc_occ_pos 'SHMS 1X+ Raw TDC Occupancy; PMT Number; Number of Raw +TDC Hits' P.hod.1x.posTdcCounter 13 0.5 13.5
+TH1F phodo_1y_raw_tdc_occ_pos 'SHMS 1Y+ Raw TDC Occupancy; PMT Number; Number of Raw +TDC Hits' P.hod.1y.posTdcCounter 13 0.5 13.5 
+TH1F phodo_2x_raw_tdc_occ_pos 'SHMS 2X+ Raw TDC Occupancy; PMT Number; Number of Raw +TDC Hits' P.hod.2x.posTdcCounter 14 0.5 14.5
+TH1F phodo_2y_raw_tdc_occ_pos 'SHMS 2Y+ Raw TDC Occupancy; PMT Number; Number of Raw +TDC Hits' P.hod.2y.posTdcCounter 21 0.5 21.5
 
-#RAW TDC OCCUPANCIES
-TH1F phodo_1x_raw_tdc_occ_pos 'SHMS 1X+ Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.1x.posTdcCounter 13 0.5 13.5
-TH1F phodo_1y_raw_tdc_occ_pos 'SHMS 1Y+ Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.1y.posTdcCounter 13 0.5 13.5 
-TH1F phodo_2x_raw_tdc_occ_pos 'SHMS 2X+ Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.2x.posTdcCounter 14 0.5 14.5
-TH1F phodo_2y_raw_tdc_occ_pos 'SHMS 2Y+ Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.2y.posTdcCounter 21 0.5 21.5
-
-TH1F phodo_1x_raw_tdc_occ_neg 'SHMS 1X- Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.1x.negTdcCounter 13 0.5 13.5
-TH1F phodo_1y_raw_tdc_occ_neg 'SHMS 1Y- Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.1y.negTdcCounter 13 0.5 13.5 
-TH1F phodo_2x_raw_tdc_occ_neg 'SHMS 2X- Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.2x.negTdcCounter 14 0.5 14.5
-TH1F phodo_2y_raw_tdc_occ_neg 'SHMS 2Y- Raw TDC Occupancy; PMT Number; Number of Hits' P.hod.2y.negTdcCounter 21 0.5 21.5
+TH1F phodo_1x_raw_tdc_occ_neg 'SHMS 1X- Raw TDC Occupancy; PMT Number; Number of Raw -TDC Hits' P.hod.1x.negTdcCounter 13 0.5 13.5
+TH1F phodo_1y_raw_tdc_occ_neg 'SHMS 1Y- Raw TDC Occupancy; PMT Number; Number of Raw -TDC Hits' P.hod.1y.negTdcCounter 13 0.5 13.5 
+TH1F phodo_2x_raw_tdc_occ_neg 'SHMS 2X- Raw TDC Occupancy; PMT Number; Number of Raw -TDC Hits' P.hod.2x.negTdcCounter 14 0.5 14.5
+TH1F phodo_2y_raw_tdc_occ_neg 'SHMS 2Y- Raw TDC Occupancy; PMT Number; Number of Raw -TDC Hits' P.hod.2y.negTdcCounter 21 0.5 21.5
 
 #######################
 
-#GOOD ADC Multiplicities
-TH1F phodo_1x_good_adc_mult_pos 'SHMS 1X+ Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumGoodPosAdcHits 13 0.5 13.5
-TH1F phodo_1y_good_adc_mult_pos 'SHMS 1Y+ Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumGoodPosAdcHits 13 0.5 13.5
-TH1F phodo_2x_good_adc_mult_pos 'SHMS 2X+ Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumGoodPosAdcHits 14 0.5 14.5
-TH1F phodo_2y_good_adc_mult_pos 'SHMS 2Y+ Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumGoodPosAdcHits 21 0.5 21.5
+#GOOD ADC Multiplicities 
+TH1F phodo_1x_good_adc_mult_pos 'SHMS 1X+ Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits' P.hod.1x.totNumGoodPosAdcHits 13 0.5 13.5
+TH1F phodo_1y_good_adc_mult_pos 'SHMS 1Y+ Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits' P.hod.1y.totNumGoodPosAdcHits 13 0.5 13.5
+TH1F phodo_2x_good_adc_mult_pos 'SHMS 2X+ Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits' P.hod.2x.totNumGoodPosAdcHits 14 0.5 14.5
+TH1F phodo_2y_good_adc_mult_pos 'SHMS 2Y+ Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good +ADC Hits' P.hod.2y.totNumGoodPosAdcHits 21 0.5 21.5
 
-TH1F phodo_1x_good_adc_mult_neg 'SHMS 1X- Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumGoodNegAdcHits 13 0.5 13.5
-TH1F phodo_1y_good_adc_mult_neg 'SHMS 1Y- Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumGoodNegAdcHits 13 0.5 13.5
-TH1F phodo_2x_good_adc_mult_neg 'SHMS 2X- Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumGoodNegAdcHits 14 0.5 14.5
-TH1F phodo_2y_good_adc_mult_neg 'SHMS 2Y- Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumGoodNegAdcHits 21 0.5 21.5
+TH1F phodo_1x_good_adc_mult_neg 'SHMS 1X- Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits' P.hod.1x.totNumGoodNegAdcHits 13 0.5 13.5
+TH1F phodo_1y_good_adc_mult_neg 'SHMS 1Y- Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits' P.hod.1y.totNumGoodNegAdcHits 13 0.5 13.5
+TH1F phodo_2x_good_adc_mult_neg 'SHMS 2X- Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits' P.hod.2x.totNumGoodNegAdcHits 14 0.5 14.5
+TH1F phodo_2y_good_adc_mult_neg 'SHMS 2Y- Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good -ADC Hits' P.hod.2y.totNumGoodNegAdcHits 21 0.5 21.5
 
-TH1F phodo_1x_good_adc_mult 'SHMS 1X Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumGoodAdcHits 13 0.5 13.5
-TH1F phodo_1y_good_adc_mult 'SHMS 1Y Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumGoodAdcHits 13 0.5 13.5
-TH1F phodo_2x_good_adc_mult 'SHMS 2X Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumGoodAdcHits 14 0.5 14.5
-TH1F phodo_2y_good_adc_mult 'SHMS 2Y Good ADC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumGoodAdcHits 21 0.5 21.5
+TH1F phodo_1x_good_adc_mult 'SHMS 1X Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits' P.hod.1x.totNumGoodAdcHits 13 0.5 13.5
+TH1F phodo_1y_good_adc_mult 'SHMS 1Y Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits' P.hod.1y.totNumGoodAdcHits 13 0.5 13.5
+TH1F phodo_2x_good_adc_mult 'SHMS 2X Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits' P.hod.2x.totNumGoodAdcHits 14 0.5 14.5
+TH1F phodo_2y_good_adc_mult 'SHMS 2Y Good ADC Multiplicity; Number of PMTs Hit; Total Number of Good ADC Hits' P.hod.2y.totNumGoodAdcHits 21 0.5 21.5
 
 #Good TDC Multiplicities
-TH1F phodo_1x_good_tdc_mult_pos 'SHMS 1X+ Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumGoodPosTdcHits 13 0.5 13.5
-TH1F phodo_1y_good_tdc_mult_pos 'SHMS 1Y+ Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumGoodPosTdcHits 13 0.5 13.5
-TH1F phodo_2x_good_tdc_mult_pos 'SHMS 2X+ Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumGoodPosTdcHits 14 0.5 14.5
-TH1F phodo_2y_good_tdc_mult_pos 'SHMS 2Y+ Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumGoodPosTdcHits 21 0.5 21.5
+TH1F phodo_1x_good_tdc_mult_pos 'SHMS 1X+ Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good +TDC Hits' P.hod.1x.totNumGoodPosTdcHits 13 0.5 13.5
+TH1F phodo_1y_good_tdc_mult_pos 'SHMS 1Y+ Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good +TDC Hits' P.hod.1y.totNumGoodPosTdcHits 13 0.5 13.5
+TH1F phodo_2x_good_tdc_mult_pos 'SHMS 2X+ Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good +TDC Hits' P.hod.2x.totNumGoodPosTdcHits 14 0.5 14.5
+TH1F phodo_2y_good_tdc_mult_pos 'SHMS 2Y+ Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good +TDC Hits' P.hod.2y.totNumGoodPosTdcHits 21 0.5 21.5
 
-TH1F phodo_1x_good_tdc_mult_neg 'SHMS 1X- Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumGoodNegTdcHits 13 0.5 13.5
-TH1F phodo_1y_good_tdc_mult_neg 'SHMS 1Y- Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumGoodNegTdcHits 13 0.5 13.5
-TH1F phodo_2x_good_tdc_mult_neg 'SHMS 2X- Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumGoodNegTdcHits 14 0.5 14.5
-TH1F phodo_2y_good_tdc_mult_neg 'SHMS 2Y- Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumGoodNegTdcHits 21 0.5 21.5
+TH1F phodo_1x_good_tdc_mult_neg 'SHMS 1X- Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good -TDC Hits' P.hod.1x.totNumGoodNegTdcHits 13 0.5 13.5
+TH1F phodo_1y_good_tdc_mult_neg 'SHMS 1Y- Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good -TDC Hits' P.hod.1y.totNumGoodNegTdcHits 13 0.5 13.5
+TH1F phodo_2x_good_tdc_mult_neg 'SHMS 2X- Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good -TDC Hits' P.hod.2x.totNumGoodNegTdcHits 14 0.5 14.5
+TH1F phodo_2y_good_tdc_mult_neg 'SHMS 2Y- Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good -TDC Hits' P.hod.2y.totNumGoodNegTdcHits 21 0.5 21.5
 
-TH1F phodo_1x_good_tdc_mult 'SHMS 1X Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1x.totNumGoodTdcHits 13 0.5 13.5
-TH1F phodo_1y_good_tdc_mult 'SHMS 1Y Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.1y.totNumGoodTdcHits 13 0.5 13.5
-TH1F phodo_2x_good_tdc_mult 'SHMS 2X Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2x.totNumGoodTdcHits 14 0.5 14.5
-TH1F phodo_2y_good_tdc_mult 'SHMS 2Y Good TDC Multiplicity; Number of PMTs Hit; Number of Entries' P.hod.2y.totNumGoodTdcHits 21 0.5 21.5
+TH1F phodo_1x_good_tdc_mult 'SHMS 1X Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good TDC Hits' P.hod.1x.totNumGoodTdcHits 13 0.5 13.5
+TH1F phodo_1y_good_tdc_mult 'SHMS 1Y Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good TDC Hits' P.hod.1y.totNumGoodTdcHits 13 0.5 13.5
+TH1F phodo_2x_good_tdc_mult 'SHMS 2X Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good TDC Hits' P.hod.2x.totNumGoodTdcHits 14 0.5 14.5
+TH1F phodo_2y_good_tdc_mult 'SHMS 2Y Good TDC Multiplicity; Number of PMTs Hit; Total Number of Good TDC Hits' P.hod.2y.totNumGoodTdcHits 21 0.5 21.5
 
 
 
 #GOOD ADC OCCUPANCIES
-TH1F phodo_1x_good_adc_occ_pos 'SHMS 1X+ Good ADC Occupancy; PMT Number; Number of Hits' P.hod.1x.numGoodPosAdcHits 13 0.5 13.5
-TH1F phodo_1y_good_adc_occ_pos 'SHMS 1Y+ Good ADC Occupancy; PMT Number; Number of Hits' P.hod.1y.numGoodPosAdcHits 13 0.5 13.5 
-TH1F phodo_2x_good_adc_occ_pos 'SHMS 2X+ Good ADC Occupancy; PMT Number; Number of Hits' P.hod.2x.numGoodPosAdcHits 14 0.5 14.5
-TH1F phodo_2y_good_adc_occ_pos 'SHMS 2Y+ Good ADC Occupancy; PMT Number; Number of Hits' P.hod.2y.numGoodPosAdcHits 21 0.5 21.5
+TH1F phodo_1x_good_adc_occ_pos 'SHMS 1X+ Good ADC Occupancy; PMT Number; Number of Good +ADC Hits' P.hod.1x.numGoodPosAdcHits 13 0.5 13.5
+TH1F phodo_1y_good_adc_occ_pos 'SHMS 1Y+ Good ADC Occupancy; PMT Number; Number of Good +ADC Hits' P.hod.1y.numGoodPosAdcHits 13 0.5 13.5 
+TH1F phodo_2x_good_adc_occ_pos 'SHMS 2X+ Good ADC Occupancy; PMT Number; Number of Good +ADC Hits' P.hod.2x.numGoodPosAdcHits 14 0.5 14.5
+TH1F phodo_2y_good_adc_occ_pos 'SHMS 2Y+ Good ADC Occupancy; PMT Number; Number of Good +ADC Hits' P.hod.2y.numGoodPosAdcHits 21 0.5 21.5
 
-TH1F phodo_1x_good_adc_occ_neg 'SHMS 1X- Good ADC Occupancy; PMT Number; Number of Hits' P.hod.1x.numGoodNegAdcHits 13 0.5 13.5
-TH1F phodo_1y_good_adc_occ_neg 'SHMS 1Y- Good ADC Occupancy; PMT Number; Number of Hits' P.hod.1y.numGoodNegAdcHits 13 0.5 13.5 
-TH1F phodo_2x_good_adc_occ_neg 'SHMS 2X- Good ADC Occupancy; PMT Number; Number of Hits' P.hod.2x.numGoodNegAdcHits 14 0.5 14.5
-TH1F phodo_2y_good_adc_occ_neg 'SHMS 2Y- Good ADC Occupancy; PMT Number; Number of Hits' P.hod.2y.numGoodNegAdcHits 21 0.5 21.5
+TH1F phodo_1x_good_adc_occ_neg 'SHMS 1X- Good ADC Occupancy; PMT Number; Number of Good -ADC Hits' P.hod.1x.numGoodNegAdcHits 13 0.5 13.5
+TH1F phodo_1y_good_adc_occ_neg 'SHMS 1Y- Good ADC Occupancy; PMT Number; Number of Good -ADC Hits' P.hod.1y.numGoodNegAdcHits 13 0.5 13.5 
+TH1F phodo_2x_good_adc_occ_neg 'SHMS 2X- Good ADC Occupancy; PMT Number; Number of Good -ADC Hits' P.hod.2x.numGoodNegAdcHits 14 0.5 14.5
+TH1F phodo_2y_good_adc_occ_neg 'SHMS 2Y- Good ADC Occupancy; PMT Number; Number of Good -ADC Hits' P.hod.2y.numGoodNegAdcHits 21 0.5 21.5
 
 #GOOD TDC OCCUPANCIES
-TH1F phodo_1x_good_tdc_occ_pos 'SHMS 1X+ Good TDC Occupancy; PMT Number; Number of Hits' P.hod.1x.numGoodPosTdcHits 13 0.5 13.5
-TH1F phodo_1y_good_tdc_occ_pos 'SHMS 1Y+ Good TDC Occupancy; PMT Number; Number of Hits' P.hod.1y.numGoodPosTdcHits 13 0.5 13.5 
-TH1F phodo_2x_good_tdc_occ_pos 'SHMS 2X+ Good TDC Occupancy; PMT Number; Number of Hits' P.hod.2x.numGoodPosTdcHits 14 0.5 14.5
-TH1F phodo_2y_good_tdc_occ_pos 'SHMS 2Y+ Good TDC Occupancy; PMT Number; Number of Hits' P.hod.2y.numGoodPosTdcHits 21 0.5 21.5
+TH1F phodo_1x_good_tdc_occ_pos 'SHMS 1X+ Good TDC Occupancy; PMT Number; Number of Good +TDC Hits' P.hod.1x.numGoodPosTdcHits 13 0.5 13.5
+TH1F phodo_1y_good_tdc_occ_pos 'SHMS 1Y+ Good TDC Occupancy; PMT Number; Number of Good +TDC Hits' P.hod.1y.numGoodPosTdcHits 13 0.5 13.5 
+TH1F phodo_2x_good_tdc_occ_pos 'SHMS 2X+ Good TDC Occupancy; PMT Number; Number of Good +TDC Hits' P.hod.2x.numGoodPosTdcHits 14 0.5 14.5
+TH1F phodo_2y_good_tdc_occ_pos 'SHMS 2Y+ Good TDC Occupancy; PMT Number; Number of Good +TDC Hits' P.hod.2y.numGoodPosTdcHits 21 0.5 21.5
 
-TH1F phodo_1x_good_tdc_occ_neg 'SHMS 1X- Good TDC Occupancy; PMT Number; Number of Hits' P.hod.1x.numGoodNegTdcHits 13 0.5 13.5
-TH1F phodo_1y_good_tdc_occ_neg 'SHMS 1Y- Good TDC Occupancy; PMT Number; Number of Hits' P.hod.1y.numGoodNegTdcHits 13 0.5 13.5 
-TH1F phodo_2x_good_tdc_occ_neg 'SHMS 2X- Good TDC Occupancy; PMT Number; Number of Hits' P.hod.2x.numGoodNegTdcHits 14 0.5 14.5
-TH1F phodo_2y_good_tdc_occ_neg 'SHMS 2Y- Good TDC Occupancy; PMT Number; Number of Hits' P.hod.2y.numGoodNegTdcHits 21 0.5 21.5
+TH1F phodo_1x_good_tdc_occ_neg 'SHMS 1X- Good TDC Occupancy; PMT Number; Number of Good -TDC Hits' P.hod.1x.numGoodNegTdcHits 13 0.5 13.5
+TH1F phodo_1y_good_tdc_occ_neg 'SHMS 1Y- Good TDC Occupancy; PMT Number; Number of Good -TDC Hits' P.hod.1y.numGoodNegTdcHits 13 0.5 13.5 
+TH1F phodo_2x_good_tdc_occ_neg 'SHMS 2X- Good TDC Occupancy; PMT Number; Number of Good -TDC Hits' P.hod.2x.numGoodNegTdcHits 14 0.5 14.5
+TH1F phodo_2y_good_tdc_occ_neg 'SHMS 2Y- Good TDC Occupancy; PMT Number; Number of Good -TDC Hits' P.hod.2y.numGoodNegTdcHits 21 0.5 21.5
 
 #####################
 
