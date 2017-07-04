@@ -3,19 +3,21 @@
 */
 
 #define NPLANES 12
-#define TOTAL_BINS 137
-
+#define TOTAL_BINS 274
 void get_LookUp_Values() {
 
    
   //Read Run Number from txt file
   int run_NUM;
+  Long64_t num_evts;        //added
+  string input_file;   //added
+
   TString f0 = "input_RUN.txt";
   ifstream infile(f0);
-  infile >> run_NUM;
+  infile >> input_file >> run_NUM >> num_evts;
  
   //Open root file containing drift time histos
-  TFile *f = new TFile(Form("../root_files/run%d/shms_tzero_corr_histos.root", run_NUM),"READ");
+  TFile *f = new TFile(Form("../root_files/run%d/shms_tzero_corr_histo.root", run_NUM),"READ");
  
   //Define histogram array
   TH1F *h[NPLANES];
@@ -35,7 +37,7 @@ void get_LookUp_Values() {
   
   //Create an output file to store lookup values  
   ofstream ofs;
-  TString lookup_table = "../../../PARAM/SHMS/DC/pdriftmap_new.param";
+  TString lookup_table = Form("../../../PARAM/SHMS/DC/pdriftmap_run%d_NEW.param", run_NUM);
   ofs.open (lookup_table);
  
  
@@ -46,7 +48,7 @@ void get_LookUp_Values() {
   ofs << "; number of 1st bin in table in ns" << "\n";
   ofs << "pdrift1stbin=0" << "\n";
   ofs << "; bin size in ns" << "\n";
-  ofs << "pdriftbinsz=2" << "\n";
+  ofs << "pdriftbinsz=1" << "\n";
  
  
  
@@ -54,7 +56,7 @@ void get_LookUp_Values() {
 
   for (int ip=0; ip<NPLANES; ip++){
    
-    TString drift_time_histo = "all_wires_"+plane_names[ip]; 
+    TString drift_time_histo = "pdc"+plane_names[ip]+"_time"; 
 
     //Get drift time histograms from root file
     h[ip] = (TH1F*)f->Get(drift_time_histo);
@@ -98,15 +100,15 @@ void get_LookUp_Values() {
       lookup_value[ip] = binSUM[ip] / binContent_TOTAL[ip];
       bin_count = bin_count + 1;
      
-      if (bin_count <= 8 ) {
+      if (bin_count <= 16 ) {
 	ofs << setprecision(5) << lookup_value[ip] << fixed << ",";
       }
      
-      else if (bin_count >8 && bin_count < 138) {
-	ofs << setprecision(5) << lookup_value[ip] << ((bin_count+1) % 10 ? "," : "\n") << fixed; 
+      else if (bin_count >16 && bin_count <= 274) {
+	ofs << setprecision(5) << lookup_value[ip] << ((bin_count+1) % 20 ? "," : "\n") << fixed; 
       }
       else {
-	ofs << setprecision(5) << lookup_value[ip] << fixed << endl;	  
+	ofs  << setprecision(5) << lookup_value[ip] <<  fixed << endl;	  
       }
      
     }
