@@ -8,17 +8,21 @@ void run_calibration()
   cout << "Enter run number: ";
   cin >> run_NUM;
 
+  Int_t events_NUM;
+  cout << "Enter number of events: ";
+  cin >> events_NUM;
+
   //Create root and data file directories if they don't exist
   gROOT->ProcessLine(".! mkdir root_files");
   gROOT->ProcessLine(".! mkdir data_files");
 
   //Execute histogram creator & cutting script
-  gROOT->ProcessLine(Form(".x scripts/analysis.C(%d)", run_NUM));
+  gROOT->ProcessLine(Form(".x scripts/analysis.C(%d, %d)", run_NUM, events_NUM));
 
   //cout << "I got here!" << endl;
 
   //Take those histograms and determine the calibration constants
-  gROOT->ProcessLine(Form(".x scripts/calib_const.C(%d)", run_NUM));
+  gROOT->ProcessLine(Form(".x scripts/calib_const.C(%d, %d)", run_NUM, events_NUM));
 
   //Take calibration constants and put into parameter file
   ofstream output;

@@ -47,20 +47,22 @@ phgc_pulseAmp     -- Maximum amplitude of ADC waveform !!There is a ceiling on t
  */
 
 //Main Script
-void analysis(Int_t RunNumber=0)
+void analysis(Int_t RunNumber=0, Int_t EventNumber=-1)
 {
   if (RunNumber == 0)
     {
       cout << "Enter a Run Number (-1 to exit): ";
       cin >> RunNumber;
+      cout << "Enter number of events: ";
+      cin >> EventNumber;
       if (RunNumber <= 0) return;
     }
 
   //Read Appropriate ROOT file
-  TFile *F = new TFile(Form("../../ROOTfiles/shms_replay_%d.root", RunNumber));
+  TFile *F = new TFile(Form("../../ROOTfiles/shms_replay_%d_%d.root", RunNumber, EventNumber));
 
   //Output Histograms
-  TFile *g = new TFile(Form("root_files/shms_calibration_%d.root", RunNumber), "RECREATE");
+  TFile *g = new TFile(Form("root_files/shms_calibration_%d_%d.root", RunNumber, EventNumber), "RECREATE");
   
   //Function to separate e and pi in shwr vs NGC
   //TF1 *shwr_ngc_id = new TF1("shwr_ngc_id","-[0]*x + [1]",-5000,12000);
@@ -340,6 +342,7 @@ void analysis(Int_t RunNumber=0)
   TH1F *h_phgc_quad4_pulseAmp_sum[4];
 
   TH1F *h_phgc_pulseInt_npe[4];
+  TH1F *h_phgc_npesum;
 
   //PreShower & Shower
   TH1F *h_ppshwr_PulseInt;
@@ -428,6 +431,8 @@ void analysis(Int_t RunNumber=0)
 
   TH2F *h2_pshwr_vs_pngc_ecut;
   TH2F *h2_pshwr_vs_pngc_picut;
+  TH2F *h2_pshwr_vs_pngc_ecut_pmt[4];
+  TH2F *h2_pshwr_vs_pngc_picut_pmt[4];
   TH2F *h2_pshwr_vs_phgc_ecut;
   TH2F *h2_pshwr_vs_phgc_picut;
 
@@ -575,15 +580,15 @@ void analysis(Int_t RunNumber=0)
   T->SetBranchAddress("Ndata.P.cal.pr.posAdcCounter", &ppshwr_posHits);
   T->SetBranchAddress("P.cal.pr.negAdcCounter", ppshwr_negPmt);
   T->SetBranchAddress("P.cal.pr.posAdcCounter", ppshwr_posPmt);
-  T->SetBranchAddress("P.cal.pr.negAdcPulseTimeRaw", ppshwr_negPulseTime);
-  T->SetBranchAddress("P.cal.pr.posAdcPulseTimeRaw", ppshwr_posPulseTime);
-  T->SetBranchAddress("P.cal.pr.negAdcPulseInt", ppshwr_negPulseInt);
-  T->SetBranchAddress("P.cal.pr.posAdcPulseInt", ppshwr_posPulseInt);
+  T->SetBranchAddress("P.cal.pr.goodNegAdcPulseTime", ppshwr_negPulseTime);
+  T->SetBranchAddress("P.cal.pr.goodPosAdcPulseTime", ppshwr_posPulseTime);
+  T->SetBranchAddress("P.cal.pr.goodNegAdcPulseInt", ppshwr_negPulseInt);
+  T->SetBranchAddress("P.cal.pr.goodPosAdcPulseInt", ppshwr_posPulseInt);
 
   T->SetBranchAddress("Ndata.P.cal.fly.adcCounter", &pshwr_hits);
   T->SetBranchAddress("P.cal.fly.adcCounter", pshwr_pmt);
-  T->SetBranchAddress("P.cal.fly.adcPulseTimeRaw", pshwr_pulseTimeRaw);
-  T->SetBranchAddress("P.cal.fly.adcPulseInt", pshwr_pulseInt);
+  T->SetBranchAddress("P.cal.fly.goodAdcPulseTime", pshwr_pulseTimeRaw);
+  T->SetBranchAddress("P.cal.fly.goodAdcPulseInt", pshwr_pulseInt);
 
   //NGC
   T->SetBranchAddress("Ndata.P.ngcer.adcCounter", &pngc_hits);
@@ -980,7 +985,8 @@ void analysis(Int_t RunNumber=0)
   h_phgc_pulseInt_npe[1] = new TH1F ("phgc_pulseInt_npe2", "Photoelectrons from pulseInt in PMT2; NPE; Counts", bins, 0, 20);
   h_phgc_pulseInt_npe[2] = new TH1F ("phgc_pulseInt_npe3", "Photoelectrons from pulseInt in PMT3; NPE; Counts", bins, 0, 20);
   h_phgc_pulseInt_npe[3] = new TH1F ("phgc_pulseInt_npe4", "Photoelectrons from pulseInt in PMT4; NPE; Counts", bins, 0, 20);
-  
+
+  h_phgc_npesum = new TH1F("phgc_npesum", "Photoelectrons from all PMTs; NPE; Counts", bins, 0, 20);
 
   //PreShower & Shower
   h_ppshwr_PulseInt = new TH1F ("ppshwr_PulseInt", "Pulse Integral for PreShower", bins, adc_min, adc_max);  
@@ -1194,6 +1200,17 @@ void analysis(Int_t RunNumber=0)
 
   h2_pshwr_vs_pngc_ecut = new TH2F ("pcom_h2_pshwr_vs_pngc_ecut", "Pre-Shower vs. NGC only Electrons; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
   h2_pshwr_vs_pngc_picut = new TH2F ("pcom_h2_pshwr_vs_pngc_picut", "Pre-Shower vs. NGC only Pions; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  
+  h2_pshwr_vs_pngc_ecut_pmt[0] = new TH2F ("pcom_h2_pshwr_vs_pngc_ecut_pmt1", "Pre-Shower vs. NGC only Electrons PMT1; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  h2_pshwr_vs_pngc_ecut_pmt[1] = new TH2F ("pcom_h2_pshwr_vs_pngc_ecut_pmt2", "Pre-Shower vs. NGC only Electrons PMT2; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  h2_pshwr_vs_pngc_ecut_pmt[2] = new TH2F ("pcom_h2_pshwr_vs_pngc_ecut_pmt3", "Pre-Shower vs. NGC only Electrons PMT3; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  h2_pshwr_vs_pngc_ecut_pmt[3] = new TH2F ("pcom_h2_pshwr_vs_pngc_ecut_pmt4", "Pre-Shower vs. NGC only Electrons PMT4; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+
+  h2_pshwr_vs_pngc_picut_pmt[0] = new TH2F ("pcom_h2_pshwr_vs_pngc_picut_pmt1", "Pre-Shower vs. NGC only Pions PMT1; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  h2_pshwr_vs_pngc_picut_pmt[1] = new TH2F ("pcom_h2_pshwr_vs_pngc_picut_pmt2", "Pre-Shower vs. NGC only Pions PMT2; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  h2_pshwr_vs_pngc_picut_pmt[2] = new TH2F ("pcom_h2_pshwr_vs_pngc_picut_pmt3", "Pre-Shower vs. NGC only Pions PMT3; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  h2_pshwr_vs_pngc_picut_pmt[3] = new TH2F ("pcom_h2_pshwr_vs_pngc_picut_pmt4", "Pre-Shower vs. NGC only Pions PMT4; NGC PulseInt; Shower+Pre-Shower Energy (GeV)", 100, 0, 10000, 100, 0, 20);
+  
   h2_pshwr_vs_phgc_ecut = new TH2F ("pcom_h2_pshwr_vs_phgc_ecut", "Pre-Shower vs. HGC only Electrons; HGC NPE; Shower+Pre-Shower Energy (GeV)", 60, -10, 20, 100, 0, 20);
   h2_pshwr_vs_phgc_picut = new TH2F ("pcom_h2_pshwr_vs_phgc_picut", "Pre-Shower vs. HGC only Pions; HGC NPE; Shower+Pre-Shower Energy (GeV)", 60, -10, 20, 100, 0, 20);
 
@@ -1221,6 +1238,10 @@ void analysis(Int_t RunNumber=0)
   
   //Loop of entries in tree
   cout << "Number of entries found: " << nentries << endl;
+
+  //Quantities used across detectors
+  Double_t pngc_NPE;
+  Double_t phgc_NPE;
   
   for (UInt_t ievent = 0; ievent < nentries; ievent++)
     {
@@ -1235,12 +1256,12 @@ void analysis(Int_t RunNumber=0)
       for (UInt_t itrack = 0; itrack < ntracks; itrack++)
 	{
 	  //Quantities for Particle ID cuts
-	  Double_t phgc_NPE = 0;
+	  phgc_NPE = 0;
 	  for (UInt_t ipmt = 0; ipmt < nhgc_pmts; ipmt++)
 	    {
 	      phgc_NPE = phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt];
 	    }
-	  Double_t pngc_NPE = 0;
+	  pngc_NPE = 0;
 	  for (UInt_t ipmt = 0; ipmt < nngc_pmts; ipmt++)
 	    {
 	      pngc_NPE = pngc_pulseInt[ipmt]*ngc_adc2npe[ipmt];
@@ -1403,7 +1424,7 @@ void analysis(Int_t RunNumber=0)
 	    h2_paero_negPulseTime_pT2_diff->Fill(paero_negPmt[iaerohit], paero_negPulseTime[iaerohit]*clk2adc - pT2_tdcTime*clk2tdc);
 	    h2_paero_negPulseTime_pT3_diff->Fill(paero_negPmt[iaerohit], paero_negPulseTime[iaerohit]*clk2adc - pT3_tdcTime*clk2tdc);
 	     //*/
-	    paero_adcPulseInt += paero_negPulseInt[iaerohit]*aero_neg_adc2npe[iaerohit];
+	      paero_adcPulseInt += paero_negPulseInt[iaerohit]*aero_neg_adc2npe[iaerohit];
 	    }
 	  for (UInt_t iaerohit = 0; iaerohit < paero_posHits; iaerohit++)
 	    {/*
@@ -1411,15 +1432,15 @@ void analysis(Int_t RunNumber=0)
 	    h2_paero_posPulseTime_pT2_diff->Fill(paero_posPmt[iaerohit], paero_posPulseTime[iaerohit]*clk2adc - pT2_tdcTime*clk2tdc);
 	    h2_paero_posPulseTime_pT3_diff->Fill(paero_posPmt[iaerohit], paero_posPulseTime[iaerohit]*clk2adc - pT3_tdcTime*clk2tdc);
 	     //*/
-	    paero_adcPulseInt += paero_posPulseInt[iaerohit]*aero_pos_adc2npe[iaerohit];
+	      paero_adcPulseInt += paero_posPulseInt[iaerohit]*aero_pos_adc2npe[iaerohit];
 	    }
-	  if (paero_adcPulseInt != 0.0) //h_paero_PulseInt->Fill(paero_adcPulseInt);
+	  //if (paero_adcPulseInt != 0.0) h_paero_PulseInt->Fill(paero_adcPulseInt);
 	  //End of Loop over Aerogel
 
 
 	  //Pre-Shower
-	  Double_t ppshwr_adcPulseInt = 0.0;   
-	  for (UInt_t ipshwrhit=0; ipshwrhit < ppshwr_negHits; ipshwrhit++)
+	  Double_t ppshwr_adcPulseInt = 0;   
+	  for (UInt_t ipshwrhit=0; ipshwrhit < nneg_pshwr_blks; ipshwrhit++)
 	    {/*
 	      h2_ppshwr_negPulseTime_pT1_diff->Fill(ppshwr_negPmt[ipshwrhit], ppshwr_negPulseTime[ipshwrhit]*clk2adc - pT1_tdcTime*clk2tdc);
 	      h2_ppshwr_negPulseTime_pT2_diff->Fill(ppshwr_negPmt[ipshwrhit], ppshwr_negPulseTime[ipshwrhit]*clk2adc - pT2_tdcTime*clk2tdc);
@@ -1428,7 +1449,7 @@ void analysis(Int_t RunNumber=0)
 	      ppshwr_adcPulseInt += ppshwr_negPulseInt[ipshwrhit]*pshwr_neg_adc2GeV[ipshwrhit];
 	    }
       
-	  for (UInt_t ipshwrhit=0; ipshwrhit < ppshwr_posHits; ipshwrhit++)
+	  for (UInt_t ipshwrhit=0; ipshwrhit < npos_pshwr_blks; ipshwrhit++)
 	    {/*
 	      h2_ppshwr_posPulseTime_pT1_diff->Fill(ppshwr_posPmt[ipshwrhit], ppshwr_posPulseTime[ipshwrhit]*clk2adc - pT1_tdcTime*clk2tdc);
 	      h2_ppshwr_posPulseTime_pT2_diff->Fill(ppshwr_posPmt[ipshwrhit], ppshwr_posPulseTime[ipshwrhit]*clk2adc - pT2_tdcTime*clk2tdc);
@@ -1436,13 +1457,13 @@ void analysis(Int_t RunNumber=0)
 	     //*/
 	      ppshwr_adcPulseInt += ppshwr_posPulseInt[ipshwrhit]*pshwr_pos_adc2GeV[ipshwrhit];
 	    }
-	  if (ppshwr_adcPulseInt != 0.0) //h_ppshwr_PulseInt->Fill(ppshwr_adcPulseInt);
+	  if (ppshwr_adcPulseInt != 0.0) h_ppshwr_PulseInt->Fill(ppshwr_adcPulseInt);
 	  //End of loop over Pre-Shower
 	  
 	  //Shower
-	  Double_t pshwr_adcPulseInt = 0.0;
+	  Double_t pshwr_adcPulseInt = 0;
 
-	  for (UInt_t ishwrhit = 0; ishwrhit < pshwr_hits; ishwrhit++)
+	  for (UInt_t ishwrhit = 0; ishwrhit < nshwr_blks; ishwrhit++)
 	    {/*
 	      h2_pshwr_pulseTime_pT1_diff->Fill(pshwr_pmt[ishwrhit], pshwr_pulseTimeRaw[ishwrhit]*clk2adc - pT1_tdcTime*clk2tdc);
 	      h2_pshwr_pulseTime_pT2_diff->Fill(pshwr_pmt[ishwrhit], pshwr_pulseTimeRaw[ishwrhit]*clk2adc - pT2_tdcTime*clk2tdc);
@@ -1450,7 +1471,7 @@ void analysis(Int_t RunNumber=0)
 	     //*/
 	      pshwr_adcPulseInt += pshwr_pulseInt[ishwrhit]*shwr_adc2GeV;
 	    }
-	  if (pshwr_adcPulseInt != 0.0) //h_pshwr_PulseInt->Fill(pshwr_adcPulseInt);
+	  if (pshwr_adcPulseInt != 0.0) h_pshwr_PulseInt->Fill(pshwr_adcPulseInt);
 
 	  for (UInt_t itrack = 0; itrack < ntracks; itrack++)
 	    {
@@ -1460,9 +1481,9 @@ void analysis(Int_t RunNumber=0)
 
 	  
 	  //NGC
-	  Double_t pngc_adcInt = 0.0;
-	  Double_t pngc_adcAmp = 0.0;
-	  Double_t pngc_NPE = 0.0;
+	  Double_t pngc_adcInt = 0;
+	  Double_t pngc_adcAmp = 0;
+	  pngc_NPE = 0;
 
 	  for (UInt_t ipmt = 0; ipmt < nngc_pmts; ipmt++)
 	    {
@@ -1474,7 +1495,7 @@ void analysis(Int_t RunNumber=0)
 	      pngc_NPE += pngc_pulseInt[ipmt]*ngc_adc2npe[ipmt];
 
 	      //Basic Quantities
-	      ///*
+	      /*
 	      h_pngc_adcPulseInt[ipmt]->Fill(pngc_pulseInt[ipmt]);
 	      h_pngc_adcPulseAmp[ipmt]->Fill(pngc_pulseAmp[ipmt]);
 	      h_pngc_adcPulseTimeRaw[ipmt]->Fill(pngc_pulseTimeRaw[ipmt]*clk2adc); //*/
@@ -1486,7 +1507,7 @@ void analysis(Int_t RunNumber=0)
 	      //*/
 	       
 	       //Generating histos for Quadrants vs PMT
-	       ///*
+	       /*
 	     
 	       if (trk_y[0] + trk_phi[0] * nngc_z >= 0.0 && trk_x[0] + trk_theta[0] * nngc_z >= 0.0)
 		 {
@@ -1552,13 +1573,13 @@ void analysis(Int_t RunNumber=0)
 		     }
 		     }//Quadrant 4  //*/
 	    }
-	  if (pngc_adcInt != 0.0) //h_pngc_adcPulseInt_sum->Fill(pngc_adcInt);
+	  if (pngc_adcInt != 0.0) h_pngc_adcPulseInt_sum->Fill(pngc_adcInt);
 	  //End of loop over NGC
 
 	  //HGC
 	  Double_t phgc_Int = 0;
 	  Double_t phgc_Amp = 0;
-	  Double_t phgc_NPE = 0;
+	  phgc_NPE = 0;
       
 	  for (UInt_t ipmt = 0; ipmt < nhgc_pmts; ipmt++)
 	    {
@@ -1570,7 +1591,7 @@ void analysis(Int_t RunNumber=0)
 	      phgc_NPE += phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]; //Remove pedistal from other PMTs?
 
 	      //Basic Quantities
-	      /*
+	      ///*
 	      h_phgc_adcPulseInt[ipmt]->Fill(phgc_pulseInt[ipmt]);
 	      //h_phgc_adcPulseAmp[ipmt]->Fill(phgc_pulseAmp[ipmt]);
 	      //h_phgc_adcPulseTimeRaw[ipmt]->Fill(phgc_pulseTimeRaw[ipmt]*clk2adc); //*/
@@ -1632,19 +1653,21 @@ void analysis(Int_t RunNumber=0)
 	      */
 
 	      //Particle ID cuts with a 1/x cut
-	      /*
+	      ///*
 	      if (pngc_adcInt >= 2000 && pngc_adcInt != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0)
 		{
 		  if ((ppshwr_adcPulseInt + pshwr_adcPulseInt) >= shwr_ngc_id->Eval(pngc_adcInt))
 		    {
 		      //h_phgc_ecut_shwr[ipmt]->Fill(phgc_pulseInt[ipmt]);
 		      //h2_phgc_adcInt_TimeRaw_e[ipmt]->Fill(phgc_pulseTimeRaw[ipmt]*clk2adc, phgc_pulseInt[ipmt]);
+		      h2_pshwr_vs_pngc_ecut_pmt[ipmt]->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
 		      h3_ptrk_hgc_adcInt2NPE_e[ipmt]->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]);
 		    }
 		  if ((ppshwr_adcPulseInt + pshwr_adcPulseInt) < shwr_ngc_id->Eval(pngc_adcInt))
 		    {
 		      //h_phgc_picut_shwr[ipmt]->Fill(phgc_pulseInt[ipmt]);
 		      //h2_phgc_adcInt_TimeRaw_pi[ipmt]->Fill(phgc_pulseTimeRaw[ipmt]*clk2adc, phgc_pulseInt[ipmt]);
+		      h2_pshwr_vs_pngc_picut_pmt[ipmt]->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
 		      h3_ptrk_hgc_adcInt2NPE_pi[ipmt]->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]);
 		    }
 		}
@@ -1653,11 +1676,12 @@ void analysis(Int_t RunNumber=0)
 		{
 		  //h_phgc_picut_shwr[ipmt]->Fill(phgc_pulseInt[ipmt]);
 		  //h2_phgc_adcInt_TimeRaw_pi[ipmt]->Fill(phgc_pulseTimeRaw[ipmt]*clk2adc, phgc_pulseInt[ipmt]);
+		  h2_pshwr_vs_pngc_picut_pmt[ipmt]->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
 		  h3_ptrk_hgc_adcInt2NPE_pi[ipmt]->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]);
 		  }//*/
 	      
 	      //Tracking Information in HGC
-	      /*
+	      ///*
 	      h2_ptrk_hgc[ipmt]->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_pulseInt[ipmt]);
 	      h2_ptrk_hgc_adcAmp[ipmt]->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_pulseAmp[ipmt]);
 	      h3_ptrk_hgc_adcInt2NPE[ipmt]->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]);
@@ -1666,7 +1690,7 @@ void analysis(Int_t RunNumber=0)
 	      
 	      
 	      //Generating histos for Quadrants vs PMT
-	      /*
+	      ///*
 	     
 	      if (trk_y[0] + trk_phi[0] * nhgc_z >= 4.6 && trk_x[0] + trk_theta[0] * nhgc_z >= 9.4)
 		{
@@ -1767,8 +1791,9 @@ void analysis(Int_t RunNumber=0)
 	      
 	      //*/
 	      
-	      //h_phgc_pulseInt_npe[ipmt]->Fill(phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]);
+	      h_phgc_pulseInt_npe[ipmt]->Fill(phgc_pulseInt[ipmt]*hgc_adcInt2npe_pulseInt[ipmt]);
 	    }
+	  if (phgc_Int != 0.0) h_phgc_npesum->Fill(phgc_NPE);
 	  //if (phgc_Int != 0.0) h_phgc_adcPulseIntSum->Fill(phgc_Int);
 	  //if (phgc_Amp != 0.0) h_phgc_adcPulseAmpSum->Fill(phgc_Amp);
 	  //if (phgc_Amp != 0.0) h3_ptrk_hgc_adcInt2NPE_full->Fill(trk_x[0] + trk_theta[0] * nhgc_z, trk_y[0] + trk_phi[0] * nhgc_z, phgc_NPE);
@@ -1808,9 +1833,9 @@ void analysis(Int_t RunNumber=0)
 	    }//*/
 	  
 	  //Combinations of Detectors
-	  /*
+	  ///*
 	  if (phgc_NPE != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0) h2_pshwr_vs_phgcer->Fill(phgc_NPE, pshwr_adcPulseInt + ppshwr_adcPulseInt);
-	  //if (pngc_adcInt != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0) h2_pshwr_vs_pngc->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
+	  if (pngc_adcInt != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0) h2_pshwr_vs_pngc->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
 	  //if (ppshwr_adcPulseInt != 0.0 && pshwr_adcPulseInt != 0.0) h2_pshwr_vs_ppshwr->Fill(pshwr_adcPulseInt, ppshwr_adcPulseInt); 
 	  //*/
 
@@ -1830,29 +1855,29 @@ void analysis(Int_t RunNumber=0)
 	    }
 	  */
 	  //For a 1/x Cut on Paricle ID
-	  /*
+	  ///*
 	  if (pngc_adcInt > 2000 && pngc_adcInt != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0)
 	    {
 	      if ((ppshwr_adcPulseInt + pshwr_adcPulseInt) > shwr_ngc_id->Eval(pngc_adcInt))
 		{
 		  h2_pshwr_vs_pngc_ecut->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
-		  h_phgc_adcPulseIntSum_e->Fill(phgc_Int);
+		  //h_phgc_adcPulseIntSum_e->Fill(phgc_Int);
 		}
 		if ((ppshwr_adcPulseInt + pshwr_adcPulseInt) < shwr_ngc_id->Eval(pngc_adcInt))
 		{
 		  h2_pshwr_vs_pngc_picut->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
-		  h_phgc_adcPulseIntSum_pi->Fill(phgc_Int);
+		  //h_phgc_adcPulseIntSum_pi->Fill(phgc_Int);
 		}
 	    }
 	  
 	  if (pngc_adcInt < 2000 && pngc_adcInt != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0)
 	    {
 	      h2_pshwr_vs_pngc_picut->Fill(pngc_adcInt, pshwr_adcPulseInt + ppshwr_adcPulseInt);
-	      h_phgc_adcPulseIntSum_pi->Fill(phgc_Int);
+	      //h_phgc_adcPulseIntSum_pi->Fill(phgc_Int);
 	    }
 	  //*/
 	  //Cut on Shower and HGC for Particle ID
-	  /*
+	  ///*
 	  if (phgc_NPE != 0.0 && (ppshwr_adcPulseInt + pshwr_adcPulseInt) != 0.0)
 	    {
 	      if ((ppshwr_adcPulseInt + pshwr_adcPulseInt) > shwr_hgc_id->Eval(phgc_NPE))
