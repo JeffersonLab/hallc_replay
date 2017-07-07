@@ -27,6 +27,7 @@ public :
    Bool_t          fFullShow;
    Bool_t          fNGC;
    Bool_t          fLowLight;
+   Bool_t          fPions;
 
    // Declaration of detector specific constants
    Int_t           fhgc_pmts;
@@ -35,8 +36,8 @@ public :
    Double_t        fngc_zpos;
 
    // Declaration of histograms
-   TH1F            *fPulseInt[4];
-   TH1F            *fPulseInt_quad[4][4];
+   TH1F *fPulseInt[4];
+   TH1F *fPulseInt_quad[4][4];
 
    // Declaration of leaf types
    Int_t           Ndata_P_aero_goodNegAdcPed;
