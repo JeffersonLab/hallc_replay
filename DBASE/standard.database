@@ -6,7 +6,14 @@ g_ctp_kinematics_filename ="DBASE/standard.kinematics"
 g_ctp_parm_filename ="DBASE/general484.param"
 g_ctp_kinematics_filename ="DBASE/standard.kinematics"
 
-486-9999999
+486-486
 g_ctp_parm_filename ="DBASE/general486.param"
 g_ctp_kinematics_filename ="DBASE/standard.kinematics"
 
+487-487
+g_ctp_parm_filename ="DBASE/general487.param"
+g_ctp_kinematics_filename ="DBASE/standard.kinematics"
+
+488-999999
+g_ctp_parm_filename ="DBASE/general488.param"
+g_ctp_kinematics_filename ="DBASE/standard.kinematics"

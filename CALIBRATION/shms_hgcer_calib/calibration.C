@@ -367,12 +367,16 @@ void calibration::Terminate()
   TCanvas *final_spectra_ipmt;
   TCanvas *background_mk2_ipmt;
   TCanvas *final_spectra_mk2_ipmt;
+  TCanvas *final_spectra_combined;
+  TCanvas *final_spectra_combined_mk2;
 
   //Histograms to store scaling information and background removed spectra
   TH1F *fscaled[4];
   TH1F *fscaled_nobackground[4];
   TH1F *fscaled_mk2[4];
   TH1F *fscaled_mk2_nobackground[4];
+  TH1F *fscaled_combined;
+  TH1F *fscaled_combined_mk2;
 
   //Rebin the histograms into something more sensible, add functionality to bin HGC & NGC independently
   for (Int_t ipmt=0; ipmt < (fNGC ? fngc_pmts : fhgc_pmts); ipmt++)
@@ -383,9 +387,7 @@ void calibration::Terminate()
 	}
       fLowLight ? fPulseInt[ipmt]->Rebin(10) : fPulseInt[ipmt]->Rebin(25);
     }
-
-  //TSpectrum class is used to find the SPE peak using the search method
-  TSpectrum *s = new TSpectrum(1);  
+ 
       
   //An array is used to store the means for the SPE, and to determine NPE spacing
   Double_t mean[3];
@@ -409,6 +411,9 @@ void calibration::Terminate()
       //Begin strategy for a low-light Cherenkov calibration
       if (fLowLight)
 	{
+	  //TSpectrum class is used to find the SPE peak using the search method
+	  TSpectrum *s = new TSpectrum(2);  
+
 	  //Create Canvas to see the search result for the SPE  
 	  if (fFullShow) quad_cuts_ipmt = new TCanvas(Form("quad_cuts_%d",ipmt), Form("First Photoelectron peaks PMT%d",ipmt+1));
 	  if (fFullShow) quad_cuts_ipmt->Divide(3,1);  
@@ -599,9 +604,12 @@ void calibration::Terminate()
 
       if (!fLowLight)
 	{
+	  //TSpectrum class is used to find the SPE peak using the search method
+	  TSpectrum *s = new TSpectrum(1); 
+
 	  //Create Canvas to show the search result for the SPE
 	  if (fFullShow) quad_cuts_ipmt = new TCanvas(Form("quad_cuts_%d",ipmt), Form("First Photoelectron peaks PMT%d",ipmt+1));
-	  if (fFullShow) quad_cuts_ipmt;
+	  if (fFullShow) quad_cuts_ipmt->cd(1);
 
 	  //Perform search for the SPE and save the peak into the array xpeaks
 	  fPulseInt_quad[ipmt][ipmt]->GetXaxis()->SetRangeUser(150,2000);
@@ -611,17 +619,138 @@ void calibration::Terminate()
 	  Double_t *xpeaks = pm->GetX();
 
 	  //Use the peak to fit the SPE with a Gaussian to determine the mean
-	  Gauss1->SetRange(xpeaks[1]-125, xpeaks[1]+125);
+	  Gauss1->SetRange(xpeaks[0]-150, xpeaks[0]+200);
 	  Gauss1->SetParameter(1, xpeaks[0]);
 	  Gauss1->SetParameter(2, 200.);
 	  Gauss1->SetParLimits(0, 0., 2000.);
-	  Gauss1->SetParLimits(1, xpeaks[0]-50, xpeaks[0]+50);
+	  Gauss1->SetParLimits(1, xpeaks[0]-100, xpeaks[0]+100);
 	  Gauss1->SetParLimits(2, 10., 500.);
 	  fPulseInt_quad[ipmt][ipmt]->GetXaxis()->SetRangeUser(-500,12000);
 	  fFullShow ? fPulseInt_quad[ipmt][ipmt]->Fit("Gauss1","RQ") : fPulseInt_quad[ipmt][ipmt]->Fit("Gauss1","RQN");
-	}
+
+	  calibration_mk1[ipmt] = Gauss1->GetParameter(1);
+
+	  //Scale full ADC spectra according to the mean of the SPE. This requires filling a new histogram with the same number of bins but scaled min/max
+	  Int_t nbins;
+	  nbins = fPulseInt[ipmt]->GetXaxis()->GetNbins();
+
+	  //With the scale of ADC to NPE create a histogram that has the conversion applied
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), nbins, fPulseInt[ipmt]->GetXaxis()->GetXmin()/calibration_mk1[ipmt],fPulseInt[ipmt]->GetXaxis()->GetXmax()/calibration_mk1[ipmt]);
+
+	  //Fill this histogram bin by bin
+	  for (Int_t ibin=0; ibin<nbins; ibin++)
+	    {
+	      Double_t y = fPulseInt[ipmt]->GetBinContent(ibin);
+	      fscaled[ipmt]->SetBinContent(ibin,y);
+	    }
+
+	  //Normalize the histogram for ease of fitting
+	  fscaled[ipmt]->Scale(1.0/fscaled[ipmt]->Integral(), "width");
+	  
+	  //Show the calibrated ADC spectra for each PMT
+	  if (fFullShow) background_ipmt = new TCanvas(Form("background_%d",ipmt), Form("NPE spectra for PMT%d",ipmt+1));
+	  if (fFullShow) background_ipmt->cd(1);
+
+	  //Obtain refined estimate for calibration constant
+	  //Begin by removing noise around 0.1 - 0.2 NPE
+	  fFullShow ? s->Search(fscaled[ipmt], 2.0, "nobackground", 0.001) : s->Search(fscaled[ipmt], 2.0, "nobackground&&nodraw", 0.001);
+	  TList *functions_mk1 = fscaled[ipmt]->GetListOfFunctions();
+	  TPolyMarker *pm_mk1 = (TPolyMarker*)functions_mk1->FindObject("TPolyMarker");
+	  Double_t *xpeaks_mk1 = pm_mk1->GetX();
+	  Gauss1->SetRange(xpeaks_mk1[0]-0.5, xpeaks_mk1[0]+0.5);
+	  Gauss1->SetParameter(0, 2.0); 
+	  Gauss1->SetParameter(1, xpeaks_mk1[0]);
+	  Gauss1->SetParameter(2, 0.1);
+	  Gauss1->SetParLimits(0, 0., 5.);
+	  Gauss1->SetParLimits(1, xpeaks_mk1[0]-0.1, xpeaks_mk1[0]+0.1);
+	  Gauss1->SetParLimits(2, 0.001, 0.5);
+	  fFullShow ? fscaled[ipmt]->Fit("Gauss1","RQ") : fscaled[ipmt]->Fit("Gauss1","RQN");
+
+	  //Make and fill histogram with the background (low NPE pulse) removed
+	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d",ipmt+1), nbins, fscaled[ipmt]->GetXaxis()->GetXmin(),fscaled[ipmt]->GetXaxis()->GetXmax());
+
+	  for (Int_t ibin=0; ibin<nbins; ibin++)
+	    {
+	      Double_t y = Gauss1->Eval(fscaled[ipmt]->GetXaxis()->GetBinCenter(ibin));
+	      Double_t y2 = fscaled[ipmt]->GetBinContent(ibin) - y;
+	      fscaled_nobackground[ipmt]->SetBinContent(ibin,y2);
+	    }
+	  
+	  //Find the SPE and obtain a calibration where this peak is now exactly at 1
+	  if (fFullShow) final_spectra_ipmt = new TCanvas(Form("final_Spectra_%d",ipmt), Form("NPE spectra Background Removed for PMT%d",ipmt+1));
+	  if (fFullShow) final_spectra_ipmt->cd(1);
+	  fscaled_nobackground[ipmt]->GetXaxis()->SetRangeUser(0.5,1.2);
+	  fFullShow ? s->Search(fscaled_nobackground[ipmt], 2.5, "nobackground", 0.001) : s->Search(fscaled_nobackground[ipmt], 2.5, "nobackground&&nodraw", 0.001);
+	  TList *functions_mk2 = fscaled_nobackground[ipmt]->GetListOfFunctions();
+	  TPolyMarker *pm_mk2 = (TPolyMarker*)functions_mk2->FindObject("TPolyMarker");
+	  Double_t *xpeaks_mk2 = pm_mk2->GetX();
+	  Gauss1->SetRange(xpeaks_mk2[0]-0.5, xpeaks_mk2[0]+0.5);
+	  Gauss1->SetParameter(0, 0.06); 
+	  Gauss1->SetParameter(1, xpeaks_mk2[0]);
+	  Gauss1->SetParameter(2, 0.1);
+	  Gauss1->SetParLimits(0, 0., 5.);
+	  Gauss1->SetParLimits(1, xpeaks_mk2[0]-0.1, xpeaks_mk2[0]+0.1);
+	  Gauss1->SetParLimits(2, 0.001, 0.5);
+	  fscaled_nobackground[ipmt]->GetXaxis()->SetRangeUser(-0.5,25);
+	  fFullShow ? fscaled_nobackground[ipmt]->Fit("Gauss1","RQ") : fscaled_nobackground[ipmt]->Fit("Gauss1","RQN");
+
+	  calibration_mk2[ipmt] = Gauss1->GetParameter(1)*calibration_mk1[ipmt];
+
+	  //Take this new xscale and display the new calibration result
+	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), nbins, fPulseInt[ipmt]->GetXaxis()->GetXmin()/calibration_mk2[ipmt],fPulseInt[ipmt]->GetXaxis()->GetXmax()/calibration_mk2[ipmt]);
+	  
+	  //Fill this histogram bin by bin
+	  for (Int_t ibin=0; ibin<nbins; ibin++)
+	    {
+	      Double_t y = fPulseInt[ipmt]->GetBinContent(ibin);
+	      fscaled_mk2[ipmt]->SetBinContent(ibin,y);
+	    }
+
+	  //Normalize the histogram for ease of fitting
+	  fscaled_mk2[ipmt]->Scale(1.0/fscaled_mk2[ipmt]->Integral(), "width");
+
+	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("NPE spectra Background Removed for PMT%d Second Iteration",ipmt+1));
+	  if (fFullShow) final_spectra_mk2_ipmt->cd(1);
+	  if (fFullShow) fscaled_mk2[ipmt]->Draw();
+	} //This brace marks the end of high light strategy
 
     } // This brace marks the end of the loop over PMTs
+
+  //For regular light conditions, verify the calibration by fitting the full Poisson distribution
+  if (!fLowLight)
+    {
+      fscaled_combined = new TH1F("fscaled_combined", "Scaled ADC spectra for all PMTs", fPulseInt[0]->GetXaxis()->GetNbins(), 0, 25);
+      //Combine all the scaled PMT's together
+      for (Int_t ipmt=0; ipmt<4; ipmt++)
+	{
+	  fscaled[ipmt]->GetXaxis()->SetRangeUser(-0.5,25);
+	  fscaled[ipmt]->GetYaxis()->SetRangeUser(0,3);
+	  fscaled_combined->Add(fscaled[ipmt]);
+	}
+
+      final_spectra_combined = new TCanvas("final_spectra_combined","Calibrated ADC spectra for all PMTs");
+      final_spectra_combined->cd(1);
+      Poisson->SetParameter(0, Poisson_mean);
+      Poisson->SetParameter(1, 0.25);
+      Poisson->SetParLimits(0, Poisson_mean - 2.0, Poisson_mean + 2.0);
+      fscaled_combined->Fit("Poisson","RQ");
+
+      fscaled_combined_mk2 = new TH1F("fscaled_combined_mk2", "Scaled ADC spectra for all PMTs", fPulseInt[0]->GetXaxis()->GetNbins(), 0, 25);
+      //Combine all the scaled PMT's together
+      for (Int_t ipmt=0; ipmt<4; ipmt++)
+	{
+	  fscaled_mk2[ipmt]->GetXaxis()->SetRangeUser(-0.5,25);
+	  fscaled_mk2[ipmt]->GetYaxis()->SetRangeUser(0,3);
+	  fscaled_combined_mk2->Add(fscaled_mk2[ipmt]);
+	}
+
+      final_spectra_combined_mk2 = new TCanvas("final_spectra_combined_mk2","Calibrated ADC spectra for all PMTs");
+      final_spectra_combined_mk2->cd(1);
+      Poisson->SetParameter(0, Poisson_mean);
+      Poisson->SetParameter(1, 0.25);
+      Poisson->SetParLimits(0, Poisson_mean - 2.0, Poisson_mean + 2.0);
+      fscaled_combined_mk2->Fit("Poisson","RQ");
+    }
 
   printf("\n\n");
 
