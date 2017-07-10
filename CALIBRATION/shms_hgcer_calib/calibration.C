@@ -18,9 +18,8 @@
 //
 // To use this file, try the following session on your Tree T:
 //
-// Root > T->Process("calibration.C")
-// Root > T->Process("calibration.C","some options")
 // Root > T->Process("calibration.C+")
+// Root > T->Process("calibration.C+","some options")
 //
 
 
@@ -52,6 +51,7 @@ void calibration::Begin(TTree * /*tree*/)
   Info("Begin", "To see details of calibration, use option showall");
   Info("Begin", "Default calibration is the HGC, for NGC use option NGC");
   Info("Begin", "For low light calibration, use option lowlight");
+  Info("Begin", "Default is no particle cut, use option cut if desired");
   Info("Begin", "Default particle ID is electrons, use option pions if desired");
 }
 
@@ -72,6 +72,8 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   fFullShow = kFALSE;
   // Calibration strategy
   fLowLight = kFALSE;
+  // Particle ID cuts used
+  fCut = kFALSE;
   // Which particle ID to use
   fPions = kFALSE;
    
@@ -80,13 +82,15 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   if (option.Contains("NGC")) fNGC = kTRUE;
   if (option.Contains("showall")) fFullShow = kTRUE;
   if (option.Contains("lowlight")) fLowLight = kTRUE;
-  if (option.Contains("pions")) fPions = kTRUE;
+  if (option.Contains("pions") || option.Contains("pion")) fPions = kTRUE;
+  if (option.Contains("cut") || fPions || option.Contains("cuts")) fCut = kTRUE;
 
   Info("SlaveBegin", "'%s' reading", (fFullRead ? "full" : "optimized"));
   Info("SlaveBegin", "calibrating '%s'", (fNGC ? "NGC" : "HGC"));
   Info("SlaveBegin", "'%s' showing", (fFullShow ? "full" : "minimal"));
   Info("SlaveBegin", "'%s' strategy", (fLowLight ? "lowlight" : "regular"));
-  Info("SlaveBegin", "cutting for '%s'", (fPions ? "pions" : "electrons"));
+  Info("SlaveBegin", "cuts %s performed", (fCut ? "are" : "are not"));
+  if (fCut) Info("SlaveBegin", "cutting for '%s'", (fPions ? "pions" : "electrons"));
 
   // Inintialize the histograms. Note they are binned per ADC channel which will be changed in the calibration analysis.
   Int_t ADC_min;
@@ -126,6 +130,9 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   fPulseInt_quad[3][1] = new TH1F("PulseInt_quad4_PMT2", "Pulse Integral PMT2 Quadrant 4", bins, ADC_min, ADC_max);
   fPulseInt_quad[3][2] = new TH1F("PulseInt_quad4_PMT3", "Pulse Integral PMT3 Quadrant 4", bins, ADC_min, ADC_max);
   fPulseInt_quad[3][3] = new TH1F("PulseInt_quad4_PMT4", "Pulse Integral PMT4 Quadrant 4", bins, ADC_min, ADC_max);
+  fCut_everything = new TH2F("Cut_everything", "Visualization of no cuts", 1000, 0, 6.60, 1000, 0, 210.0);
+  fCut_electron = new TH2F("Cut_electron", "Visualization of electron cut", 1000, 0, 6.60, 1000, 0, 210.0);
+  fCut_pion = new TH2F("Cut_pion", "Visualization of pion cut", 1000, 0, 6.60, 1000, 0, 210.0);
 
   printf("\n\n");
 }
@@ -189,12 +196,12 @@ Bool_t calibration::Process(Long64_t entry)
 		         P_hgcer_goodAdcPulseAmp[0]+P_hgcer_goodAdcPulseAmp[1]+P_hgcer_goodAdcPulseAmp[2]+P_hgcer_goodAdcPulseAmp[3] < 100.0) continue;
 	    }
 
-	  //Retrieve information for particle tracking fom focal plane
+	  //Retrieve information for particle tracking from focal plane
 	  if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
 	  if (!fFullRead) b_P_tr_x->GetEntry(entry), b_P_tr_th->GetEntry(entry);
 	  
 	  //For regular light conditions, need to perform particle ID cut as well. In this case electrons are selected
-	  if (!fLowLight && !fPions)
+	  if (!fLowLight && fCut && !fPions)
 	    {
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
@@ -207,25 +214,34 @@ Bool_t calibration::Process(Long64_t entry)
 
 	      //Fill histograms of what each PMT registers from each quadrant
 	      //Condition for quadrant 1 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0 && P_hgcer_npeSum < 11 && P_hgcer_npeSum > 0.5
+		  && P_cal_pr_eplane > 0.4 && P_cal_pr_eplane < 2.0: 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos >= 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos >= 9.4)
 		fNGC ? fPulseInt_quad[0][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[0][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	      //Condition for quadrant 2 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0 && P_hgcer_npeSum < 11 && P_hgcer_npeSum > 0.5
+		  && P_cal_pr_eplane > 0.4 && P_cal_pr_eplane < 2.0: 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos < 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos >= 9.4) 
 		fNGC ? fPulseInt_quad[1][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[1][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	      //Condition for quadrant 3 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0 && P_hgcer_npeSum < 11 && P_hgcer_npeSum > 0.5
+		  && P_cal_pr_eplane > 0.4 && P_cal_pr_eplane < 2.0: 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos >= 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos < 9.4) 
 		fNGC ? fPulseInt_quad[2][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[2][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	      //Condition for quadrant 4 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0 && P_hgcer_npeSum < 11 && P_hgcer_npeSum > 0.5
+		  && P_cal_pr_eplane > 0.4 && P_cal_pr_eplane < 2.0: 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos < 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos < 9.4)
 		fNGC ? fPulseInt_quad[3][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[3][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+
+	      //Fill histogram visualizaing the pion cut
+	      fCut_everything->Fill(P_cal_pr_eplane, P_hgcer_npeSum);
+	      if (fNGC && P_hgcer_npeSum < 11 && P_hgcer_npeSum > 0.5 && P_cal_pr_eplane > 0.4 && P_cal_pr_eplane < 2.0) fCut_electron->Fill(P_cal_pr_eplane, P_hgcer_npeSum);
+
 	    }
 
 	  //For regular light conditions, need to perform particle ID cut as well. In this case pions are selected
-	  if (!fLowLight && fPions)
+	  if (!fLowLight && fCut && fPions)
 	    {
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
@@ -237,25 +253,33 @@ Bool_t calibration::Process(Long64_t entry)
 	      if (P_cal_fly_earray < 11 && P_cal_pr_eplane < 0.3) fNGC ? fPulseInt[ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt[ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 
 	      //Condition for quadrant 1 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0 && P_hgcer_npeSum < 10 && P_cal_pr_eplane > 0.45: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0 && P_hgcer_npeSum != 0.0 && P_cal_pr_eplane != 0.0
+		  && P_hgcer_npeSum < (-26.7*P_cal_pr_eplane + 8): 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos >= 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos >= 9.4 && P_cal_fly_earray < 11 && P_cal_pr_eplane < 0.3)
 		fNGC ? fPulseInt_quad[0][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[0][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	      //Condition for quadrant 2 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0 && P_hgcer_npeSum < 10 && P_cal_pr_eplane < 0.3: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos >= 0.0 && P_hgcer_npeSum != 0.0 && P_cal_pr_eplane != 0.0
+		  && P_hgcer_npeSum < (-26.7*P_cal_pr_eplane + 8): 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos < 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos >= 9.4 && P_cal_fly_earray < 11 && P_cal_pr_eplane < 0.3) 
 		fNGC ? fPulseInt_quad[1][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[1][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	      //Condition for quadrant 3 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0 && P_hgcer_npeSum < 10 && P_cal_pr_eplane < 0.3: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos >= 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0 && P_hgcer_npeSum != 0.0 && P_cal_pr_eplane != 0.0
+		  && P_hgcer_npeSum < (-26.7*P_cal_pr_eplane + 8): 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos >= 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos < 9.4 && P_cal_fly_earray < 11 && P_cal_pr_eplane < 0.3) 
 		fNGC ? fPulseInt_quad[2][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[2][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	      //Condition for quadrant 4 mirror
-	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0 && P_hgcer_npeSum < 10 && P_cal_pr_eplane < 0.3: 
+	      if (fNGC ? P_tr_y[0] + P_tr_ph[0]*fngc_zpos < 0.0 && P_tr_x[0] + P_tr_th[0]*fngc_zpos < 0.0 && P_hgcer_npeSum != 0.0 && P_cal_pr_eplane != 0.0
+		  && P_hgcer_npeSum < (-26.7*P_cal_pr_eplane + 8): 
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos < 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos < 9.4 && P_cal_fly_earray < 11 && P_cal_pr_eplane < 0.3)
 		fNGC ? fPulseInt_quad[3][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[3][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+
+	      //Fill histogram visualizaing the pion cut
+	      fCut_everything->Fill(P_cal_pr_eplane, P_hgcer_npeSum);
+	      if (fNGC && P_hgcer_npeSum != 0.0 && P_cal_pr_eplane != 0.0 && P_hgcer_npeSum < (-26.7*P_cal_pr_eplane + 8)) fCut_pion->Fill(P_cal_pr_eplane, P_hgcer_npeSum);
 	    }
 
 	  //For low light conditions, no need for particle ID cut
-	  if (fLowLight)
+	  if (fLowLight || !fCut)
 	    {
 	      //Fill histogram of the full PulseInt spectra for each PMT
 	      if (!fFullRead) fNGC ? b_P_ngcer_goodAdcPulseInt->GetEntry(entry) : b_P_hgcer_goodAdcPulseInt->GetEntry(entry);
@@ -330,6 +354,17 @@ void calibration::Terminate()
   printf("\nTotal Number of Entries: %d\n\n", fNumberOfEvents);
 
   Info("Terminate", "Histograms formed, now starting calibration.\n 'Peak Buffer full' is a good warning!\n");
+
+  //Show the particle cuts performed in the histogram forming
+  if (fCut)
+    {
+      TCanvas *cut_visualization = new TCanvas("cut_visualization", "Visualization of the particle ID cuts performed");
+      cut_visualization->Divide(2,1);
+      cut_visualization->cd(1);
+      fCut_everything->Draw("Colz");
+      cut_visualization->cd(2);
+      fPions ? fCut_pion->Draw("Colz") : fCut_electron->Draw("Colz");
+    }
  
   //Single Gaussian to find mean of SPE
   TF1 *Gauss1 = new TF1("Gauss1",gauss,-500,7000,3);
@@ -409,7 +444,7 @@ void calibration::Terminate()
 	}
 
       //Begin strategy for a low-light Cherenkov calibration
-      if (fLowLight)
+      if (fLowLight || (!fLowLight && fCut))
 	{
 	  //TSpectrum class is used to find the SPE peak using the search method
 	  TSpectrum *s = new TSpectrum(2);  
@@ -602,7 +637,8 @@ void calibration::Terminate()
 	  calibration_mk2[ipmt] = xscale_mk2;
 	} // This brance marks the end of the low light strategy
 
-      if (!fLowLight)
+      //Begin the Regular light analysis
+      if (!fLowLight && !fCut)
 	{
 	  //TSpectrum class is used to find the SPE peak using the search method
 	  TSpectrum *s = new TSpectrum(1); 
