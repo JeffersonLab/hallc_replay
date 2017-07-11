@@ -1,20 +1,20 @@
 ; Number of heavy gas Cherenkov PMT's
 phgcer_tot_pmts = 4
 
-; Garth H. gain calibration from run 486, March 9 2017
-; phgcer_adc_to_npe = 1/436., 1/393., 1/364., 1/372.
+; Garth H. gain calibration for run 483, June 20 2017
+; phgcer_adc_to_npe = 1./273., 1./460., 1./582., 1./378.		
 
-; Garth H. gain calibration from run 488, June 20 2017
-phgcer_adc_to_npe = 1/546., 1/430., 1/376., 1/477.
+; Garth H. gain calibration for run 484, June 20 2017
+; phgcer_adc_to_npe = 1./454., 1./447., 1./409., 1./547.		
+
+; Garth H. gain calibration for run 486, June 20 2017
+; phgcer_adc_to_npe = 1./551., 1./426., 1./376., 1./488.		
 
 ; Garth H. gain calibration from run 487, June 20 2017
 ; phgcer_adc_to_npe = 1/551., 1/426., 1/376., 1/488.
 
-; Garth H. gain calibration from run 486, June 20 2017
-; phgcer_adc_to_npe = 1/556., 1/436., 1/383., 1/496.
-
-; Garth H. gain calibration from run 484, June 20 2017
-; phgcer_adc_to_npe = 1/454., 1/477., 1/409., 1/547.		  
+; Garth H. gain calibration from run 488, June 20 2017
+phgcer_adc_to_npe = 1/546., 1/430., 1/376., 1/477.  
 
 ; Track matching reduced chi2 cut values
 phgcer_red_chi2_min = 0.0
