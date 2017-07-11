@@ -37,7 +37,7 @@ cminch=2.54
 
 ; SHMS detector specific paramter files
 #include "PARAM/SHMS/AERO/paero.param"
-#include "PARAM/SHMS/CAL/pcal.param"
+#include "PARAM/SHMS/CAL/KPP_Spring_2017/pcal_488.param"
 #include "PARAM/SHMS/HGCER/KPP_Spring_2017/phgcer_488.param"
 #include "PARAM/SHMS/NGCER/KPP_Spring_2017/pngcer_488.param"
 #include "PARAM/SHMS/DC/pdc.param"
