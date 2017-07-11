@@ -1,0 +1,18 @@
+0-99999
+g_ctp_parm_filename ="DBASE/GEN/general.param"
+g_ctp_kinematics_filename ="DBASE/STD/standard.kinematics"
+
+483-483
+g_ctp_parm_filename ="DBASE/GEN/KPP_Spring_2017/general_483.param"
+
+484-484
+g_ctp_parm_filename ="DBASE/GEN/KPP_Spring_2017/general_484.param"
+
+486-486
+g_ctp_parm_filename ="DBASE/GEN/KPP_Spring_2017/general_486.param"
+
+487-487
+g_ctp_parm_filename ="DBASE/GEN/KPP_Spring_2017/general_487.param"
+
+488-488
+g_ctp_parm_filename ="DBASE/GEN/KPP_Spring_2017/general_488.param"
