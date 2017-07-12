@@ -1,4 +1,4 @@
-void replay_shms(Int_t RunNumber=0, Int_t MaxEvent=0) {
+void replay_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -18,24 +18,20 @@ void replay_shms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Create file name patterns.
   const char* RunFileNamePattern = "raw/shms_all_%05d.dat";
   const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_%d_%d.root";
+  
+  // Load global parameters
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
   gHcParms->AddString("g_ctp_database_filename", "DBASE/STD/standard.database");
-
   // Load varibles from files to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
-
   // g_ctp_parm_filename and g_decode_map_filename should now be defined.
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
-
   // Load params for SHMS trigger configuration
   gHcParms->Load("PARAM/TRIG/tshms.param");
 
-  // Load custom tracking params
-  //gHcParms->Load("PARAM/SHMS/GEN/hgoldtrack.param");
-
-  // Load the Hall C style detector map
+  // Load the Hall C detector map
   gHcDetectorMap = new THcDetectorMap();
   gHcDetectorMap->Load("MAPS/SHMS/DETEC/shms_stack.map");
 
@@ -108,19 +104,21 @@ void replay_shms(Int_t RunNumber=0, Int_t MaxEvent=0) {
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
   analyzer->SetEvent(event);
+  // Define crate map
   analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
+  // Define output ROOT file
   analyzer->SetOutFile(ROOTFileName.Data());
+  // Define DEF-file
   analyzer->SetOdefFile("DEF-files/SHMS/GEN/pstackana.def");
-  analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_cuts.def");    // optional
-
-  // File to record cuts accounting information
-  //analyzer->SetSummaryFile("summary_example.log");    // optional
-
+  // Define cuts file
+  analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_cuts.def");         // optional
+  analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_report_cuts.def");  // optional
+  // File to record accounting information for cuts
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
-  // Create report file from template.
-  //analyzer->PrintReport(    // optional
-  //  "TEMPLATES/dcana.template",
-  //  Form("REPORT_OUTPUT/replay_shms_%05d.report", RunNumber)
-  //);
+  // Create report file from template
+  analyzer->PrintReport("TEMPLATES/SHMS/pstackana.template",
+  			Form("REPORT_OUTPUT/SHMS/replay_shms_%d_%d.report", RunNumber, MaxEvent));  // optional
+
 }
