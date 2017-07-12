@@ -81,7 +81,14 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   analyzer->SetOutFile(ROOTFileName.Data());
   // Define DEF-file
   analyzer->SetOdefFile("DEF-files/SHMS/EPICS/epics_short.def");
+  // Define cuts file
+  analyzer->SetCutFile("DEF-files/SHMS/SCALERS/pscaler_report_cuts.def");  // optional
+  // File to record accounting information for cuts
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/SCALERS/summary_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
+  // Create report file from template
+  analyzer->PrintReport("TEMPLATES/SHMS/SCALERS/pscalers.template",
+  			Form("REPORT_OUTPUT/SHMS/SCALERS/replay_shms_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional  
 
 }

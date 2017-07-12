@@ -111,14 +111,13 @@ void replay_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Define DEF-file
   analyzer->SetOdefFile("DEF-files/SHMS/GEN/pstackana.def");
   // Define cuts file
-  analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_cuts.def");         // optional
   analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_report_cuts.def");  // optional
   // File to record accounting information for cuts
-  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/STACK/summary_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
   // Create report file from template
-  analyzer->PrintReport("TEMPLATES/SHMS/pstackana.template",
-  			Form("REPORT_OUTPUT/SHMS/replay_shms_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->PrintReport("TEMPLATES/SHMS/STACK/pstackana.template",
+  			Form("REPORT_OUTPUT/SHMS/STACK/replay_shms_%d_%d.report", RunNumber, MaxEvent));  // optional
 
 }
