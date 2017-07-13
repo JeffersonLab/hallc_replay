@@ -50,7 +50,7 @@ void calibration::Begin(TTree * /*tree*/)
   Info("Begin", "To load all branches, use option readall (warning, very slow)");
   Info("Begin", "To see details of calibration, use option showall");
   Info("Begin", "Default calibration is the HGC, for NGC use option NGC");
-  Info("Begin", "For low light calibration, use option lowlight");
+  Info("Begin", "To calibrate using TrackFired leaf, use option trackfired");
   Info("Begin", "Default is no particle cut, use option cut if desired");
   Info("Begin", "Default particle ID is electrons, use option pions if desired");
 }
@@ -71,7 +71,7 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   // How much of the calibration to show
   fFullShow = kFALSE;
   // Calibration strategy
-  fLowLight = kFALSE;
+  fTrack = kFALSE;
   // Particle ID cuts used
   fCut = kFALSE;
   // Which particle ID to use
@@ -81,14 +81,14 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   if (option.Contains("readall")) fFullRead = kTRUE;
   if (option.Contains("NGC")) fNGC = kTRUE;
   if (option.Contains("showall")) fFullShow = kTRUE;
-  if (option.Contains("lowlight")) fLowLight = kTRUE;
+  if (option.Contains("trackfired")) fTrack = kTRUE;
   if (option.Contains("pions") || option.Contains("pion")) fPions = kTRUE;
   if (option.Contains("cut") || fPions || option.Contains("cuts")) fCut = kTRUE;
 
   Info("SlaveBegin", "'%s' reading", (fFullRead ? "full" : "optimized"));
   Info("SlaveBegin", "calibrating '%s'", (fNGC ? "NGC" : "HGC"));
   Info("SlaveBegin", "'%s' showing", (fFullShow ? "full" : "minimal"));
-  Info("SlaveBegin", "'%s' strategy", (fLowLight ? "lowlight" : "regular"));
+  Info("SlaveBegin", "'%s' strategy", (fTrack ? "tracking" : "quadrant"));
   Info("SlaveBegin", "cuts %s performed", (fCut ? "are" : "are not"));
   if (fCut) Info("SlaveBegin", "cutting for '%s'", (fPions ? "pions" : "electrons"));
 
@@ -133,7 +133,7 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   fCut_everything = new TH2F("Cut_everything", "Visualization of no cuts", 1000, 0, 6.60, 1000, 0, 210.0);
   fCut_electron = new TH2F("Cut_electron", "Visualization of electron cut", 1000, 0, 6.60, 1000, 0, 210.0);
   fCut_pion = new TH2F("Cut_pion", "Visualization of pion cut", 1000, 0, 6.60, 1000, 0, 210.0);
-
+  
   printf("\n\n");
 }
 
@@ -188,21 +188,14 @@ Bool_t calibration::Process(Long64_t entry)
 	  if (fNGC ? P_ngcer_goodAdcPulseAmp[ipmt] == 0.0 : P_hgcer_goodAdcPulseAmp[ipmt] == 0.0) continue;
 	  if (!fFullRead) fNGC ? b_P_ngcer_goodAdcPulseTime->GetEntry(entry) : b_P_hgcer_goodAdcPulseTime->GetEntry(entry);
 	  if (fNGC ? P_ngcer_goodAdcPulseTime[ipmt] == 0.0 : P_hgcer_goodAdcPulseTime[ipmt] == 0.0) continue;
-	  
-	  //For regular amounts of light, have to remove pulses 'peeking' over threshold since they drown out the SPE...this cut seems to work best
-	  if (!fLowLight)
+	 	  
+	  //For quadrant cut strategy with particle ID cuts. In this case electrons are selected
+	  if (!fTrack && fCut && !fPions)
 	    {
-	      if (fNGC ? P_ngcer_goodAdcPulseAmp[0]+P_ngcer_goodAdcPulseAmp[1]+P_ngcer_goodAdcPulseAmp[2]+P_ngcer_goodAdcPulseAmp[3] < 100.0: 
-		         P_hgcer_goodAdcPulseAmp[0]+P_hgcer_goodAdcPulseAmp[1]+P_hgcer_goodAdcPulseAmp[2]+P_hgcer_goodAdcPulseAmp[3] < 100.0) continue;
-	    }
+	      //Retrieve information for particle tracking from focal plane
+	      if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
+	      if (!fFullRead) b_P_tr_x->GetEntry(entry), b_P_tr_th->GetEntry(entry);
 
-	  //Retrieve information for particle tracking from focal plane
-	  if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
-	  if (!fFullRead) b_P_tr_x->GetEntry(entry), b_P_tr_th->GetEntry(entry);
-	  
-	  //For regular light conditions, need to perform particle ID cut as well. In this case electrons are selected
-	  if (!fLowLight && fCut && !fPions)
-	    {
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
 	      if (!fFullRead) b_P_hgcer_npeSum->GetEntry(entry);
@@ -240,9 +233,13 @@ Bool_t calibration::Process(Long64_t entry)
 
 	    }
 
-	  //For regular light conditions, need to perform particle ID cut as well. In this case pions are selected
-	  if (!fLowLight && fCut && fPions)
+	  //For quadrant cut strategy with particle ID cuts. In this case pions are selected
+	  if (!fTrack && fCut && fPions)
 	    {
+	      //Retrieve information for particle tracking from focal plane
+	      if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
+	      if (!fFullRead) b_P_tr_x->GetEntry(entry), b_P_tr_th->GetEntry(entry);
+
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
 	      if (!fFullRead) b_P_hgcer_npeSum->GetEntry(entry);
@@ -278,9 +275,13 @@ Bool_t calibration::Process(Long64_t entry)
 	      if (fNGC && P_hgcer_npeSum != 0.0 && P_cal_pr_eplane != 0.0 && P_hgcer_npeSum < (-26.7*P_cal_pr_eplane + 8)) fCut_pion->Fill(P_cal_pr_eplane, P_hgcer_npeSum);
 	    }
 
-	  //For low light conditions, no need for particle ID cut
-	  if (fLowLight || !fCut)
+	  //For quadrant cut strategy with no particle ID cut
+	  if (!fTrack && !fCut)
 	    {
+	      //Retrieve information for particle tracking from focal plane
+	      if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
+	      if (!fFullRead) b_P_tr_x->GetEntry(entry), b_P_tr_th->GetEntry(entry);
+
 	      //Fill histogram of the full PulseInt spectra for each PMT
 	      if (!fFullRead) fNGC ? b_P_ngcer_goodAdcPulseInt->GetEntry(entry) : b_P_hgcer_goodAdcPulseInt->GetEntry(entry);
 	      if (fNGC ? P_ngcer_goodAdcPulseInt[ipmt] == 0.0 : P_hgcer_goodAdcPulseInt[ipmt] == 0.0) continue;
@@ -303,6 +304,20 @@ Bool_t calibration::Process(Long64_t entry)
 		         P_tr_y[0] + P_tr_ph[0]*fhgc_zpos < 4.6 && P_tr_x[0] + P_tr_th[0]*fhgc_zpos < 9.4)
 		fNGC ? fPulseInt_quad[3][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[3][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
 	    }
+
+	  //For TracksFired cut strategy with no particle ID cut
+	  if (fTrack && !fCut)
+	    {
+	      //Fill histogram of the full PulseInt spectra for each PMT
+	      if (!fFullRead) fNGC ? b_P_ngcer_goodAdcPulseInt->GetEntry(entry) : b_P_hgcer_goodAdcPulseInt->GetEntry(entry);
+	      if (fNGC ? P_ngcer_goodAdcPulseInt[ipmt] == 0.0 : P_hgcer_goodAdcPulseInt[ipmt] == 0.0) continue;
+	      fNGC ? fPulseInt[ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt[ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+
+	      //Fill histograms with TracksFired cut, note that quadrant cuts are included so any off quadrant histograms will be empty
+	      if (!fFullRead) fNGC ? b_P_ngcer_numTracksFired->GetEntry(entry) : b_P_hgcer_numTracksFired->GetEntry(entry);
+	      if (fNGC ? P_ngcer_numTracksFired[ipmt] != 0.0 : P_hgcer_numTracksFired[ipmt] != 0.0)
+		fNGC ? fPulseInt_quad[ipmt][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[ipmt][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+	    }
 	}  
     }
 
@@ -315,6 +330,7 @@ void calibration::SlaveTerminate()
    // have been processed. When running with PROOF SlaveTerminate() is called
    // on each slave server.
 }
+
 
 //********************************************************
 //Define functions used for fitting in calibration process
@@ -343,6 +359,7 @@ Double_t linear(Double_t *x, Double_t *par)
   return result1;
 }
 //********************************************************
+
 
 void calibration::Terminate()
 {
@@ -380,16 +397,7 @@ void calibration::Terminate()
 
   //Note about Poisson background, the mean varies between detectors/operating conditions so this quantity may require user input
   Double_t Poisson_mean = 0;
-  if (!fLowLight) 
-    {
-      if (!fNGC) Poisson_mean = 10.0;
-      if (fNGC) Poisson_mean = 17.0;
-    }
-  if (fLowLight)
-    {
-      if (!fNGC) Poisson_mean = 5.5;
-      if (fNGC) Poisson_mean = 5.5;
-    }
+  fNGC ? Poisson_mean = 12.0 : Poisson_mean = 5.5;  
 
   //Linear function used to determine goodness-of-fit for NPE spacing
   TF1 *Linear = new TF1("Linear",linear,0,4,2);
@@ -418,9 +426,9 @@ void calibration::Terminate()
     {
       for (Int_t iquad=0; iquad<4; iquad++)
 	{
-	  fLowLight ? fPulseInt_quad[iquad][ipmt]->Rebin(10) : fPulseInt_quad[iquad][ipmt]->Rebin(25);
+	  fNGC ? fPulseInt_quad[iquad][ipmt]->Rebin(25) : fPulseInt_quad[iquad][ipmt]->Rebin(25);
 	}
-      fLowLight ? fPulseInt[ipmt]->Rebin(10) : fPulseInt[ipmt]->Rebin(25);
+      fNGC ? fPulseInt[ipmt]->Rebin(25) : fPulseInt[ipmt]->Rebin(25);
     }
  
       
@@ -443,8 +451,8 @@ void calibration::Terminate()
 	  x_npe[i] = 0, y_npe[i] = 0, x_err[i] = 0, y_err[i] = 0;
 	}
 
-      //Begin strategy for a low-light Cherenkov calibration
-      if (fLowLight || (!fLowLight && fCut))
+      //Begin strategy for quadrant cut calibration
+      if (!fTrack)
 	{
 	  //TSpectrum class is used to find the SPE peak using the search method
 	  TSpectrum *s = new TSpectrum(2);  
@@ -635,10 +643,11 @@ void calibration::Terminate()
 	  fFullShow ? gr_npe_mk2->Fit("Linear","RQ") : gr_npe_mk2->Fit("Linear","RQN");
 	  if (fFullShow) gr_npe_mk2->Draw("A*");
 	  calibration_mk2[ipmt] = xscale_mk2;
-	} // This brance marks the end of the low light strategy
+	} // This brance marks the end of the quadrant cut strategy
 
-      //Begin the Regular light analysis
-      if (!fLowLight && !fCut)
+
+      //Begin the TrackFired cut calibration
+      if (fTrack)
 	{
 	  //TSpectrum class is used to find the SPE peak using the search method
 	  TSpectrum *s = new TSpectrum(1); 
@@ -648,7 +657,7 @@ void calibration::Terminate()
 	  if (fFullShow) quad_cuts_ipmt->cd(1);
 
 	  //Perform search for the SPE and save the peak into the array xpeaks
-	  fPulseInt_quad[ipmt][ipmt]->GetXaxis()->SetRangeUser(150,2000);
+	  fNGC ? fPulseInt_quad[ipmt][ipmt]->GetXaxis()->SetRangeUser(150,2000) : fPulseInt_quad[ipmt][ipmt]->GetXaxis()->SetRangeUser(150,600);
 	  fFullShow ? s->Search(fPulseInt_quad[ipmt][ipmt], 1.5, "nobackground", 0.001) : s->Search(fPulseInt_quad[ipmt][ipmt], 1.5, "nobackground&&nodraw", 0.001);
 	  TList *functions = fPulseInt_quad[ipmt][ipmt]->GetListOfFunctions();
 	  TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
@@ -666,127 +675,74 @@ void calibration::Terminate()
 
 	  calibration_mk1[ipmt] = Gauss1->GetParameter(1);
 
-	  //Scale full ADC spectra according to the mean of the SPE. This requires filling a new histogram with the same number of bins but scaled min/max
+	   //Scale full ADC spectra according to the mean of the SPE. This requires filling a new histogram with the same number of bins but scaled min/max
 	  Int_t nbins;
 	  nbins = fPulseInt[ipmt]->GetXaxis()->GetNbins();
 
-	  //With the scale of ADC to NPE create a histogram that has the conversion applied
-	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), nbins, fPulseInt[ipmt]->GetXaxis()->GetXmin()/calibration_mk1[ipmt],fPulseInt[ipmt]->GetXaxis()->GetXmax()/calibration_mk1[ipmt]);
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), nbins, fPulseInt_quad[ipmt][ipmt]->GetXaxis()->GetXmin()/calibration_mk1[ipmt],fPulseInt_quad[ipmt][ipmt]->GetXaxis()->GetXmax()/calibration_mk1[ipmt]);
 
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
-	      Double_t y = fPulseInt[ipmt]->GetBinContent(ibin);
+	      Double_t y = fPulseInt_quad[ipmt][ipmt]->GetBinContent(ibin);
 	      fscaled[ipmt]->SetBinContent(ibin,y);
 	    }
 
 	  //Normalize the histogram for ease of fitting
 	  fscaled[ipmt]->Scale(1.0/fscaled[ipmt]->Integral(), "width");
-	  
-	  //Show the calibrated ADC spectra for each PMT
-	  if (fFullShow) background_ipmt = new TCanvas(Form("background_%d",ipmt), Form("NPE spectra for PMT%d",ipmt+1));
-	  if (fFullShow) background_ipmt->cd(1);
 
-	  //Obtain refined estimate for calibration constant
-	  //Begin by removing noise around 0.1 - 0.2 NPE
-	  fFullShow ? s->Search(fscaled[ipmt], 2.0, "nobackground", 0.001) : s->Search(fscaled[ipmt], 2.0, "nobackground&&nodraw", 0.001);
-	  TList *functions_mk1 = fscaled[ipmt]->GetListOfFunctions();
-	  TPolyMarker *pm_mk1 = (TPolyMarker*)functions_mk1->FindObject("TPolyMarker");
-	  Double_t *xpeaks_mk1 = pm_mk1->GetX();
-	  Gauss1->SetRange(xpeaks_mk1[0]-0.5, xpeaks_mk1[0]+0.5);
-	  Gauss1->SetParameter(0, 2.0); 
-	  Gauss1->SetParameter(1, xpeaks_mk1[0]);
-	  Gauss1->SetParameter(2, 0.1);
-	  Gauss1->SetParLimits(0, 0., 5.);
-	  Gauss1->SetParLimits(1, xpeaks_mk1[0]-0.1, xpeaks_mk1[0]+0.1);
-	  Gauss1->SetParLimits(2, 0.001, 0.5);
-	  fFullShow ? fscaled[ipmt]->Fit("Gauss1","RQ") : fscaled[ipmt]->Fit("Gauss1","RQN");
-
-	  //Make and fill histogram with the background (low NPE pulse) removed
-	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d",ipmt+1), nbins, fscaled[ipmt]->GetXaxis()->GetXmin(),fscaled[ipmt]->GetXaxis()->GetXmax());
-
-	  for (Int_t ibin=0; ibin<nbins; ibin++)
+	  //Attempt to characterize the Poisson-like distribution for larger NPE, this requires combining the spectrum from each PMT
+	  if (ipmt == 3)
 	    {
-	      Double_t y = Gauss1->Eval(fscaled[ipmt]->GetXaxis()->GetBinCenter(ibin));
-	      Double_t y2 = fscaled[ipmt]->GetBinContent(ibin) - y;
-	      fscaled_nobackground[ipmt]->SetBinContent(ibin,y2);
-	    }
-	  
-	  //Find the SPE and obtain a calibration where this peak is now exactly at 1
-	  if (fFullShow) final_spectra_ipmt = new TCanvas(Form("final_Spectra_%d",ipmt), Form("NPE spectra Background Removed for PMT%d",ipmt+1));
-	  if (fFullShow) final_spectra_ipmt->cd(1);
-	  fscaled_nobackground[ipmt]->GetXaxis()->SetRangeUser(0.5,1.2);
-	  fFullShow ? s->Search(fscaled_nobackground[ipmt], 2.5, "nobackground", 0.001) : s->Search(fscaled_nobackground[ipmt], 2.5, "nobackground&&nodraw", 0.001);
-	  TList *functions_mk2 = fscaled_nobackground[ipmt]->GetListOfFunctions();
-	  TPolyMarker *pm_mk2 = (TPolyMarker*)functions_mk2->FindObject("TPolyMarker");
-	  Double_t *xpeaks_mk2 = pm_mk2->GetX();
-	  Gauss1->SetRange(xpeaks_mk2[0]-0.5, xpeaks_mk2[0]+0.5);
-	  Gauss1->SetParameter(0, 0.06); 
-	  Gauss1->SetParameter(1, xpeaks_mk2[0]);
-	  Gauss1->SetParameter(2, 0.1);
-	  Gauss1->SetParLimits(0, 0., 5.);
-	  Gauss1->SetParLimits(1, xpeaks_mk2[0]-0.1, xpeaks_mk2[0]+0.1);
-	  Gauss1->SetParLimits(2, 0.001, 0.5);
-	  fscaled_nobackground[ipmt]->GetXaxis()->SetRangeUser(-0.5,25);
-	  fFullShow ? fscaled_nobackground[ipmt]->Fit("Gauss1","RQ") : fscaled_nobackground[ipmt]->Fit("Gauss1","RQN");
+	      TH1F *fscaled_combined = (TH1F*)fscaled[0]->Clone("fscaled_combined");
+	      fscaled_combined->Reset();
+	      fscaled_combined->Add(fscaled[0]),fscaled_combined->Add(fscaled[1]),fscaled_combined->Add(fscaled[2]),fscaled_combined->Add(fscaled[3]);
+	      if (fFullShow) background_ipmt = new TCanvas(Form("backgrounf_pmt%d",ipmt), Form("NPE spectra for PMT%d with Poisson-like background",ipmt+1));
+	      if (fFullShow) background_ipmt->cd(1);
+	      Poisson->SetParameter(0, Poisson_mean);
+	      Poisson->SetParameter(1, 0.25);
+	      Poisson->SetParLimits(0, Poisson_mean - 4.0, Poisson_mean + 4.0);
+	      fFullShow ? fscaled_combined->Fit("Poisson","RQ") : fscaled_combined->Fit("Poisson","RQN");
 
-	  calibration_mk2[ipmt] = Gauss1->GetParameter(1)*calibration_mk1[ipmt];
+	      //Then see where the Poisson peak should be, and generate a new calibration constant
+	      fFullShow ? s->Search(fscaled_combined, 5.5, "nobackground", 0.001) : s->Search(fscaled_combined, 5.5, "nobackground&&nodraw", 0.001);
+	      TList *functions_poisson = fscaled_combined->GetListOfFunctions();
+	      TPolyMarker *pm_poisson = (TPolyMarker*)functions_poisson->FindObject("TPolyMarker");
+	      Double_t *xpeaks_poisson = pm_poisson->GetX();
+	      cout << xpeaks_poisson[0] << "   " << Poisson->GetParameter(0) << endl;
+	      
+	      for (Int_t i=0; i<4; i++)
+		{
+		  calibration_mk2[i] = calibration_mk1[i] * (xpeaks_poisson[0]/Poisson->GetParameter(0));
 
-	  //Take this new xscale and display the new calibration result
-	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), nbins, fPulseInt[ipmt]->GetXaxis()->GetXmin()/calibration_mk2[ipmt],fPulseInt[ipmt]->GetXaxis()->GetXmax()/calibration_mk2[ipmt]);
-	  
-	  //Fill this histogram bin by bin
-	  for (Int_t ibin=0; ibin<nbins; ibin++)
-	    {
-	      Double_t y = fPulseInt[ipmt]->GetBinContent(ibin);
-	      fscaled_mk2[ipmt]->SetBinContent(ibin,y);
+		  //Repeat the Poisson fit to examine goodness of calibration
+		  fscaled_mk2[i] = new TH1F(Form("fscaled_mk2_PMT%d", i+1), Form("Scaled ADC spectra for PMT%d",i+1), nbins, fPulseInt_quad[i][i]->GetXaxis()->GetXmin()/calibration_mk2[i],fPulseInt_quad[i][i]->GetXaxis()->GetXmax()/calibration_mk2[i]);
+
+		  //Fill this histogram bin by bin
+		  for (Int_t ibin=0; ibin<nbins; ibin++)
+		    {
+		      Double_t y = fPulseInt_quad[i][i]->GetBinContent(ibin);
+		      fscaled_mk2[i]->SetBinContent(ibin,y);
+		    }
+
+		  //Normalize the histogram for ease of fitting
+		  fscaled_mk2[i]->Scale(1.0/fscaled_mk2[i]->Integral(), "width");
+		}
+
+	      TH1F *fscaled_combined_mk2 = (TH1F*)fscaled_mk2[0]->Clone("fscaled_combined_mk2");
+	      fscaled_combined_mk2->Reset();
+	      fscaled_combined_mk2->Add(fscaled_mk2[0]),fscaled_combined_mk2->Add(fscaled_mk2[1]),fscaled_combined_mk2->Add(fscaled_mk2[2]),fscaled_combined_mk2->Add(fscaled_mk2[3]);
+	      if (fFullShow) background_mk2_ipmt = new TCanvas(Form("background_mk2_pmt%d",ipmt), Form("NPE spectra for PMT%d with Poisson-like background",ipmt+1));
+	      if (fFullShow) background_mk2_ipmt->cd(1);
+	      Poisson->SetParameter(0, Poisson_mean);
+	      Poisson->SetParameter(1, 0.25);
+	      Poisson->SetParLimits(0, Poisson_mean - 4.0, Poisson_mean + 4.0);
+	      fFullShow ? fscaled_combined_mk2->Fit("Poisson","RQ") : fscaled_combined_mk2->Fit("Poisson","RQN");
 	    }
 
-	  //Normalize the histogram for ease of fitting
-	  fscaled_mk2[ipmt]->Scale(1.0/fscaled_mk2[ipmt]->Integral(), "width");
-
-	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("NPE spectra Background Removed for PMT%d Second Iteration",ipmt+1));
-	  if (fFullShow) final_spectra_mk2_ipmt->cd(1);
-	  if (fFullShow) fscaled_mk2[ipmt]->Draw();
-	} //This brace marks the end of high light strategy
+	} //This brace marks the end of TracksFired strategy
 
     } // This brace marks the end of the loop over PMTs
-
-  //For regular light conditions, verify the calibration by fitting the full Poisson distribution
-  if (!fLowLight)
-    {
-      fscaled_combined = new TH1F("fscaled_combined", "Scaled ADC spectra for all PMTs", fPulseInt[0]->GetXaxis()->GetNbins(), 0, 25);
-      //Combine all the scaled PMT's together
-      for (Int_t ipmt=0; ipmt<4; ipmt++)
-	{
-	  fscaled[ipmt]->GetXaxis()->SetRangeUser(-0.5,25);
-	  fscaled[ipmt]->GetYaxis()->SetRangeUser(0,3);
-	  fscaled_combined->Add(fscaled[ipmt]);
-	}
-
-      final_spectra_combined = new TCanvas("final_spectra_combined","Calibrated ADC spectra for all PMTs");
-      final_spectra_combined->cd(1);
-      Poisson->SetParameter(0, Poisson_mean);
-      Poisson->SetParameter(1, 0.25);
-      Poisson->SetParLimits(0, Poisson_mean - 2.0, Poisson_mean + 2.0);
-      fscaled_combined->Fit("Poisson","RQ");
-
-      fscaled_combined_mk2 = new TH1F("fscaled_combined_mk2", "Scaled ADC spectra for all PMTs", fPulseInt[0]->GetXaxis()->GetNbins(), 0, 25);
-      //Combine all the scaled PMT's together
-      for (Int_t ipmt=0; ipmt<4; ipmt++)
-	{
-	  fscaled_mk2[ipmt]->GetXaxis()->SetRangeUser(-0.5,25);
-	  fscaled_mk2[ipmt]->GetYaxis()->SetRangeUser(0,3);
-	  fscaled_combined_mk2->Add(fscaled_mk2[ipmt]);
-	}
-
-      final_spectra_combined_mk2 = new TCanvas("final_spectra_combined_mk2","Calibrated ADC spectra for all PMTs");
-      final_spectra_combined_mk2->cd(1);
-      Poisson->SetParameter(0, Poisson_mean);
-      Poisson->SetParameter(1, 0.25);
-      Poisson->SetParLimits(0, Poisson_mean - 2.0, Poisson_mean + 2.0);
-      fscaled_combined_mk2->Fit("Poisson","RQ");
-    }
 
   printf("\n\n");
 

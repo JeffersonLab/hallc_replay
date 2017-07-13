@@ -26,7 +26,7 @@ public :
    Bool_t          fFullRead;
    Bool_t          fFullShow;
    Bool_t          fNGC;
-   Bool_t          fLowLight;
+   Bool_t          fTrack;
    Bool_t          fCut;
    Bool_t          fPions;
 
