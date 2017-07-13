@@ -1,4 +1,4 @@
-void replay_shms_raster_simple(Int_t RunNumber=0, Int_t MaxEvent=0) {
+void replay_shms_raster_simple (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -17,32 +17,24 @@ void replay_shms_raster_simple(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Create file name patterns.
   const char* RunFileNamePattern = "raw/shms_all_%05d.dat";
-  const char* ROOTFileNamePattern = "ROOTfiles/shms_raster_simple_%d.root";
+  const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_raster_simple_%d_%d.root";
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
   gHcParms->AddString("g_ctp_database_filename", "DBASE/STD/standard.database");
 
-  // Load varibles from files to global list.
+  // Load global parameters
+  // Add varibles to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
-
   // g_ctp_parm_filename and g_decode_map_filename should now be defined.
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
-
   // Load params for HMS trigger configuration
   gHcParms->Load("PARAM/TRIG/tshms_raster.param");
 
-  // Load the Hall C style detector map
+  // Load the Hall C detector map
   gHcDetectorMap = new THcDetectorMap();
   gHcDetectorMap->Load("MAPS/SHMS/DETEC/praster_simple.map");
   
-  // Set up the equipment to be analyzed.
-  //THaApparatus* HMS = new THcHallCSpectrometer("H", "HMS");
-  //gHaApps->Add(HMS);
-  // Add hodoscope to HMS apparatus
-  //THcHodoscope* hod = new THcHodoscope("hod", "Hodoscope");
-  //HMS->AddDetector(hod);
-
   // Add trigger apparatus
   THaApparatus* TRG = new THcTrigApp("T", "TRG");
   gHaApps->Add(TRG);
@@ -77,24 +69,20 @@ void replay_shms_raster_simple(Int_t RunNumber=0, Int_t MaxEvent=0) {
   run->Print();
 
   // Define the analysis parameters
-  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber);
+  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber, MaxEvent);
   analyzer->SetCountMode(2);    // 0 = counter is # of physics triggers
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
  analyzer->SetEvent(event);
+ // Define crate map
  analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
+ // Define output ROOT file
  analyzer->SetOutFile(ROOTFileName.Data());
+ // Define DEF-file
  analyzer->SetOdefFile("DEF-files/SHMS/RASTER/shms_raster_simple.def");
+ // Define cuts file
  analyzer->SetCutFile("DEF-files/SHMS/RASTER/shms_raster_simple_cuts.def");    // optional
+ // Start the actual analysis.
+ analyzer->Process(run);
 
- // File to record cuts accounting information
- //analyzer->SetSummaryFile("summary_example.log");    // optional
-
-  // Start the actual analysis.
-  analyzer->Process(run);
-  // Create report file from template.
-  //analyzer->PrintReport(    // optional
-  //  "TEMPLATES/dcana.template",
-  //  Form("REPORT_OUTPUT/replay_hms_%05d.report", RunNumber)
-  //);
 }
