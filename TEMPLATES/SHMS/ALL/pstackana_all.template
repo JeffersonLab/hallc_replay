@@ -1,13 +1,5 @@
-Run #{gen_run_number}
-           Standalone drift chamber analysis report template
-The names of the SHMS drift chamber planes are: 
-{pdc_plane_names}
 
-Horizontal drift chamber z positions:
-Chamber 1: {pdc_zpos[0]:%6.2f} {pdc_zpos[1]:%6.2f} {pdc_zpos[2]:%6.2f} 
-           {pdc_zpos[3]:%6.2f} {pdc_zpos[4]:%6.2f} {pdc_zpos[5]:%6.2f} 
-Chamber 2: {pdc_zpos[6]:%6.2f} {pdc_zpos[7]:%6.2f} {pdc_zpos[8]:%6.2f} 
-           {pdc_zpos[9]:%6.2f} {pdc_zpos[10]:%6.2f} {pdc_zpos[11]:%6.2f}
+Run #{gen_run_number}
 
 Run Time: {PS1Mhz}  {PS1Mhz/1000000.} sec
 

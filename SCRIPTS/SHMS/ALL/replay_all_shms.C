@@ -68,9 +68,17 @@ void replay_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
   gHaPhysics->Add(gtr);
 
-  // Add handler for prestart event 125.
+  // // Add handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
+  // Add handler for EPICS events
+  THaEpicsEvtHandler *hcepics = new THaEpicsEvtHandler("epics", "HC EPICS event type 180");
+  gHaEvtHandlers->Add(hcepics);
+  // Add handler for scaler events
+  THcScalerEvtHandler *pscaler = new THcScalerEvtHandler("PS","Hall C scaler event type 1");
+  pscaler->AddEventType(1);
+  pscaler->SetUseFirstEvent(kTRUE);
+  gHaEvtHandlers->Add (pscaler);
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -104,20 +112,22 @@ void replay_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
   analyzer->SetEvent(event);
+  // Set EPICS event type
+  analyzer->SetEpicsEvtType(180);
   // Define crate map
   analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
   // Define output ROOT file
   analyzer->SetOutFile(ROOTFileName.Data());
   // Define DEF-file
-  analyzer->SetOdefFile("DEF-files/SHMS/GEN/pstackana.def");
+  analyzer->SetOdefFile("DEF-files/SHMS/ALL/pstackana_all.def");
   // Define cuts file
-  analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_report_cuts.def");  // optional
+  analyzer->SetCutFile("DEF-files/SHMS/ALL/pstackana_all_cuts.def");  // optional
   // File to record accounting information for cuts
-  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/STACK/summary_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/ALL/summary_all_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
   // Create report file from template
-  analyzer->PrintReport("TEMPLATES/SHMS/STACK/pstackana.template",
-  			Form("REPORT_OUTPUT/SHMS/STACK/replay_shms_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->PrintReport("TEMPLATES/SHMS/ALL/pstackana_all.template",
+  			Form("REPORT_OUTPUT/SHMS/ALL/replay_shms_all_%d_%d.report", RunNumber, MaxEvent));  // optional
 
 }
