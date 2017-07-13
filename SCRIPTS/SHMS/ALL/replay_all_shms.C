@@ -1,4 +1,4 @@
-void replay_pngcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
+void replay_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -17,31 +17,23 @@ void replay_pngcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Create file name patterns.
   const char* RunFileNamePattern = "raw/shms_all_%05d.dat";
-  const char* ROOTFileNamePattern = "ROOTfiles/pngcer_replay_%d.root";
+  const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_all_%d_%d.root";
+  
+  // Load global parameters
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
   gHcParms->AddString("g_ctp_database_filename", "DBASE/STD/standard.database");
-
   // Load varibles from files to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
-
   // g_ctp_parm_filename and g_decode_map_filename should now be defined.
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
-
   // Load params for SHMS trigger configuration
   gHcParms->Load("PARAM/TRIG/tshms.param");
-  gHcParms->Load("PARAM/SHMS/GEN/p_fadc_debug.param");
-  // Load the Hall C style detector map
-  gHcDetectorMap = new THcDetectorMap();
-  gHcDetectorMap->Load("MAPS/SHMS/DETEC/NGC/pngcer_ptrig.map");
 
-  // Set up the equipment to be analyzed.
-  THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
-  gHaApps->Add(SHMS);
-  // Add hodoscope to HMS apparatus
-  THcCherenkov* ngcer = new THcCherenkov("ngcer", "Noble Gas Cherenkov");
-  SHMS->AddDetector(ngcer);
+  // Load the Hall C detector map
+  gHcDetectorMap = new THcDetectorMap();
+  gHcDetectorMap->Load("MAPS/SHMS/DETEC/STACK/shms_stack.map");
 
   // Add trigger apparatus
   THaApparatus* TRG = new THcTrigApp("T", "TRG");
@@ -49,6 +41,32 @@ void replay_pngcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Add trigger detector to trigger apparatus
   THcTrigDet* shms = new THcTrigDet("shms", "SHMS Trigger Information");
   TRG->AddDetector(shms);
+
+  // Set up the equipment to be analyzed.
+  THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
+  gHaApps->Add(SHMS);
+  // Add Noble Gas Cherenkov to SHMS apparatus
+  THcCherenkov* ngcer = new THcCherenkov("ngcer", "Noble Gas Cherenkov");
+  SHMS->AddDetector(ngcer);
+  // Add drift chambers to SHMS apparatus
+  THcDC* dc = new THcDC("dc", "Drift Chambers");
+  SHMS->AddDetector(dc);
+  // Add hodoscope to SHMS apparatus
+  THcHodoscope* hod = new THcHodoscope("hod", "Hodoscope");
+  SHMS->AddDetector(hod);
+  // Add Heavy Gas Cherenkov to SHMS apparatus
+  THcCherenkov* hgcer = new THcCherenkov("hgcer", "Heavy Gas Cherenkov");
+  SHMS->AddDetector(hgcer);
+  // Add Heavy Gas Cherenkov to SHMS apparatus
+  THcAerogel* aero = new THcAerogel("aero", "Aerogel");
+  SHMS->AddDetector(aero);
+  // Add calorimeter to SHMS apparatus
+  THcShower* cal = new THcShower("cal", "Calorimeter");
+  SHMS->AddDetector(cal);
+
+  // Include golden track information
+  THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
+  gHaPhysics->Add(gtr);
 
   // Add handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
@@ -81,24 +99,25 @@ void replay_pngcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   run->Print();
 
   // Define the analysis parameters
-  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber);
+  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber, MaxEvent);
   analyzer->SetCountMode(2);    // 0 = counter is # of physics triggers
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
- analyzer->SetEvent(event);
- analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
- analyzer->SetOutFile(ROOTFileName.Data());
- analyzer->SetOdefFile("DEF-files/SHMS/NGCER/pngcerana.def");
- analyzer->SetCutFile("DEF-files/SHMS/NGCER/pngcerana_cuts.def");    // optional
-
- // File to record cuts accounting information
- //analyzer->SetSummaryFile("summary_example.log");    // optional
-
+  analyzer->SetEvent(event);
+  // Define crate map
+  analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
+  // Define output ROOT file
+  analyzer->SetOutFile(ROOTFileName.Data());
+  // Define DEF-file
+  analyzer->SetOdefFile("DEF-files/SHMS/GEN/pstackana.def");
+  // Define cuts file
+  analyzer->SetCutFile("DEF-files/SHMS/GEN/pstackana_report_cuts.def");  // optional
+  // File to record accounting information for cuts
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/STACK/summary_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
-  // Create report file from template.
-  //analyzer->PrintReport(    // optional
-  //  "TEMPLATES/dcana.template",
-  //  Form("REPORT_OUTPUT/replay_hms_%05d.report", RunNumber)
-  //);
+  // Create report file from template
+  analyzer->PrintReport("TEMPLATES/SHMS/STACK/pstackana.template",
+  			Form("REPORT_OUTPUT/SHMS/STACK/replay_shms_%d_%d.report", RunNumber, MaxEvent));  // optional
+
 }

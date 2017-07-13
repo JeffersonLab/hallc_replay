@@ -34,7 +34,7 @@ void replay_pdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   gHcDetectorMap = new THcDetectorMap();
   //gHcDetectorMap->Load(gHcParms->GetString("g_decode_map_filename"));
-  gHcDetectorMap->Load("MAPS/SHMS/DETEC/pdc.map");
+  gHcDetectorMap->Load("MAPS/SHMS/DETEC/DC/pdc.map");
 
   // Set up the equipment to be analyzed.
   THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
