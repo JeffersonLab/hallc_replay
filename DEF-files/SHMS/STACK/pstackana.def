@@ -1,3 +1,5 @@
+
+
 #********************
 # Block Definitions *
 #********************
@@ -44,6 +46,13 @@ TH2F pngcer_npe 'SHMS Noble Gas Cherenkov Number of Photoelectrons vs. PMT Numbe
 #-------------------------------
 
 TH1F pngcer_tot_npe 'SHMS Noble Gas Cherenkov Total Number of Photoelectrons; Total Number of Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.ngcer.npeSum 200 0 100 P.ngcer.npeSum>0.0 
+
+#--------------------------
+# SHMS NGC TRACK MATCHING
+#--------------------------
+
+sTH1F pngcer_trk_match 'SHMS Noble Gas Cherenkov Tracks Matches; PMT Number; Number of Tracks Matched' P.ngcer.numTracksMatched 4 0.5 4.5
+sTH1F pngcer_trk_fired 'SHMS Noble Gas Cherenkov Tracks Fired; PMT Number; Number of Tracks Fired' P.ngcer.numTracksFired 4 0.5 4.5
 
 #*****************
 # Drift Chambers *
@@ -206,11 +215,11 @@ TH1F pdc_trk_beta 'SHMS DC Track Beta; Beta (GeV); Number of Entires' P.tr.beta 
 TH2F pdc_xfp_vs_yxp 'SHMS DC X_{fp} vs Y_{fp}; Y_{fp} (cm) / 1 cm; X_{fp} (cm) / 1 cm' P.dc.y_fp P.dc.x_fp 100 -50 50 100 -50 50
 TH2F pdc_xpfp_vs_ypfp 'SHMS DC X'_{fp} vs Y'_{fp}; Y'_{fp} / 0.002 rad; X'_{fp} / 0.002 rad' P.dc.yp_fp P.dc.xp_fp 100 -.1 .1 100 -.1 .1
 TH2F pdc_xfp_vs_ypfp 'SHMS DC X_{fp} vs Y'_{fp}; Y'_{fp} / 0.002 rad; X_{fp} / 1 cm'  P.dc.yp_fp P.dc.x_fp 100 -.1 .1 100 -50 50 
-TH2F pdc_xfp_vs_xpfp 'SHMS DC X_{fp} vs X'_{fp}; X'_{fp} / 0.002 rad; X_{fp} / 1 cm' P.dc.xp_fp P.dc.x_fp 100 -.1 .1 100 -50 50 
+TH2F pdc_xfp_vs_xpfp 'SHMS DC X_{fp} vs X'_{fp}; X'_{fp} / 0.002 rad; X_{fp} / 1 cm' P.dc.xp_fp P.dc.x_fp 100 -.1 .1 100 -50 50
 
-#****************
+#*****************
 # SHMS HODOSCOPES
-#****************
+#*****************
 
 #-----------------------------------
 # SHMS HODO GOOD ADC Multiplicities 
@@ -405,7 +414,6 @@ TH1F phgcer_good_mult 'SHMS Heavy Gas Cherenkov Good Multiplicity; Number of PMT
 
 TH2F phgcer_good_pped_vs_pmt 'SHMS Heavy Gas Cherenkov Good Pulse Pedestal vs. PMT Number; PMT Number; Pulse Pedestal / 1 ADC Units' [I+1] P.hgcer.goodAdcPed 4 0.5 4.5 400 300 700
 TH2F phgcer_good_pi_vs_pmt 'SHMS Heavy Gas Cherenkov Good Pulse Integral vs. PMT Number; PMT Number; Pulse Integral / 50 ADC Units' [I+1] P.hgcer.goodAdcPulseInt 4 0.5 4.5 600 0 30000 P.hgcer.goodAdcPulseInt>0.0
-TH2F phgcer_good_rawpi_vs_pmt 'SHMS Heavy Gas Cherenkov Good Raw Pulse Integral vs. PMT Number; PMT Number; Raw Pulse Integral / 50 ADC Units' [I+1] P.hgcer.goodAdcPulseIntRaw 4 0.5 4.5 600 0 30000 P.hgcer.goodAdcPulseIntRaw>0.0
 TH2F phgcer_good_pamp_vs_pmt 'SHMS Heavy Gas Cherenkov Good Pulse Amplitude vs. PMT Number; PMT Number; Pulse Amplitude / 20 ADC Units' [I+1] P.hgcer.goodAdcPulseAmp 4 0.5 4.5 200 0 4000 P.hgcer.goodAdcPulseAmp>0.0
 TH2F phgcer_good_ptime_vs_pmt 'SHMS Heavy Gas Cherenkov Good Pulse Time vs. PMT Number; PMT Number; Pulse Time / 10 ADC Units' [I+1] P.hgcer.goodAdcPulseTime 4 0.5 4.5 350 0 3500 P.hgcer.goodAdcPulseTime>0.0
 
@@ -421,6 +429,12 @@ TH2F phgcer_npe 'SHMS Heavy Gas Cherenkov Number of Photoelectrons vs. PMT Numbe
 
 TH1F phgcer_tot_npe 'SHMS Heavy Gas Cherenkov Total Number of Photoelectrons; Total Number of Photoelectrons; Number of Entries / 0.5 Photoelectrons' P.hgcer.npeSum 200 0 100 P.hgcer.npeSum>0.0 
 
+#--------------------------
+# SHMS HGC TRACK MATCHING
+#--------------------------
+
+sTH1F phgcer_trk_match 'SHMS Noble Gas Cherenkov Track Matches; PMT Number; Number of Tracks Matched' P.hgcer.numTracksMatched 4 0.5 4.5
+sTH1F phgcer_trk_fired 'SHMS Noble Gas Cherenkov Tracks Fired; PMT Number; Number of Tracks Fired' P.hgcer.numTracksFired 4 0.5 4.5
 
 #***************
 # SHMS AEROGEL *
@@ -458,19 +472,17 @@ TH2F paero_npe_neg 'SHMS Aero- Number of Photoelectrons vs. PMT Number; PMT Numb
 
 TH2F paero_good_pped_vs_pmt_pos 'SHMS Aero+ Good Pulse Pedestal vs. PMT Number; PMT Number;  Pulse Pedestal / 1 ADC Units' [I+1] P.aero.goodPosAdcPed 7 0.5 7.5 400 300 700  P.aero.goodPosAdcPed>0.0
 TH2F paero_good_pi_vs_pmt_pos 'SHMS Aero+ Good Pulse Integral vs. PMT Number; PMT Number;  Pulse Integral / 50 ADC Units' [I+1] P.aero.goodPosAdcPulseInt 7 0.5 7.5 600 0 30000 P.aero.goodPosAdcPulseInt>0.0
-TH2F paero_good_raw_pi_vs_pmt_pos 'SHMS Aero+ Good Raw Pulse Integral vs. PMT Number; PMT Number; Raw Pulse Integral / 50 ADC Units' [I+1] P.aero.goodPosAdcPulseIntRaw 7 0.5 7.5 600 0 30000 P.aero.goodPosAdcPulseIntRaw>0.0
 TH2F paero_good_pamp_vs_pmt_pos 'SHMS Aero+ Good Pulse Amplitude vs. PMT Number; PMT Number;  Pulse Amplitude / 20 ADC Units' [I+1] P.aero.goodPosAdcPulseAmp 7 0.5 7.5 200 0 4000 P.aero.goodPosAdcPulseAmp>0.0
 TH2F paero_good_ptime_vs_pmt_pos 'SHMS Aero+ Good Pulse Time vs. PMT Number; PMT Number; Pulse Time / 10 ADC Units' [I+1] P.aero.goodPosAdcPulseTime 7 0.5 7.5 350 0 3500 P.aero.goodPosAdcPulseTime>0.0
 
 TH2F paero_good_pped_vs_pmt_neg 'SHMS Aero- Good Pulse Pedestal vs. PMT Number; PMT Number;  Pulse Pedestal / 1 ADC Units' [I+1] P.aero.goodNegAdcPed 7 0.5 7.5 400 300 700 P.aero.goodNegAdcPed>0.0
 TH2F paero_good_pi_vs_pmt_neg 'SHMS Aero- Good Pulse Integral vs. PMT Number; PMT Number;  Pulse Integral / 50 ADC Units' [I+1] P.aero.goodNegAdcPulseInt 7 0.5 7.5 600 0 30000 P.aero.goodNegAdcPulseInt>0.0
-TH2F paero_good_raw_pi_vs_pmt_neg 'SHMS Aero- Good Raw Pulse Integral vs. PMT Number; PMT Number; Raw Pulse Integral / 50 ADC Units' [I+1] P.aero.goodNegAdcPulseIntRaw 7 0.5 7.5 600 0 30000 P.aero.goodNegAdcPulseIntRaw>0.0
 TH2F paero_good_pamp_vs_pmt_neg 'SHMS Aero- Good Pulse Amplitude vs. PMT Number; PMT Number;  Pulse Amplitude / 20 ADC Units' [I+1] P.aero.goodNegAdcPulseAmp 7 0.5 7.5 200 0 4000 P.aero.goodNegAdcPulseAmp>0.0
 TH2F paero_good_ptime_vs_pmt_neg 'SHMS Aero- Good Pulse Time vs. PMT Number; PMT Number; Pulse Time / 10 ADC Units' [I+1] P.aero.goodNegAdcPulseTime 7 0.5 7.5 350 0 3500 P.aero.goodNegAdcPulseTime>0.0
 
-#******************************
-# SHMS PRE-SHOWER CALORIMETER *
-#******************************
+#*******************
+# SHMS CALORIMETER *
+#*******************
 
 #--------------------------------------------
 # SHMS PreSH GOOD Occupancy and Multiplicity
@@ -513,10 +525,6 @@ TH2F pcal_prshwr_Emean_vs_pmt 'SHMS PreShower Mean Energy Deposition vs. PMT Num
 TH1F pcal_prshwr_Eplane_pos 'SHMS PreShower+ Energy Deposition; Energy Deposition (GeV); Number of Entries / 0.01 GeV' P.cal.pr.eplane_pos 200 0 2 P.cal.pr.eplane_pos>0.0
 TH1F pcal_prshwr_Eplane_neg 'SHMS PreShower- Energy Deposition; Energy Deposition (GeV); Number of Entries / 0.01 GeV' P.cal.pr.eplane_neg 200 0 2 P.cal.pr.eplane_neg>0.0
 TH1F pcal_prshwr_Eplane 'SHMS PreShower Total Energy Deposition; Total Energy Deposition (GeV); Number of Entries / 0.01 GeV' P.cal.pr.eplane 300 0 3 P.cal.pr.eplane>0.0
-
-#**************************
-# SHMS SHOWER CALORIMETER *
-#**************************
 
 #---------------------------------------------
 # SHMS Shower GOOD Occupancy and Multiplicity
