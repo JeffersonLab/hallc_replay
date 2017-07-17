@@ -1,4 +1,4 @@
-void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
+void replay_hms_raster_simple(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -17,9 +17,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Create file name patterns.
   const char* RunFileNamePattern = "raw/hms_all_%05d.dat";
-  const char* ROOTFileNamePattern = "ROOTfiles/hms_replay_%d.root";
-
-  //Load global parameters
+  const char* ROOTFileNamePattern = "ROOTfiles/hms_raster_simple_%d_%d.root";
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
   gHcParms->AddString("g_ctp_database_filename", "DBASE/standard.database");
@@ -32,11 +30,18 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
 
   // Load params for HMS trigger configuration
-  gHcParms->Load("PARAM/TRIG/thms.param");
+  gHcParms->Load("PARAM/TRIG/thms_raster.param");
 
-  // Load the Hall C style detector map
+  // Load the Hall C detector map
   gHcDetectorMap = new THcDetectorMap();
-  gHcDetectorMap->Load("MAPS/HMS/DETEC/STACK/hms_stack.map");
+  gHcDetectorMap->Load("MAPS/HMS/DETEC/hraster_simple.map");
+  
+  // Set up the equipment to be analyzed.
+  //THaApparatus* HMS = new THcHallCSpectrometer("H", "HMS");
+  //gHaApps->Add(HMS);
+  // Add hodoscope to HMS apparatus
+  //THcHodoscope* hod = new THcHodoscope("hod", "Hodoscope");
+  //HMS->AddDetector(hod);
 
   // Add trigger apparatus
   THaApparatus* TRG = new THcTrigApp("T", "TRG");
@@ -44,30 +49,6 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Add trigger detector to trigger apparatus
   THcTrigDet* hms = new THcTrigDet("hms", "HMS Trigger Information");
   TRG->AddDetector(hms);
-
-  // Set up the equipment to be analyzed.
-  THaApparatus* HMS = new THcHallCSpectrometer("H", "HMS");
-  gHaApps->Add(HMS);
-  // Add drift chambers to HMS apparatus
-  THcDC* dc = new THcDC("dc", "Drift Chambers");
-  HMS->AddDetector(dc);
-  // Add hodoscope to HMS apparatus
-  THcHodoscope* hod = new THcHodoscope("hod", "Hodoscope");
-  HMS->AddDetector(hod);
-  // Add Cherenkov to HMS apparatus
-  THcCherenkov* cer = new THcCherenkov("cer", "Heavy Gas Cherenkov");
-  HMS->AddDetector(cer);
-  // Add calorimeter to HMS apparatus
-  THcShower* cal = new THcShower("cal", "Calorimeter");
-  HMS->AddDetector(cal);
-
-  // Include golden track information
-  THaGoldenTrack* gtr = new THaGoldenTrack("H.gtr", "HMS Golden Track", "H");
-  gHaPhysics->Add(gtr);
-
-  // Add handler for prestart event 125.
-  THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
-  gHaEvtHandlers->Add(ev125);
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -96,7 +77,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   run->Print();
 
   // Define the analysis parameters
-  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber);
+  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber, MaxEvent);
   analyzer->SetCountMode(2);    // 0 = counter is # of physics triggers
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
@@ -106,17 +87,18 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
  //Define output ROOT file
  analyzer->SetOutFile(ROOTFileName.Data());
  //Define DEF-file
- analyzer->SetOdefFile("DEF-files/HMS/GEN/hstackana.def");
- 
+ analyzer->SetOdefFile("DEF-files/HMS/RASTER/hms_raster_simple.def");
  //Define cuts file
- analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_cuts.def");    // optional
- analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
+ analyzer->SetCutFile("DEF-files/HMS/RASTER/hms_raster_simple_cuts.def");    // optional
 
  // File to record cuts accounting information
- //analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));    // optional
+ //analyzer->SetSummaryFile("summary_example.log");    // optional
 
- // Start the actual analysis.
- analyzer->Process(run);
- // Create report file from template.
- //analyzer->PrintReport("TEMPLATES/HMS/STACK/hstackana.template", Form("REPORT_OUTPUT/HMS/replay_hms_%d_%d.report", RunNumber, MaxEvent)); //optional
+  // Start the actual analysis.
+  analyzer->Process(run);
+  // Create report file from template.
+  //analyzer->PrintReport(    // optional
+  //  "TEMPLATES/dcana.template",
+  //  Form("REPORT_OUTPUT/replay_hms_%05d.report", RunNumber)
+  //);
 }

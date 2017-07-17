@@ -34,7 +34,7 @@ void replay_hcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   gHcParms->Load("PARAM/HMS/GEN/h_fadc_debug.param");
   // Load the Hall C style detector map
   gHcDetectorMap = new THcDetectorMap();
-  gHcDetectorMap->Load("MAPS/HMS/DETEC/hcer_htrig.map");
+  gHcDetectorMap->Load("MAPS/HMS/DETEC/CER/hcer_htrig.map");
 
   // Set up the equipment to be analyzed.
   THaApparatus* HMS = new THcHallCSpectrometer("H", "HMS");

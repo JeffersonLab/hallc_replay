@@ -17,7 +17,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Create file name patterns.
   const char* RunFileNamePattern = "raw/hms_all_%05d.dat";
-  const char* ROOTFileNamePattern = "ROOTfiles/hms_replay_%d.root";
+  const char* ROOTFileNamePattern = "ROOTfiles/hms_replay_all_%d_%d.root";
 
   //Load global parameters
   // Add variables to global list.
@@ -69,6 +69,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
 
+
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
   // The Analyzer controls the reading of the data, executes
@@ -96,7 +97,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   run->Print();
 
   // Define the analysis parameters
-  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber);
+  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber, MaxEvent);
   analyzer->SetCountMode(2);    // 0 = counter is # of physics triggers
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
@@ -109,7 +110,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
  analyzer->SetOdefFile("DEF-files/HMS/GEN/hstackana.def");
  
  //Define cuts file
- analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_cuts.def");    // optional
+ // analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_cuts.def");    // optional
  analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
 
  // File to record cuts accounting information
