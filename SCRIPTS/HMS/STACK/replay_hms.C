@@ -113,10 +113,10 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
  analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
 
  // File to record cuts accounting information
- analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));    // optional
+ //analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));    // optional
 
  // Start the actual analysis.
  analyzer->Process(run);
  // Create report file from template.
- analyzer->PrintReport("TEMPLATES/HMS/hstackana.template", Form("REPORT_OUTPUT/HMS/replay_hms_%d_%d.report", RunNumber, MaxEvent)); //optional
+ //analyzer->PrintReport("TEMPLATES/HMS/STACK/hstackana.template", Form("REPORT_OUTPUT/HMS/replay_hms_%d_%d.report", RunNumber, MaxEvent)); //optional
 }

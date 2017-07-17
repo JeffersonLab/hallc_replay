@@ -101,13 +101,15 @@ void replay_hms_scalers(Int_t RunNumber=0, Int_t MaxEvent=0) {
  //Define DEF-file
  analyzer->SetOdefFile("DEF-files/HMS/EPICS/epics_short.def");  // Call EPICS variables  K.Park
   // analyzer->SetOdefFile("DEF-files/HMS/GEN/hstackana_report.def");
-  //analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
+
+ //Define cuts file
+ analyzer->SetCutFile("DEF-files/HMS/SCALERS/hscaler_report_cuts.def");    // optional
 
  // File to record cuts accounting information
-  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/HMS/summary_%05d.report", RunNumber));    // optional
+ // analyzer->SetSummaryFile(Form("REPORT_OUTPUT/HMS/summary_%05d.report", RunNumber));    // optional
 
-  // Start the actual analysis.
-  analyzer->Process(run);
-  // Create report file from template.
-  // analyzer->PrintReport("TEMPLATES/hstackana.template",Form("REPORT_OUTPUT/HMS/replay_hms_%05d.report", RunNumber));
+ // Start the actual analysis.
+ analyzer->Process(run);
+ // Create report file from template.
+ //analyzer->PrintReport("TEMPLATES/hstackana.template",Form("REPORT_OUTPUT/HMS/replay_hms_%05d.report", RunNumber));
 }
