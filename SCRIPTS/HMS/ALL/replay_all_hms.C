@@ -1,4 +1,4 @@
-void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
+void replay_all_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -22,7 +22,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   //Load global parameters
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
-  gHcParms->AddString("g_ctp_database_filename", "DBASE/standard.database");
+  gHcParms->AddString("g_ctp_database_filename", "DBASE/STD/standard.database");
 
   // Load varibles from files to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
