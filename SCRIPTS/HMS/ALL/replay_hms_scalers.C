@@ -103,7 +103,7 @@ void replay_hms_scalers(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // analyzer->SetOdefFile("DEF-files/HMS/GEN/hstackana_report.def");
 
  //Define cuts file
- analyzer->SetCutFile("DEF-files/HMS/SCALERS/hscaler_report_cuts.def");    // optional
+ analyzer->SetCutFile("DEF-files/HMS/SCALERS/hscaler_cuts.def");    // optional
 
  // File to record cuts accounting information
  // analyzer->SetSummaryFile(Form("REPORT_OUTPUT/HMS/summary_%05d.report", RunNumber));    // optional

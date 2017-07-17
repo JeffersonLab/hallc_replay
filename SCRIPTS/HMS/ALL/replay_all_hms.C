@@ -69,6 +69,19 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
 
+  //Add handler for epics events
+  THaEpicsEvtHandler *hcepics = new THaEpicsEvtHandler("epics","HC EPICS event type 180");
+  gHaEvtHandlers->Add (hcepics);
+  
+
+  //Add handler for scaler events
+  THcScalerEvtHandler *hscaler = new THcScalerEvtHandler("HS","Hall C scaler event type 1");
+  hscaler->AddEventType(1);
+  hscaler->SetUseFirstEvent(kTRUE);
+  gHaEvtHandlers->Add(hscaler);
+
+
+
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -102,16 +115,18 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
                                 // 1 = counter is # of all decode reads
                                 // 2 = counter is event number
  analyzer->SetEvent(event);
+ //Set EPICS event type
+ analyzer->SetEpicsEvtType(180);
  //Define crate map
  analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
  //Define output ROOT file
  analyzer->SetOutFile(ROOTFileName.Data());
  //Define DEF-file
- analyzer->SetOdefFile("DEF-files/HMS/GEN/hstackana.def");
+ analyzer->SetOdefFile("DEF-files/HMS/ALL/hstackana.def");
  
  //Define cuts file
  // analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_cuts.def");    // optional
- analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
+ analyzer->SetCutFile("DEF-files/HMS/ALL/hstackana_all_cuts.def");    // optional
 
  // File to record cuts accounting information
  //analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));    // optional

@@ -106,11 +106,11 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
  //Define output ROOT file
  analyzer->SetOutFile(ROOTFileName.Data());
  //Define DEF-file
- analyzer->SetOdefFile("DEF-files/HMS/GEN/hstackana.def");
+ analyzer->SetOdefFile("DEF-files/HMS/STACK/hstackana.def");
  
  //Define cuts file
- analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_cuts.def");    // optional
- analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
+ analyzer->SetCutFile("DEF-files/HMS/STACK/hstackana_cuts.def");    // optional
+ //analyzer->SetCutFile("DEF-files/HMS/GEN/hstackana_report_cuts.def");    // optional
 
  // File to record cuts accounting information
  //analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/summary_%d_%d.report", RunNumber, MaxEvent));    // optional
