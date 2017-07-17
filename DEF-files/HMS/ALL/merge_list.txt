@@ -1,0 +1,6 @@
+CER/hcerana.def
+DC/hdcana.def
+HODO/hhodoana.def
+CAL/hcalana.def
+TRIG/htrigana.def
+EPICS/hepics_vars.def
