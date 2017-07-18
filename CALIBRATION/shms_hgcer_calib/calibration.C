@@ -29,10 +29,12 @@
 #include <TF1.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TPaveText.h>
 #include <TSpectrum.h>
 #include <TList.h>
 #include <TPolyMarker.h>
 #include <TGraphErrors.h>
+#include <TMath.h>
 #include <iostream>
 
 using namespace TMath;
@@ -412,6 +414,7 @@ void calibration::Terminate()
   TCanvas *final_spectra_mk2_ipmt;
   TCanvas *final_spectra_combined;
   TCanvas *final_spectra_combined_mk2;
+  TCanvas *scaled_quad_cuts_ipmt;
 
   //Histograms to store scaling information and background removed spectra
   TH1F *fscaled[4];
@@ -420,6 +423,7 @@ void calibration::Terminate()
   TH1F *fscaled_mk2_nobackground[4];
   TH1F *fscaled_combined;
   TH1F *fscaled_combined_mk2;
+  TH1F *fscaled_quad[4][4];
 
   //Rebin the histograms into something more sensible, add functionality to bin HGC & NGC independently
   for (Int_t ipmt=0; ipmt < (fNGC ? fngc_pmts : fhgc_pmts); ipmt++)
@@ -645,6 +649,105 @@ void calibration::Terminate()
 	  calibration_mk2[ipmt] = xscale_mk2;
 	} // This brance marks the end of the quadrant cut strategy
 
+
+      //Begin investigation of Poisson-like integration of first few peaks (requires particle ID)
+      if (fCut)
+	{
+	  //Begin by calibrating each quadrant...assume for now the first calibration is sufficient
+	  scaled_quad_cuts_ipmt = new TCanvas(Form("scaled_quad_cuts_PMT%d",ipmt),Form("Scaled Adc Spectra with Quadrant Cuts for PMT %d",ipmt+1));
+	  scaled_quad_cuts_ipmt->Divide(2,2);
+
+	  for (Int_t iquad = 0; iquad < 4; iquad++)
+	    {
+	      scaled_quad_cuts_ipmt->cd(iquad+1);
+
+	      Int_t nbins = fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetNbins();
+	      Double_t xmean = calibration_mk1[ipmt];
+
+	      fscaled_quad[iquad][ipmt] = new TH1F(Form("fscaled_quad%d_pmt%d",iquad+1,ipmt+1), Form("Scaled ADC spectra in Quadrant %d for PMT %d",iquad+1, ipmt+1), nbins, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+
+	      //Fill this histogram bin by bin
+	      for (Int_t ibin=0; ibin < nbins; ibin++)
+		{
+		  Double_t y = fPulseInt_quad[iquad][ipmt]->GetBinContent(ibin);
+		  fscaled_quad[iquad][ipmt]->SetBinContent(ibin,y);
+		}
+
+	      //Normalize the histogram for ease of fitting
+	      fscaled_quad[iquad][ipmt]->Scale(1.0/fscaled_quad[iquad][ipmt]->Integral(), "width");
+
+	      //TSpectrum class is used to find the SPE peak using the search method
+	      TSpectrum *s = new TSpectrum(3); 
+	      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(0,4);
+	      s->Search(fscaled_quad[iquad][ipmt], 2.5, "", 0.001);
+	      TList *functions = fscaled_quad[iquad][ipmt]->GetListOfFunctions();
+	      TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
+	      Double_t *xpeaks = pm->GetX();
+	      long long index[3];
+	      long long size = 3;
+	      TMath::Sort(size, xpeaks, index, kFALSE);
+	      TPaveText *pl = new TPaveText(0.6,0.5,0.89,0.89,"NDC");
+	      TF1 *Temp_Gaus1 = new TF1("Temp_Gaus1",gauss,-500,7000,3);
+	      TF1 *Temp_Gaus2 = new TF1("Temp_Gaus2",gauss,-500,7000,3);
+	      TF1 *Temp_Gaus3 = new TF1("Temp_Gaus3",gauss,-500,7000,3);
+	      TF1 *Temp_Pois = new TF1("Temp_Pois",poisson,-500,7000,2);
+	      for (Int_t i = 0; i<3; i++)
+		{
+		  if (xpeaks[index[i]] < 0.5) continue;
+		  if (i == 0)
+		    {
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
+		      Temp_Gaus1->SetParameter(1, xpeaks[index[i]]);
+		      Temp_Gaus1->SetParameter(2, 0.1);
+		      Temp_Gaus1->SetParLimits(1, xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
+		      Temp_Gaus1->SetParLimits(2, 0.0, 0.5);
+		      fscaled_quad[iquad][ipmt]->SetStats(0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus1","RQN");
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+		      Temp_Gaus1->Draw("same");
+		      pl->AddText(Form("Integral: %f",Temp_Gaus1->Integral(0,20)));
+		    }
+
+		  if (i == 1)
+		    {
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
+		      Temp_Gaus2->SetParameter(1, xpeaks[index[i]]);
+		      Temp_Gaus2->SetParameter(2, 0.1);
+		      Temp_Gaus2->SetParLimits(1, xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
+		      Temp_Gaus2->SetParLimits(2, 0.0, 0.5);
+		      fscaled_quad[iquad][ipmt]->SetStats(0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus2","RQN");
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+		      Temp_Gaus2->Draw("same");
+		      pl->AddText(Form("Integral: %f",Temp_Gaus2->Integral(0,20)));
+		    }
+
+		  if (i == 2)
+		    {
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
+		      Temp_Gaus3->SetParameter(1, xpeaks[index[i]]);
+		      Temp_Gaus3->SetParameter(2, 0.1);
+		      Temp_Gaus3->SetParLimits(1, xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
+		      Temp_Gaus3->SetParLimits(2, 0.0, 0.5);
+		      fscaled_quad[iquad][ipmt]->SetStats(0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus3","RQN");
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+		      Temp_Gaus3->Draw("same");
+		      fscaled_quad[iquad][ipmt]->Draw("same");
+		      pl->AddText(Form("Integral: %f",Temp_Gaus3->Integral(0,20)));
+
+		      Temp_Pois->SetParameter(0, 4.3);
+		      Temp_Pois->SetParameter(1, 1.0);
+		      Temp_Pois->SetParLimits(0, 0.0, 6.0);
+		      Temp_Pois->SetParLimits(1, 0.0, 2.0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Pois","RQN");
+		      Temp_Pois->Draw("same");
+		      pl->AddText(Form("Mean #PE: %f",Temp_Pois->GetParameter(0)));
+		      pl->Draw("same");
+		    }
+		}
+	    }
+	}
 
       //Begin the TrackFired cut calibration
       if (fTrack)
