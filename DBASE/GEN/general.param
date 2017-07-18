@@ -43,7 +43,7 @@ cminch=2.54
 #include "PARAM/SHMS/AERO/GEOM/paero_geom.param"
 #include "PARAM/SHMS/CAL/GEOM/pcal_geom.param"
 
-; SHMS default cuts parameter files
+; SHMS default cut parameter files
 #include "PARAM/SHMS/NGCER/CUTS/pngcer_cuts.param"
 #include "PARAM/SHMS/DC/CUTS/pdc_cuts.param"
 #include "PARAM/SHMS/HODO/CUTS/phodo_cuts.param"
