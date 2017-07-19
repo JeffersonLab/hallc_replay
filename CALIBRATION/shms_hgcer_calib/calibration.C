@@ -677,15 +677,15 @@ void calibration::Terminate()
 	      fscaled_quad[iquad][ipmt]->Scale(1.0/fscaled_quad[iquad][ipmt]->Integral(), "width");
 
 	      //TSpectrum class is used to find the SPE peak using the search method
-	      TSpectrum *s = new TSpectrum(3); 
-	      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(0,4);
-	      s->Search(fscaled_quad[iquad][ipmt], 2.5, "", 0.001);
-	      TList *functions = fscaled_quad[iquad][ipmt]->GetListOfFunctions();
-	      TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
-	      Double_t *xpeaks = pm->GetX();
-	      long long index[3];
-	      long long size = 3;
-	      TMath::Sort(size, xpeaks, index, kFALSE);
+	      //TSpectrum *s = new TSpectrum(3); 
+	      //fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(0.5,4);
+	      //s->Search(fscaled_quad[iquad][ipmt], 2.5, "", 0.001);
+	      //TList *functions = fscaled_quad[iquad][ipmt]->GetListOfFunctions();
+	      //TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
+	      //Double_t *xpeaks = pm->GetX();
+	      //long long index[3];
+	      //long long size = 3;
+	      //TMath::Sort(size, xpeaks, index, kFALSE);
 	      TPaveText *pl = new TPaveText(0.6,0.5,0.89,0.89,"NDC");
 	      TF1 *Temp_Gaus1 = new TF1("Temp_Gaus1",gauss,-500,7000,3);
 	      TF1 *Temp_Gaus2 = new TF1("Temp_Gaus2",gauss,-500,7000,3);
@@ -693,56 +693,57 @@ void calibration::Terminate()
 	      TF1 *Temp_Pois = new TF1("Temp_Pois",poisson,-500,7000,2);
 	      for (Int_t i = 0; i<3; i++)
 		{
-		  if (xpeaks[index[i]] < 0.5) continue;
+		  //if (xpeaks[index[i]] < 0.5) continue;
 		  if (i == 0)
 		    {
-		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
-		      Temp_Gaus1->SetParameter(1, xpeaks[index[i]]);
-		      Temp_Gaus1->SetParameter(2, 0.1);
-		      Temp_Gaus1->SetParLimits(1, xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
-		      Temp_Gaus1->SetParLimits(2, 0.0, 0.5);
-		      fscaled_quad[iquad][ipmt]->SetStats(0);
-		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus1","RQN");
-		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
-		      Temp_Gaus1->Draw("same");
-		      pl->AddText(Form("Integral: %f",Temp_Gaus1->Integral(0,20)));
-		    }
-
-		  if (i == 1)
-		    {
-		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
-		      Temp_Gaus2->SetParameter(1, xpeaks[index[i]]);
-		      Temp_Gaus2->SetParameter(2, 0.1);
-		      Temp_Gaus2->SetParLimits(1, xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
-		      Temp_Gaus2->SetParLimits(2, 0.0, 0.5);
-		      fscaled_quad[iquad][ipmt]->SetStats(0);
-		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus2","RQN");
-		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
-		      Temp_Gaus2->Draw("same");
-		      pl->AddText(Form("Integral: %f",Temp_Gaus2->Integral(0,20)));
-		    }
-
-		  if (i == 2)
-		    {
-		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
-		      Temp_Gaus3->SetParameter(1, xpeaks[index[i]]);
-		      Temp_Gaus3->SetParameter(2, 0.1);
-		      Temp_Gaus3->SetParLimits(1, xpeaks[index[i]]-0.1, xpeaks[index[i]]+0.1);
-		      Temp_Gaus3->SetParLimits(2, 0.0, 0.5);
-		      fscaled_quad[iquad][ipmt]->SetStats(0);
-		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus3","RQN");
-		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean, (fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
-		      Temp_Gaus3->Draw("same");
-		      fscaled_quad[iquad][ipmt]->Draw("same");
-		      pl->AddText(Form("Integral: %f",Temp_Gaus3->Integral(0,20)));
-
 		      Temp_Pois->SetParameter(0, 4.3);
 		      Temp_Pois->SetParameter(1, 1.0);
 		      Temp_Pois->SetParLimits(0, 0.0, 6.0);
 		      Temp_Pois->SetParLimits(1, 0.0, 2.0);
-		      fscaled_quad[iquad][ipmt]->Fit("Temp_Pois","RQN");
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Pois","RQ");
 		      Temp_Pois->Draw("same");
 		      pl->AddText(Form("Mean #PE: %f",Temp_Pois->GetParameter(0)));
+
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(0.9, 1.1);
+		      Temp_Gaus1->SetParameter(1, 1);
+		      Temp_Gaus1->SetParameter(2, 0.1);
+		      Temp_Gaus1->SetParLimits(1, 0.9, 1.1);
+		      Temp_Gaus1->SetParLimits(2, 0.0, 0.5);
+		      fscaled_quad[iquad][ipmt]->SetStats(0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus1","RQN");
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean,(fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+		      Temp_Gaus1->Draw("same");
+		      pl->AddText(Form("Integral: %f, (%f)",Temp_Gaus1->Integral(0,20),pow(Temp_Pois->GetParameter(0),1)*(exp(-1*Temp_Pois->GetParameter(0)))/tgamma(1+1)));
+		    }
+
+		  if (i == 1)
+		    {
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(1.9, 2.1);
+		      Temp_Gaus2->SetParameter(1, 2);
+		      Temp_Gaus2->SetParameter(2, 0.1);
+		      Temp_Gaus2->SetParLimits(1, 1.9, 2.1);
+		      Temp_Gaus2->SetParLimits(2, 0.0, 1.0);
+		      fscaled_quad[iquad][ipmt]->SetStats(0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus2","RQN");
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean,(fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+		      Temp_Gaus2->Draw("same");
+		      pl->AddText(Form("Integral: %f, (%f)",Temp_Gaus2->Integral(0,20),pow(Temp_Pois->GetParameter(0),2)*(exp(-1*Temp_Pois->GetParameter(0)))/tgamma(2+1)));
+		    }
+
+		  if (i == 2)
+		    {
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser(2.9, 3.1);
+		      Temp_Gaus3->SetParameter(1, 3);
+		      Temp_Gaus3->SetParameter(2, 0.1);
+		      Temp_Gaus3->SetParLimits(1, 2.9, 3.1);
+		      Temp_Gaus3->SetParLimits(2, 0.0, 1.5);
+		      fscaled_quad[iquad][ipmt]->SetStats(0);
+		      fscaled_quad[iquad][ipmt]->Fit("Temp_Gaus3","RQN");
+		      
+		      Temp_Gaus3->Draw("same");
+		      fscaled_quad[iquad][ipmt]->GetXaxis()->SetRangeUser((fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmin())/xmean,(fPulseInt_quad[iquad][ipmt]->GetXaxis()->GetXmax())/xmean);
+		      fscaled_quad[iquad][ipmt]->Draw("same");
+		      pl->AddText(Form("Integral: %f, (%f)",Temp_Gaus3->Integral(0,20),pow(Temp_Pois->GetParameter(0),3)*(exp(-1*Temp_Pois->GetParameter(0)))/tgamma(3+1)));
 		      pl->Draw("same");
 		    }
 		}
