@@ -1,3 +1,4 @@
+; HMS Hodo Geometry parmeters
 
 hhodo_num_planes = 4
 hhodo_plane_names = "1x 1y 2x 2y"
