@@ -23,6 +23,7 @@ class efficiencies : public TSelector {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fNumberOfEvents;
+   Bool_t          fShowall;
    Bool_t          fChercut;
    Bool_t          fNGC;
    Float_t         fHGC_cut;
@@ -37,6 +38,10 @@ public :
    TH1F           *fNPE_piDet[4];
    TH1F           *fNPE_Full_piNoDet;
    TH1F           *fNPE_Full_piDet;
+   TH1F           *fBeta_Cut;
+   TH1F           *fBeta_Full;
+   TH1F           *fTiming_Cut;
+   TH1F           *fTiming_Full;
    TH2F           *fFly_Pr_Full;
    TH2F           *fFly_Pr_eCut;
    TH2F           *fFly_Pr_piCut;

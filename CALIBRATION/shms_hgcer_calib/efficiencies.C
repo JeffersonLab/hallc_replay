@@ -39,6 +39,7 @@ void efficiencies::Begin(TTree * /*tree*/)
 
   TString option = GetOption();
   Info("Begin", "Starting calibration process with option: %s", option.Data());
+  Info("Begin", "To show details of calculation, use option showall (will open lots of windows)");
   Info("Begin", "Default detector is HGC, use option NGC if desired");
   Info("Begin", "If cut desired on other Cherenkov, use option Chercut");
 }
@@ -51,27 +52,30 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
 
   printf("\n\n");
   TString option = GetOption();
-
+  
+  //Determine how much to show
+  fShowall = kFALSE;
   //Determine if cut on other Cherenkov is desired
   fChercut = kFALSE;
-
   //Which Detector is the efficiency for
   fNGC = kFALSE;
 
   //Check option
+  if (option.Contains("showall")) fShowall = kTRUE;
   if (option.Contains("Chercut")) fChercut = kTRUE;
   if (option.Contains("NGC")) fNGC = kTRUE;
 
+  Info("SlaveBegin", "%s showing", fShowall ? "full" : "minimal");
   Info("SlaveBegin", "%s other Cherenkov for particle ID", fChercut ? "using" : "ignoring");
-  Info("SlaveBegin", "Efficiency for %s is found", fNGC ? "NGC" : "HGC");
+  Info("SlaveBegin", "efficiency for %s is found", fNGC ? "NGC" : "HGC");
 
   printf("\n");
 
-  //Obtain value for HGC cut
+  //Obtain value for detector cut
   cout << Form("Enter number of photoelectrons in %s to cut on: ", fNGC ? "NGC" : "HGC");
   fNGC ? cin >> fNGC_cut : cin >> fHGC_cut;
   
-  //Obtain value for NGC cut if desired
+  //Obtain value for other Cherenkov cut if desired
   if (fChercut)
     {
       cout << Form("Enter number of photoelectrons in %s to cut on: ", fNGC ? "HGC" : "NGC");
@@ -109,8 +113,14 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
   fNPE_Full_piNoDet = new TH1F("NPE_Full_piNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max); 
   fNPE_Full_piDet = new TH1F("NPE_Full_piDet", "NPE in All PMTs with Detector Cut", bins, NPE_min, NPE_max);
 
+  //Histograms examining various cuts for "good" hits
+  fBeta_Cut = new TH1F("Beta_Cut", "Beta cut used for 'good' hits", 1000, -5, 5);
+  fBeta_Full = new TH1F("Beta_Full", "Full beta for events", 1000, -5, 5);
+  fTiming_Cut = new TH1F("Timing_Cut", "Timing cut used for 'good' hits", 10000, 0, 5000);
+  fTiming_Full = new TH1F("Timing_Full", "Full timing information for events", 10000, 1, 5000);
+
   //Histograms examining particle ID cuts
-  fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID cut from calorimeter & preshower", 400, 0, 5, 400, 0 ,4);
+  fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID from calorimeter & preshower", 400, 0, 5, 400, 0 ,4);
   fFly_Pr_eCut = new TH2F("Fly_Pr_eCut", "calorimeter & preshower electrons", 400, 0, 5, 400, 0 ,4);
   fFly_Pr_piCut = new TH2F("Fly_Pr_piCut", "calorimeter & preshower pions", 400, 0, 5, 400, 0 ,4);
 
@@ -156,15 +166,19 @@ Bool_t efficiencies::Process(Long64_t entry)
     {
       //Require loose cut on particle velocity
       b_P_tr_beta->GetEntry(entry);
+      fBeta_Full->Fill(P_tr_beta[itrack]);
       if (TMath::Abs(P_tr_beta[itrack] - 1.0) > 0.2) return kTRUE;
+      fBeta_Cut->Fill(P_tr_beta[itrack]);
 
       //Filling the histograms
       for (Int_t ipmt = 0; ipmt < fpmts; ipmt++)
 	{
 	  //Require the signal passes a timing cut
 	  fNGC ? b_P_ngcer_goodAdcPulseTime->GetEntry(entry) : b_P_hgcer_goodAdcPulseTime->GetEntry(entry);
+	  fTiming_Full->Fill(fNGC ?  P_ngcer_goodAdcPulseTime[ipmt] : P_hgcer_goodAdcPulseTime[ipmt]);
 	  if (fNGC ? P_ngcer_goodAdcPulseTime[ipmt] < 1000 || P_ngcer_goodAdcPulseTime[ipmt] > 2000 :
 	             P_hgcer_goodAdcPulseTime[ipmt] < 1000 || P_hgcer_goodAdcPulseTime[ipmt] > 2000) continue;
+	  fTiming_Cut->Fill(fNGC ?  P_ngcer_goodAdcPulseTime[ipmt] : P_hgcer_goodAdcPulseTime[ipmt]);
 
 	  //Require the signal passes a tracking cut, with a threshold NPE cut as well
 	  fNGC ? b_P_ngcer_numTracksFired->GetEntry(entry) : b_P_hgcer_numTracksFired->GetEntry(entry);
@@ -248,86 +262,137 @@ void efficiencies::Terminate()
    // the results graphically or save the results to file.
   
   //Canvases to display efficiency information
-  TCanvas *Fly_Pr;
-
-  Fly_Pr = new TCanvas("Fly_Pr", "Particle ID info from calorimeter & Preshower");
-  Fly_Pr->Divide(3,1);
-  Fly_Pr->cd(1);
-  fFly_Pr_Full->Draw("Colz");
-  Fly_Pr->cd(2);
-  fFly_Pr_eCut->Draw("Colz");
-  Fly_Pr->cd(3);
-  fFly_Pr_piCut->Draw("Colz");
-
-  //Canvases to show Effects of HGC cut
-  //Start with electrons
-  gStyle->SetOptStat(11);
-  TCanvas *Det_eCut;
-  Det_eCut = new TCanvas("Det_eCut","Effect of performing cut for electrons with HGC per PMT");
-  Det_eCut->Divide(2,4);
-  for (Int_t ipad = 1; ipad <= 7; ipad += 2)
+  if (fShowall)
     {
-      Det_eCut->cd(ipad);
-      fNPE_eNoDet[(ipad-1)/2]->Draw();
-      gPad->Update();
-      TPaveStats *s = (TPaveStats*) gPad->GetPrimitive("stats");
-      s->SetTextSize(0.1);
-      s->SetX1NDC(0.7);
-      s->SetY1NDC(0.5);
+      //Canvas to show beta cut information
+      TCanvas *Beta;
+      Beta = new TCanvas("Beta", "Beta information for events");
+      Beta->Divide(2,1);
+      Beta->cd(1);
+      fBeta_Full->GetXaxis()->SetTitle("Beta");
+      fBeta_Full->GetYaxis()->SetTitle("Counts");
+      fBeta_Full->Draw();
+      Beta->cd(2);
+      fBeta_Cut->GetXaxis()->SetTitle("Beta");
+      fBeta_Cut->GetYaxis()->SetTitle("Counts");
+      fBeta_Cut->Draw();
 
-      Det_eCut->cd(ipad+1);
-      fNPE_eDet[(ipad-1)/2]->Draw();
-      gPad->Update();
-      TPaveStats *s2 = (TPaveStats*) gPad->GetPrimitive("stats");
-      s2->SetTextSize(0.1);
-      s2->SetX1NDC(0.7);
-      s2->SetY1NDC(0.5);
+      //Canvas to show timing  cut information
+      TCanvas *Timing;
+      Timing = new TCanvas("Timing", "Timing information for events");
+      Timing->Divide(2,1);
+      Timing->cd(1);
+      fTiming_Full->GetXaxis()->SetTitle("Time (ns)");
+      fTiming_Full->GetYaxis()->SetTitle("Counts");
+      fTiming_Full->Draw();
+      Timing->cd(2);
+      fTiming_Cut->GetXaxis()->SetTitle("Time (ns)");
+      fTiming_Cut->GetYaxis()->SetTitle("Counts");
+      fTiming_Cut->Draw();
+
+      //Canvas to show Particle ID cut information
+      TCanvas *Fly_Pr;
+      Fly_Pr = new TCanvas("Fly_Pr", "Particle ID info from calorimeter & Preshower");
+      Fly_Pr->Divide(3,1);
+      Fly_Pr->cd(1);
+      fFly_Pr_Full->GetXaxis()->SetTitle("Calorimeter.Fly.Earray");
+      fFly_Pr_Full->GetYaxis()->SetTitle("Calorimeter.Pr.Eplane");
+      fFly_Pr_Full->Draw("Colz");
+      Fly_Pr->cd(2);
+      fFly_Pr_eCut->GetXaxis()->SetTitle("Calorimeter.Fly.Earray");
+      fFly_Pr_eCut->GetYaxis()->SetTitle("Calorimeter.Pr.Eplane");
+      fFly_Pr_eCut->Draw("Colz");
+      Fly_Pr->cd(3);
+      fFly_Pr_piCut->GetXaxis()->SetTitle("Calorimeter.Fly.Earray");
+      fFly_Pr_piCut->GetYaxis()->SetTitle("Calorimeter.Pr.Eplane");
+      fFly_Pr_piCut->Draw("Colz");
+
+      //Canvases to show Effects of HGC cut
+      //Start with electrons
+      gStyle->SetOptStat(11);
+      TCanvas *Det_eCut;
+      Det_eCut = new TCanvas("Det_eCut","Effect of performing cut for electrons per PMT");
+      Det_eCut->Divide(2,4);
+      for (Int_t ipad = 1; ipad <= 7; ipad += 2)
+	{
+	  Det_eCut->cd(ipad);
+	  fNPE_eNoDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
+	  fNPE_eNoDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
+	  fNPE_eNoDet[(ipad-1)/2]->Draw();
+	  gPad->Update();
+	  TPaveStats *s = (TPaveStats*) gPad->GetPrimitive("stats");
+	  s->SetTextSize(0.1);
+	  s->SetX1NDC(0.7);
+	  s->SetY1NDC(0.5);
+
+	  Det_eCut->cd(ipad+1);
+	  fNPE_eDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
+	  fNPE_eDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
+	  fNPE_eDet[(ipad-1)/2]->Draw();
+	  gPad->Update();
+	  TPaveStats *s2 = (TPaveStats*) gPad->GetPrimitive("stats");
+	  s2->SetTextSize(0.1);
+	  s2->SetX1NDC(0.7);
+	  s2->SetY1NDC(0.5);
+	}
+
+      TCanvas *Det_eCut_Full;
+      Det_eCut_Full = new TCanvas("Det_eCut_Full","Effect of performing cut for electrons");
+      Det_eCut_Full->Divide(2,1);
+      Det_eCut_Full->cd(1);
+      fNPE_Full_eNoDet->GetXaxis()->SetTitle("NPE");
+      fNPE_Full_eNoDet->GetYaxis()->SetTitle("Counts");
+      fNPE_Full_eNoDet->Draw();
+      Det_eCut_Full->cd(2);
+      fNPE_Full_eDet->GetXaxis()->SetTitle("NPE");
+      fNPE_Full_eDet->GetYaxis()->SetTitle("Counts");
+      fNPE_Full_eDet->Draw();
+
+      //End with Pions
+      gStyle->SetOptStat(11);
+      TCanvas *Det_piCut;
+      Det_piCut = new TCanvas("Det_piCut","Effect of performing cut for pions per PMT");
+      Det_piCut->Divide(2,4);
+      for (Int_t ipad = 1; ipad <= 7; ipad += 2)
+	{
+	  Det_piCut->cd(ipad);
+	  fNPE_piNoDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
+	  fNPE_piNoDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
+	  fNPE_piNoDet[(ipad-1)/2]->Draw();
+	  gPad->Update();
+	  TPaveStats *s3 = (TPaveStats*) gPad->GetPrimitive("stats");
+	  s3->SetTextSize(0.1);
+	  s3->SetX1NDC(0.7);
+	  s3->SetY1NDC(0.5);
+
+	  Det_piCut->cd(ipad+1);
+	  fNPE_piDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
+	  fNPE_piDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
+	  fNPE_piDet[(ipad-1)/2]->Draw();
+	  gPad->Update();
+	  TPaveStats *s4 = (TPaveStats*) gPad->GetPrimitive("stats");
+	  s4->SetTextSize(0.1);
+	  s4->SetX1NDC(0.7);
+	  s4->SetY1NDC(0.5);
+	}
+
+      TCanvas *Det_piCut_Full;
+      Det_piCut_Full = new TCanvas("Det_piCut_Full","Effect of performing cut for pions");
+      Det_piCut_Full->Divide(2,1);
+      Det_piCut_Full->cd(1);
+      fNPE_Full_piNoDet->GetXaxis()->SetTitle("NPE");
+      fNPE_Full_piNoDet->GetYaxis()->SetTitle("Counts");
+      fNPE_Full_piNoDet->Draw();
+      Det_piCut_Full->cd(2);
+      fNPE_Full_piDet->GetXaxis()->SetTitle("NPE");
+      fNPE_Full_piDet->GetYaxis()->SetTitle("Counts");
+      fNPE_Full_piDet->Draw();
     }
-
-  TCanvas *Det_eCut_Full;
-  Det_eCut_Full = new TCanvas("Det_eCut_Full","Effect of performing particle ID with HGC");
-  Det_eCut_Full->Divide(2,1);
-  Det_eCut_Full->cd(1);
-  fNPE_Full_eNoDet->Draw();
-  Det_eCut_Full->cd(2);
-  fNPE_Full_eDet->Draw();
-
-  //End with Pions
-  gStyle->SetOptStat(11);
-  TCanvas *Det_piCut;
-  Det_piCut = new TCanvas("Det_piCut","Effect of performing cut for pions with HGC per PMT");
-  Det_piCut->Divide(2,4);
-  for (Int_t ipad = 1; ipad <= 7; ipad += 2)
-    {
-      Det_piCut->cd(ipad);
-      fNPE_piNoDet[(ipad-1)/2]->Draw();
-      gPad->Update();
-      TPaveStats *s3 = (TPaveStats*) gPad->GetPrimitive("stats");
-      s3->SetTextSize(0.1);
-      s3->SetX1NDC(0.7);
-      s3->SetY1NDC(0.5);
-
-      Det_piCut->cd(ipad+1);
-      fNPE_piDet[(ipad-1)/2]->Draw();
-      gPad->Update();
-      TPaveStats *s4 = (TPaveStats*) gPad->GetPrimitive("stats");
-      s4->SetTextSize(0.1);
-      s4->SetX1NDC(0.7);
-      s4->SetY1NDC(0.5);
-    }
-
-  TCanvas *Det_piCut_Full;
-  Det_piCut_Full = new TCanvas("Det_piCut_Full","Effect of performing cut for pions with HGC");
-  Det_piCut_Full->Divide(2,1);
-  Det_piCut_Full->cd(1);
-  fNPE_Full_piNoDet->Draw();
-  Det_piCut_Full->cd(2);
-  fNPE_Full_piDet->Draw();
-
-  cout << Form("\n\nEfficiencies for the %s are:\nPMT#  electrons  pions", fNGC ? "NGC" : "HGC") << endl;
+  
+  cout << Form("\n\nEfficiencies for the %s with a cut at %.1f are:\nPMT#  electrons  pions", fNGC ? "NGC" : "HGC", fNGC ? fNGC_cut : fHGC_cut) << endl;
   for (Int_t i=0; i<4; i++)
     {
-      cout << Form("PMT%d: ",i+1) << setprecision(4) << (fNPE_eDet[i]->GetEntries()/fNPE_eNoDet[i]->GetEntries())*100 << "%" << setw(10) << (fNPE_piDet[i]->GetEntries()/fNPE_piNoDet[i]->GetEntries())*100 << "%" << endl;
+      printf("PMT%d: %2.2f%%     %2.2f%%\n",i+1, (fNPE_eDet[i]->GetEntries()/fNPE_eNoDet[i]->GetEntries())*100.0, (fNPE_piDet[i]->GetEntries()/fNPE_piNoDet[i]->GetEntries())*100.0);
     }
-  cout << "Full: " << setprecision(4) << (fNPE_Full_eDet->GetEntries()/fNPE_Full_eNoDet->GetEntries())*100 << "%" << setw(10) << (fNPE_Full_piDet->GetEntries()/fNPE_Full_piNoDet->GetEntries())*100 << "%" << endl;
+  printf("Full: %2.2f%%     %2.2f%%\n\n",(fNPE_Full_eDet->GetEntries()/fNPE_Full_eNoDet->GetEntries())*100.0,(fNPE_Full_piDet->GetEntries()/fNPE_Full_piNoDet->GetEntries())*100.0);
 }
