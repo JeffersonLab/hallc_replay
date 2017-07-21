@@ -58,7 +58,7 @@ with open(xscalerMapName, 'r') as fi:
         lastslot = firstslot + nslots - 1
         offset = cratemap[spec]["offset"]
         specprefix = cratemap[spec]["spec"]
-        hcanaMapName = 'db_'+specprefix+'SScalevt.dat'
+        hcanaMapName = 'db_'+specprefix+'Scalevt.dat'
         with open(hcanaMapName, 'w') as fo:
             for slot in range(firstslot,firstslot+nslots):
                 if slot == lastslot:
@@ -72,11 +72,9 @@ with open(xscalerMapName, 'r') as fi:
             for name in chandict:
                 channel = chandict[name]
                 slot = channel.slot-firstslot
-                printname = name[1:] # Drop prefix
-                printname = printname.replace("+", "P")
-                printname = printname.replace("-", "M")
+                printname = "." + name[1:] + ".scaler" # Drop prefix
                 detPrefix = name[2:5]
-                printHodoName = detPrefix + "." + name[5:10] + "."
+                printHodoName = "." + detPrefix + "." + name[5:10] + "."
                 if specprefix == channel.spec and slot<nslots:
                     chan = channel.chan
                     slot = channel.slot-firstslot
@@ -91,5 +89,6 @@ with open(xscalerMapName, 'r') as fi:
                         print >>fo, 'variable', slot, chan, 1, printHodoName, comment
                         print >>fo, 'variable', slot, chan, 2, printHodoName+'Rate', comment
                     else:    
+                        print(printname)
                         print >>fo, 'variable', slot, chan, 1, printname, comment
                         print >>fo, 'variable', slot, chan, 2, printname+'Rate', comment
