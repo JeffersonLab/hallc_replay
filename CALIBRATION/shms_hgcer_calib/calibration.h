@@ -43,6 +43,25 @@ public :
    TH2F *fCut_electron;
    TH2F *fCut_pion;
 
+   // Declaration of histograms used in fitting/analysis
+   TH1F *fscaled[4];
+   TH1F *fscaled_nobackground[4];
+   TH1F *fscaled_mk2[4];
+   TH1F *fscaled_mk2_nobackground[4];
+   TH1F *fscaled_quad[4][4];
+
+   // Declaration of canvases used in fitting/analysis
+   TCanvas *quad_cuts_ipmt;
+   TCanvas *low_stats_ipmt;
+   TCanvas *background_ipmt;
+   TCanvas *final_spectra_ipmt;
+   TCanvas *background_mk2_ipmt;
+   TCanvas *final_spectra_mk2_ipmt;
+   TCanvas *final_spectra_combined;
+   TCanvas *final_spectra_combined_mk2;
+   TCanvas *scaled_quad_cuts_ipmt;
+   
+
    // Declaration of leaf types
    Int_t           Ndata_P_aero_goodNegAdcPed;
    Double_t        P_aero_goodNegAdcPed[7];   //[Ndata.P.aero.goodNegAdcPed]

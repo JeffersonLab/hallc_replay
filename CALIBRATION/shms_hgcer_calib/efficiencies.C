@@ -277,7 +277,7 @@ void efficiencies::Terminate()
       fBeta_Cut->GetYaxis()->SetTitle("Counts");
       fBeta_Cut->Draw();
 
-      //Canvas to show timing  cut information
+      //Canvas to show timing cut information
       TCanvas *Timing;
       Timing = new TCanvas("Timing", "Timing information for events");
       Timing->Divide(2,1);
@@ -389,6 +389,7 @@ void efficiencies::Terminate()
       fNPE_Full_piDet->Draw();
     }
   
+  //Output the actual efficiency information i.e. ratio of detected particles
   cout << Form("\n\nEfficiencies for the %s with a cut at %.1f are:\nPMT#  electrons  pions", fNGC ? "NGC" : "HGC", fNGC ? fNGC_cut : fHGC_cut) << endl;
   for (Int_t i=0; i<4; i++)
     {
