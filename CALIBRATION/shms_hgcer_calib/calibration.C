@@ -36,6 +36,7 @@
 #include <TGraphErrors.h>
 #include <TMath.h>
 #include <iostream>
+#include <iomanip>
 
 using namespace TMath;
 
@@ -338,7 +339,71 @@ Bool_t calibration::Process(Long64_t entry)
 	      if (!fFullRead) fNGC ? b_P_ngcer_numTracksFired->GetEntry(entry) : b_P_hgcer_numTracksFired->GetEntry(entry);
 	      if (fNGC ? P_ngcer_numTracksFired[ipmt] != 0.0 : P_hgcer_numTracksFired[ipmt] != 0.0)
 		fNGC ? fPulseInt_quad[ipmt][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[ipmt][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
-	    }//Marks end of tracksfired strategy
+	    }//Marks end of tracksfired strategy with no particle ID
+
+	  //For TracksFired cut strategy selecting electrons
+	  if (fTrack && fCut && !fPions)
+	    {
+	      //Retrieve particle ID information
+	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
+	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
+
+	      //Fill histogram visualizaing the electron selection
+	      fCut_everything->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+
+	      //Cut on Shower vs preshower is a tilted ellipse, this requires an angle of rotation (in radians), x/y center, semimajor and semiminor axis
+	      Float_t eangle = 3.2*3.14159/4;
+	      Float_t ex_center = 1.8;
+	      Float_t ey_center = 1.0;
+	      Float_t esemimajor_axis = 0.6;
+	      Float_t esemiminor_axis = 0.20;
+	      if (pow((P_cal_fly_earray - ex_center)*cos(eangle) + (P_cal_pr_eplane - ey_center)*sin(eangle),2)/pow(esemimajor_axis,2) + 
+		  pow((P_cal_fly_earray - ex_center)*sin(eangle) - (P_cal_pr_eplane - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
+		{
+		  //Fill histogram visualizing the electron selection
+		  fCut_electron->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+
+		  //Fill histogram of the full PulseInt spectra for each PMT
+		  fNGC ? fPulseInt[ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt[ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+
+		  //Fill histograms with TracksFired cut, note that quadrant cuts are included so any off quadrant histograms will be empty
+		  if (!fFullRead) fNGC ? b_P_ngcer_numTracksFired->GetEntry(entry) : b_P_hgcer_numTracksFired->GetEntry(entry);
+		  if (fNGC ? P_ngcer_numTracksFired[ipmt] != 0.0 : P_hgcer_numTracksFired[ipmt] != 0.0)
+		    fNGC ? fPulseInt_quad[ipmt][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[ipmt][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+		}
+	    }//Marks end of tracksfired with electrons
+
+	  //For TracksFired cut strategy selecting pions
+	  if (fTrack && fCut && fPions)
+	    {
+	      //Retrieve particle ID information
+	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
+	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
+
+	      //Fill histogram visualizaing the electron selection
+	      fCut_everything->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+
+	      //Cut on Shower vs preshower is a tilted ellipse, this requires an angle of rotation (in radians), x/y center, semimajor and semiminor axis
+	      Float_t piangle = 0.0;
+	      Float_t pix_center = 0.75;
+	      Float_t piy_center = 0.09;
+	      Float_t pisemimajor_axis = 0.3;
+	      Float_t pisemiminor_axis = 0.05;
+	      if (pow((P_cal_fly_earray - pix_center)*cos(piangle) + (P_cal_pr_eplane - piy_center)*sin(piangle),2)/pow(pisemimajor_axis,2) + 
+		  pow((P_cal_fly_earray - pix_center)*sin(piangle) - (P_cal_pr_eplane - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
+		{
+		  //Fill histogram visualizing the electron selection
+		  fCut_pion->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+
+		  //Fill histogram of the full PulseInt spectra for each PMT
+		  fNGC ? fPulseInt[ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt[ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+
+		  //Fill histograms with TracksFired cut, note that quadrant cuts are included so any off quadrant histograms will be empty
+		  if (!fFullRead) fNGC ? b_P_ngcer_numTracksFired->GetEntry(entry) : b_P_hgcer_numTracksFired->GetEntry(entry);
+		  if (fNGC ? P_ngcer_numTracksFired[ipmt] != 0.0 : P_hgcer_numTracksFired[ipmt] != 0.0)
+		    fNGC ? fPulseInt_quad[ipmt][ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt_quad[ipmt][ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
+		}
+	    }//Marks end of tracksfired with electrons
 
 	}//Marks end of loop over PMTs  
 
@@ -393,7 +458,7 @@ void calibration::Terminate()
   //Print number of entries put into histograms
   printf("\nTotal Number of Entries: %d\n\n", fNumberOfEvents);
 
-  Info("Terminate", "Histograms formed, now starting calibration.\n 'Peak Buffer full' is a good warning!\n");
+  Info("Terminate", "Histograms formed, now starting calibration.\n 'Peak Buffer full' is a good warning!\n 'Attempt to add histograms...' is a known warning and does not effect the calibration.\n");
 
   //Show the particle cuts performed in the histogram forming
   if (fCut)
@@ -441,8 +506,11 @@ void calibration::Terminate()
   Double_t mean[3];
   Double_t x_npe[3], y_npe[3], x_err[3], y_err[3];
       
-  //Two more arrays are used to store the estimates for the calibration constants
-  Double_t calibration_mk1[4], calibration_mk2[4];
+  //Two more arrays are used to store the estimates for the calibration constants and another two to store goodness of calibration
+  Double_t calibration_mk1[4], calibration_mk2[4], pmt_calib[4], pmt_calib_mk2[4];
+
+  //Array to hold the Poisson character of the calibrations
+  Double_t Pois_Chi[2];
 
   gStyle->SetOptFit(111);
 
@@ -708,9 +776,36 @@ void calibration::Terminate()
 	  Gauss1->SetParLimits(0, 0.0, 0.1);
 	  Gauss1->SetParLimits(1, 0.5, 1.5);
 	  Gauss1->SetParLimits(2, 0.1, 0.5);
-	  fscaled[ipmt]->Fit("Gauss1","RQ");
+	  fFullShow ? fscaled[ipmt]->Fit("Gauss1","RQ") : fscaled[ipmt]->Fit("Gauss1","RQN");
 			   
 	  calibration_mk2[ipmt] = calibration_mk1[ipmt]*Gauss1->GetParameter(1);
+	  pmt_calib[ipmt] = 1.0 - Gauss1->GetParameter(1);
+
+	  //Scale full ADC spectra according to the mean of the SPE. This requires filling a new histogram with the same number of bins but scaled min/max
+	  fscaled_mk2[ipmt] = new TH1F(Form("fscaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), nbins, fPulseInt_quad[ipmt][ipmt]->GetXaxis()->GetXmin()/calibration_mk2[ipmt],fPulseInt_quad[ipmt][ipmt]->GetXaxis()->GetXmax()/calibration_mk2[ipmt]);
+
+	  //Fill this histogram bin by bin
+	  for (Int_t ibin=0; ibin<nbins; ibin++)
+	    {
+	      Double_t y = fPulseInt_quad[ipmt][ipmt]->GetBinContent(ibin);
+	      fscaled_mk2[ipmt]->SetBinContent(ibin,y);
+	    }
+
+	  //Normalize the histogram for ease of fitting
+	  fscaled_mk2[ipmt]->Scale(1.0/fscaled_mk2[ipmt]->Integral(), "width");
+	  
+	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("Calibrated spectra for PMT%d",ipmt+1));
+	  if (fFullShow) final_spectra_mk2_ipmt->cd(1);
+	  Gauss1->SetRange(0.75,1.25);
+	  Gauss1->SetParameter(0, 0.05);
+	  Gauss1->SetParameter(1, 1.0);
+	  Gauss1->SetParameter(2, 0.3);
+	  Gauss1->SetParLimits(0, 0.0, 0.1);
+	  Gauss1->SetParLimits(1, 0.5, 1.5);
+	  Gauss1->SetParLimits(2, 0.1, 0.5);
+	  fFullShow ? fscaled_mk2[ipmt]->Fit("Gauss1","RQ") : fscaled_mk2[ipmt]->Fit("Gauss1","RQN");
+
+	  pmt_calib_mk2[ipmt] = 1.0 - Gauss1->GetParameter(1);
 
 	} //This brace marks the end of TracksFired strategy
 
@@ -766,15 +861,21 @@ void calibration::Terminate()
   Poisson->SetParameter(1, 0.8);
   Poisson->SetParLimits(0, Poisson_mean - 2.0, Poisson_mean + 2.0);
   fFullShow ? fscaled_total->Fit("Poisson","RQ") : fscaled_total->Fit("Poisson","RQN");
+  Pois_Chi[0] = Poisson->GetChisquare();
   if (fFullShow) scaled_total->cd(2);
   fFullShow ? fscaled_total_mk2->Fit("Poisson","RQ") : fscaled_total_mk2->Fit("Poisson","RQN");
+  Pois_Chi[1] = Poisson->GetChisquare();
 
   printf("\n\n");
 
   //Output the actual calibration information
-  cout << "Calibration constants are\nPMT#: First Guess  Second Guess\n" << endl;
+  cout << "Calibration constants are (where the '*' indicates the better value)\nPMT#: First Guess  Second Guess\n" << endl;
   for (Int_t i=0; i<4; i++)
     {
-      printf("PMT%d:     %3.0f           %3.0f\n", i+1, calibration_mk1[i], calibration_mk2[i]);
+      cout << Form("PMT%d:", i+1) << setw(8) << Form("%3.0f", calibration_mk1[i]) << (pmt_calib[i] < pmt_calib_mk2[i] ? "*" : " ") << setw(13) << Form("%3.0f", calibration_mk2[i]) << (pmt_calib[i] > pmt_calib_mk2[i] ? "*\n" : "\n");
     }
+
+  printf("\n");
+
+  cout << (Pois_Chi[0] < Pois_Chi[1] ? "First Guess":"Second Guess") << " better characterizes the full Poisson character" << endl;
 }
