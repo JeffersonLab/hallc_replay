@@ -49,6 +49,11 @@ public :
    TH1F *fscaled_mk2[4];
    TH1F *fscaled_mk2_nobackground[4];
    TH1F *fscaled_quad[4][4];
+   TH1F *fscaled_combined[4];
+   TH1F *fscaled_total;
+   TH1F *fscaled_quad_mk2[4][4];
+   TH1F *fscaled_combined_mk2[4];
+   TH1F *fscaled_total_mk2;
 
    // Declaration of canvases used in fitting/analysis
    TCanvas *quad_cuts_ipmt;
@@ -59,7 +64,8 @@ public :
    TCanvas *final_spectra_mk2_ipmt;
    TCanvas *final_spectra_combined;
    TCanvas *final_spectra_combined_mk2;
-   TCanvas *scaled_quad_cuts_ipmt;
+   TCanvas *scaled_poisson;
+   TCanvas *scaled_total;
    
 
    // Declaration of leaf types
