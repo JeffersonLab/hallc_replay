@@ -1,21 +1,30 @@
+//Script to add necessary drift time histograms/plane from original root file to new root file
+
+
 #define NPLANES 12
 #define NBINS 400
-using namespace std;
+#define bin_min -50.5
+#define bin_max 349.5
+
 void get_pdc_time_histo_tzero_corrected()
 {
-  
-  
+
+  //Read Run Number from txt file
   int run_NUM;
   Long64_t num_evts;        //added
   string input_file;   //added
 
+
   TString f0 = "input_RUN.txt";
   ifstream infile(f0);
-  infile >> input_file >> run_NUM >> num_evts;   
+  infile >> input_file >> run_NUM >> num_evts;
 
   TString run = Form("run%d", run_NUM);
 
-  //this script reads all tzero values inside tzero_group.dat and assigns them to their corresponding planes. 
+  //*****************READ WIRE TZERO VALUES*********************************
+  
+  
+//this script reads all tzero values inside tzero_group.dat and assigns them to their corresponding planes. 
   //these values will then be used to shift the drift time histos, wire by wire (t0-correction wire-by-wire)
 
   int ip;  //to loop over planes
@@ -82,137 +91,118 @@ void get_pdc_time_histo_tzero_corrected()
     for (sw = 0; sw < tot_wires[ip]; sw++) {
       
       tzero[ip][sw] = tzero_offset[counter];   //tzero corrections that must be added wire by wire
-      //cout << tzero[ip][sw] << endl;
+      // cout << tzero[ip][sw] << endl;
       //cout <<  tzero[ip][sw] << " :: "<<tzero_offset[counter] << endl;
 	   counter++;
     }
   }
 
-
-
-
-
-  //*****************************************************************************************
-
-  //THIS SCRIPT WILL READ the drift times array tzero[ip][sw] on a wire basis and apply the tzero correction.
-
-
-
-  int i;
- 
-  int bin_width = 1; 
-  int bin_Content;
-  Double_t shift;  //will be the t0 offset
-
-  //Declare plane names to loop over
   
+
+
+
+  //*************************************************************************
+
+  TString ext (".root"); //define a string to find in a file
+  
+  std::size_t found = input_file.find(ext); //find the pos of the string 
+  if (found!=std::string::npos)
+    //std::cout << " '.root' found at: " << found << '\n'; //found is the character position where ".root" is found
+  
+    input_file.erase (found,5);  //erase .root                      
+    // std::cout << input_file << '\n';
+
+  TString file_name = "../../../ROOTfiles/"+input_file+"_dc_uncal.root";
+  
+  //open file
+  TFile *f = new TFile(file_name, "READ");
+
+  //create new file
+  TFile *g = new TFile(Form("../root_files/"+run+"/shms_tzero_corr_histo.root", run_NUM), "RECREATE"); // create new file to store histo
+
+  f->cd();
+
+  //Get the tree
+  TTree *tree = (TTree*)f->Get("T");
+  TString SPECTROMETER="P";
+  TString DETECTOR="dc";
   TString plane_names[NPLANES]={"1u1", "1u2", "1x1", "1x2", "1v1", "1v2", "2v2", "2v1", "2x2", "2x1", "2u2", "2u1"};
   
-  //Declare a root file to read individual DC cell drift times
-  TString root_file;
-  TFile *f[NPLANES];
-
-  //Declare root file were NEW tzero corrected histograms will be added
-  TString file_name =  Form("../root_files/run%d/shms_tzero_corr_histos.root", run_NUM);
-  TFile *g = new TFile(file_name, "RECREATE");
-    
-  TH1F *h_add[NPLANES]; //t0-corrected plane drift times 
-
-
+  //Declare Variables to Loop Over
+  Int_t Ndata_time[NPLANES];
+  Int_t Ndata_wirenum[NPLANES];
+  Double_t pdc_wirenum[NPLANES][107];
+  Double_t pdc_time[NPLANES][1000];
   
- 
+
+  //Declare Histogram array to store AVG drift times per plane
+  TH1F* h[NPLANES];
+	
+  g->cd();
+	
+  //Loop over each plane
+  for(Int_t ip=0; ip<NPLANES; ip++){
+    TString base_name = SPECTROMETER+"."+DETECTOR+"."+plane_names[ip];
+    TString ndata_time = "Ndata."+base_name+".time";
+    TString ndata_wirenum = "Ndata."+base_name+".wirenum";
+    TString drift_time = base_name+".time";
+    TString wirenum_hit = base_name+".wirenum";
+
+    TString drift_time_histo = "pdc"+plane_names[ip]+"_time"; 
+    TString title = "pdc"+plane_names[ip]+"_drifttime";
+     
+    //Set Branch Address
+    tree->SetBranchAddress(drift_time, pdc_time[ip]);   
+    tree->SetBranchAddress(ndata_time, &Ndata_time[ip]);                // Ndata represents number of triggers vs number of hits that each trigger produced.
+    tree->SetBranchAddress(ndata_wirenum, &Ndata_wirenum[ip]);      // Ndata represents number of triggers vs number of hits that each trigger produced.
+    tree->SetBranchAddress(wirenum_hit, pdc_wirenum[ip]);	    // A hit is refer to as when a trigger(traversing particle), ionizes the WC gas and ionized
+						                    //electrons reach the rearest sense wire, producing a detectable signal in the O'scope 
   
- //Loop over all planes
- for (ip = 0; ip < NPLANES; ip++){
-   
-   //READ wire drift time root file per plane
-    root_file = "../root_files/"+run+"/shms_DC_"+plane_names[ip]+Form("_%d_wire_histos.root",run_NUM);
-    f[ip] = new TFile(root_file, "READ");
-    
-
-   h_add[ip] =new TH1F("plane_"+plane_names[ip]+"drifttime", "", NBINS, -50, 350);
-   
-   h_add[ip]->GetXaxis()->SetTitle("Drift Time (ns)");
-   h_add[ip]->GetYaxis()->SetTitle("Number of Entries / 1 ns");
-
-
-   TH1F *cell_dt[107];
-   TH1F *cell_dt_corr[107];
- 
   
-  	
-   //Get wire histos from root file and loop over each 
-   //  sense wire of a plane in shms Drift Chambers (DC1 or DC2)
-   
-   f[ip]->cd(); //change to file containing uncorrected wire drift times
-   
-   for (sw=1; sw<=tot_wires[ip]; sw++){
-
-     
-     
-     //set title of histos in root file
-     TString drift_time_histo = Form("wire_%d", sw); 
+    //Create Histograms
+    h[ip] = new TH1F(drift_time_histo, title, NBINS, bin_min, bin_max);  //set time to 400 ns/200 bins = 2ns/bin
+    h[ip]->GetXaxis()->SetTitle("Drift Time (ns)");
+    h[ip]->GetYaxis()->SetTitle("Number of Entries / 1 ns");
+  }
  
-     //Get drift time histograms from root file
-     cell_dt[sw-1] = (TH1F*)f[ip]->Get(drift_time_histo);  
-     
 
-     //Create corrected wire histos
-     cell_dt_corr[sw-1] = new TH1F(plane_names[ip]+Form("_wire_%d_corr", sw), "", NBINS, -50, 350);
-     
-     cell_dt_corr[sw-1]->GetXaxis()->SetTitle("Drift Time (ns)");
-     cell_dt_corr[sw-1]->GetYaxis()->SetTitle("Number of Entries / 1 ns");
+  //declare some variables
+  int wirenum;
+  double shift;
 
-
-     shift = tzero[ip][sw-1];  //the shift represents how much the drift time histo needs to be offset
-
-	//cout << "sw: " << sw << " :: " << "offset: " << shift << endl;
-    
-     //************APPLY TZERO OFFSET ON A WIRE-BY-WIRE BASIS TO ALL WIRES IN ALL PLANES***************
-
-
-     //INCLUDE the code 'shift.C ', which shifts a histogram   
-
-     for (i=1; i<=NBINS; i++) {
-       
-       bin_Content = cell_dt[sw-1]->GetBinContent(i);
-       
-       
-       cell_dt_corr[sw-1]->SetBinContent(i-shift/bin_width, bin_Content);  //apply the t0 correction
-       
-     }
-
-
-
-
-     //*************************************************************************************************
-     
-    
-
-     //write wire drift times (after tzero corrections) to file
-     g->cd();
-     cell_dt_corr[sw-1]->Write(plane_names[ip]+Form("_wire_%d", sw), TObject::kWriteDelete); 
-     
-     
-     //add all cell drift times into a single plane
-     h_add[ip]->Add(cell_dt_corr[sw-1]);
-     
-           
-     
-   } // end loop over sense wires
-   
-   
-   //Wire combined wire drift times (t0 -corrected) for each plane to file, 
-    g->cd();
-    h_add[ip]->Write();
+  //Declare number of entries in the tree
+  Long64_t nentries = tree->GetEntries(); //number of triggers (particles that passed through all 4 hodo planes)
    
 
-     
+  //Loop over all entries
+  for(Long64_t i=0; i<num_evts; i++)
+    {
+      tree->GetEntry(i);
+      //cout << "****event:**** " << i << endl;
+          //Loop over number of hits for each trigger in each DC plane 
+      for(Int_t ip=0; ip<NPLANES; ip++){       
+	//cout << "Plane: " << plane_names[ip] << endl;
+	for(Int_t j=0, k=0; j<Ndata_time[ip] && k<Ndata_wirenum[ip]; j++, k++){
+	  
+	  wirenum = int(pdc_wirenum[ip][k]); //get the wirenumber hit
+	  
+	  shift = tzero[ip][wirenum-1];  //get the tzero corresponding to wire hit
+	  
+	  // cout << plane_names[ip] << " :: " << wirenum << " :: " << shift << endl;
 
- } // end loop over planes
- 
- 
- 
-    
+	  h[ip]->Fill(pdc_time[ip][j] - shift);  //shidt the plane drift time event-by-event
+	
+   
+	  // cout << "time: " << pdc_time[ip][k] << endl;
+	 
+	}
+       
+      }
 
+    }
+ 
+  //Write histograms to file
+  
+  g->Write();
+  
 }
