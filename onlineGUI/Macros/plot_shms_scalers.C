@@ -6,7 +6,7 @@ void UserScript()
 {
   //
   const UInt_t NTRIGS  = 6;
-  const TString trig_names[NTRIGS]={"s1X","s1Y","s1Xs1y","s2X","s2Y","sTrig"};
+  const TString trig_names[NTRIGS]={"S1X","S1Y","S1XS1Y","S2X","S2Y","Trig"};
   TH1F* hScalTrig[NTRIGS];
   Double_t trig_scal[NTRIGS];
   Double_t trig_ave[NTRIGS]={0,0,0,0,0,0};
@@ -43,7 +43,7 @@ void UserScript()
   Double_t good_bcm=0;
   Double_t good_bcm_limit=260000.;
   //
- TTree *T=(TTree*)gDirectory->Get("TSPS");
+ TTree *T=(TTree*)gDirectory->Get("TSP");
   Int_t totev=T->GetEntries();
   totev=400;
   //
@@ -52,7 +52,7 @@ void UserScript()
      h2dttitle= trig_names[ip]+"; Event Number  ; Rate ";
      h2dtname="uhScalTrig"+trig_names[ip];
     hScalTrig[ip]= new TH1F(h2dtname,h2dttitle,totev,0,totev);
-    list_name ="PS"+trig_names[ip]+"r";
+    list_name ="P."+trig_names[ip]+".scalerRate";
     T->SetBranchAddress(list_name,&trig_scal[ip]);
   }
   //
@@ -63,7 +63,7 @@ void UserScript()
      h2dttitle= bcm_names[ip]+"; Event Number  ; Current  ";
      h2dtname="uhCur"+bcm_names[ip];
     hCurBCM[ip]= new TH1F(h2dtname,h2dttitle,totev,0,totev);
-    list_name ="PS"+bcm_names[ip]+"r";
+    list_name ="P."+bcm_names[ip]+".scalerRate";
     T->SetBranchAddress(list_name,&bcm_scal[ip]);
   }
   //
@@ -91,9 +91,9 @@ void UserScript()
   for(UInt_t ip = 0; ip < NPLANES; ip++) {
 	    for(UInt_t ibar = nbars_low[ip]-1; ibar < nbars[ip]; ibar++) {
 	      i2dbarname = Form("%d",ibar+1);
-	       list_name ="PSshod"+plane_names[ip]+i2dbarname+"Mr";
+	       list_name ="P.hod."+plane_names[ip]+i2dbarname+".negScalerRate";
 	       T->SetBranchAddress(list_name,&hod_scalneg[ip][ibar]);
-	       list_name ="PSshod"+plane_names[ip]+i2dbarname+"Pr";
+	       list_name ="P.hod."+plane_names[ip]+i2dbarname+".posScalerRate";
 	       T->SetBranchAddress(list_name,&hod_scalpos[ip][ibar]);
 	    }
   }
