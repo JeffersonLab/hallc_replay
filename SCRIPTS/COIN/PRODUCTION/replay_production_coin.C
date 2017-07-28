@@ -64,8 +64,11 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THaGoldenTrack* hgtr = new THaGoldenTrack("H.gtr", "HMS Golden Track", "H");
   gHaPhysics->Add(hgtr);
   // Add Physics Module to calculate primary (scattered) beam kinematics
-  THcPrimaryKine* hkin = new THcPrimaryKine("H.kin", "HMS Single Arm Kinematics", "H", "IB");
-  gHaPhysics->Add(hkin);
+  THcPrimaryKine* hkin_primary = new THcPrimaryKine("H.kin.primary", "HMS Single Arm Kinematics", "H", "IB");
+  gHaPhysics->Add(hkin_primary);
+  // Add Physics Module to calculate secondary (scattered) beam kinematics
+  // THcSecondaryKine* hkin_secondary = new THcSecondaryKine("H.kin.secondary", "HMS Single Arm Kinematics", "H", "IB");
+  // gHaPhysics->Add(hkin_secondary);
   // Add event handler for scaler events
   THcScalerEvtHandler *hscaler = new THcScalerEvtHandler("H", "Hall C scaler event type 1");  
   hscaler->AddEvtType(1);
@@ -101,9 +104,12 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Include golden track information
   THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
   gHaPhysics->Add(gtr);
-  // Add Physics Module to calculate primary (scattered beam - usually electrons) kinematics
-  THcPrimaryKine* kin = new THcPrimaryKine("P.kin", "SHMS Single Arm Kinematics", "P", "IB");
-  gHaPhysics->Add(kin);
+  // Add Physics Module to calculate primary (scattered) beam kinematics
+  THcPrimaryKine* pkin_primary = new THcPrimaryKine("P.kin.primary", "SHMS Single Arm Kinematics", "P", "IB");
+  gHaPhysics->Add(pkin_primary);
+  // // Add Physics Module to calculate secondary (scattered) beam kinematics
+  // THcSecondaryKine* pkin_secondary = new THcSecondaryKine("P.kin.secondary", "SHMS Single Arm Kinematics", "P", "IB");
+  // gHaPhysics->Add(pkin_secondary);
   // Add event handler for scaler events
   THcScalerEvtHandler* pscaler = new THcScalerEvtHandler("P", "Hall C scaler event type 1");
   pscaler->AddEvtType(1);
@@ -121,7 +127,6 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add trigger detector to trigger apparatus
   THcTrigDet* coin = new THcTrigDet("coin", "Coincidence Trigger Information");
   TRG->AddDetector(coin); 
-
   // Add Ideal Beam Apparatus
   THaApparatus* beam = new THaIdealBeam("IB", "Ideal Beamline");
   gHaApps->Add(beam);
