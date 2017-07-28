@@ -1,11 +1,9 @@
-HMS/DETEC/TRIG/htrig.map
 HMS/DETEC/DC/hdc_6gev.map
 HMS/DETEC/HODO/hhodo.map
 HMS/DETEC/CER/hcer.map
 HMS/DETEC/CAL/hcal.map
 HMS/DETEC/RASTER/hraster.map
 
-SHMS/DETEC/TRIG/ptrig.map
 SHMS/DETEC/NGCER/pngcer.map
 SHMS/DETEC/DC/pdc.map
 SHMS/DETEC/HODO/phodo.map
@@ -13,3 +11,5 @@ SHMS/DETEC/HGCER/phgcer.map
 SHMS/DETEC/AERO/paero.map
 SHMS/DETEC/CAL/pcal.map
 SHMS/DETEC/RASTER/praster.map
+
+COIN/DETEC/TRIG/cointrig.map
