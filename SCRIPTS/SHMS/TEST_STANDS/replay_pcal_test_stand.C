@@ -20,7 +20,7 @@ void replay_pcal_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   const char* ROOTFileNamePattern = "ROOTfiles/pcal_replay_%d.root";
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
-  gHcParms->AddString("g_ctp_database_filename", "DBASE/STD/standard.database");
+  gHcParms->AddString("g_ctp_database_filename", "DBASE/SHMS/STD/standard.database");
 
   // Load varibles from files to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
@@ -37,7 +37,7 @@ void replay_pcal_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Set up the equipment to be analyzed.
   THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
   gHaApps->Add(SHMS);
-  // Add hodoscope to HMS apparatus
+  // Add Calorimeter to SHMS apparatus
   THcShower* cal = new THcShower("cal", "Calorimeter");
   SHMS->AddDetector(cal);
 

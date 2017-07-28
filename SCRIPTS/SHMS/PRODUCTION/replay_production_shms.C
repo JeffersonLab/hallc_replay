@@ -22,7 +22,7 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Load global parameters
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
-  gHcParms->AddString("g_ctp_database_filename", "DBASE/STD/standard.database");
+  gHcParms->AddString("g_ctp_database_filename", "DBASE/SHMS/STD/standard.database");
   // Load varibles from files to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
   // g_ctp_parm_filename and g_decode_map_filename should now be defined.
@@ -58,7 +58,7 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add Heavy Gas Cherenkov to SHMS apparatus
   THcCherenkov* hgcer = new THcCherenkov("hgcer", "Heavy Gas Cherenkov");
   SHMS->AddDetector(hgcer);
-  // Add Heavy Gas Cherenkov to SHMS apparatus
+  // Add Aerogel Cherenkov to SHMS apparatus
   THcAerogel* aero = new THcAerogel("aero", "Aerogel");
   SHMS->AddDetector(aero);
   // Add calorimeter to SHMS apparatus
@@ -68,18 +68,24 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Include golden track information
   THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
   gHaPhysics->Add(gtr);
+  // Add Ideal Beam Apparatus
+  THaApparatus* beam = new THaIdealBeam("IB", "Ideal Beamline");
+  gHaApps->Add(beam);
+  // Add Physics Module to calculate primary (scattered beam - usually electrons) kinematics
+  THcPrimaryKine* kin = new THcPrimaryKine("P.kin", "SHMS Single Arm Kinematics", "P", "IB");
+  gHaPhysics->Add(kin);
 
-  // // Add handler for prestart event 125.
+  // Add event handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
-  // Add handler for EPICS events
-  THaEpicsEvtHandler *hcepics = new THaEpicsEvtHandler("epics", "HC EPICS event type 180");
+  // Add event handler for EPICS events
+  THaEpicsEvtHandler* hcepics = new THaEpicsEvtHandler("epics", "HC EPICS event type 180");
   gHaEvtHandlers->Add(hcepics);
-  // Add handler for scaler events
-  THcScalerEvtHandler *pscaler = new THcScalerEvtHandler("P","Hall C scaler event type 1");
-  pscaler->AddEventType(1);
+  // Add event handler for scaler events
+  THcScalerEvtHandler* pscaler = new THcScalerEvtHandler("P", "Hall C scaler event type 1");
+  pscaler->AddEvtType(1);
   pscaler->SetUseFirstEvent(kTRUE);
-  gHaEvtHandlers->Add (pscaler);
+  gHaEvtHandlers->Add(pscaler);
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -99,6 +105,9 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   sprintf(RunFileName, RunFileNamePattern, RunNumber);
   THaRun* run = new THaRun(RunFileName);
 
+  // Set to read in Hall C run database parameters
+  run->SetRunParamClass("THcRunParameters");
+  
   // Eventually need to learn to skip over, or properly analyze
   // the pedestal events
   run->SetEventRange(1, MaxEvent);    // Physics Event number, does not

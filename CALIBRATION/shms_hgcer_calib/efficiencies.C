@@ -177,7 +177,7 @@ Bool_t efficiencies::Process(Long64_t entry)
 	  fNGC ? b_P_ngcer_goodAdcPulseTime->GetEntry(entry) : b_P_hgcer_goodAdcPulseTime->GetEntry(entry);
 	  fTiming_Full->Fill(fNGC ?  P_ngcer_goodAdcPulseTime[ipmt] : P_hgcer_goodAdcPulseTime[ipmt]);
 	  if (fNGC ? P_ngcer_goodAdcPulseTime[ipmt] < 1000 || P_ngcer_goodAdcPulseTime[ipmt] > 2000 :
-	             P_hgcer_goodAdcPulseTime[ipmt] < 1000 || P_hgcer_goodAdcPulseTime[ipmt] > 2000) continue;
+	  P_hgcer_goodAdcPulseTime[ipmt] < 1000 || P_hgcer_goodAdcPulseTime[ipmt] > 2000) continue;
 	  fTiming_Cut->Fill(fNGC ?  P_ngcer_goodAdcPulseTime[ipmt] : P_hgcer_goodAdcPulseTime[ipmt]);
 
 	  //Require the signal passes a tracking cut, with a threshold NPE cut as well
@@ -189,7 +189,7 @@ Bool_t efficiencies::Process(Long64_t entry)
 	  fNGC ? b_P_hgcer_npeSum->GetEntry(entry) : b_P_ngcer_npeSum->GetEntry(entry);
 	  b_P_cal_fly_earray->GetEntry(entry);
 	  b_P_cal_pr_eplane->GetEntry(entry);
-	  
+
 	  //Visualize what we have to cut with
 	  fFly_Pr_Full->Fill(P_cal_fly_earray, P_cal_pr_eplane);
 
@@ -201,7 +201,9 @@ Bool_t efficiencies::Process(Long64_t entry)
 	  Float_t esemimajor_axis = 0.6;
 	  Float_t esemiminor_axis = 0.20;
 	  if (pow((P_cal_fly_earray - ex_center)*cos(eangle) + (P_cal_pr_eplane - ey_center)*sin(eangle),2)/pow(esemimajor_axis,2) + 
-	      pow((P_cal_fly_earray - ex_center)*sin(eangle) - (P_cal_pr_eplane - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
+	      pow((P_cal_fly_earray - ex_center)*sin(eangle) - (P_cal_pr_eplane - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1 ||
+	      pow((P_cal_fly_earray - 2.25)*cos(eangle) + (P_cal_pr_eplane - 1.2)*sin(eangle),2)/pow(esemimajor_axis,2) + 
+	      pow((P_cal_fly_earray - 2.25)*sin(eangle) - (P_cal_pr_eplane - 1.2)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
 	    {
 	      if (!fChercut || (fChercut && (fNGC ? P_hgcer_npeSum > fHGC_cut : P_ngcer_npeSum > fNGC_cut))) //condition if cut on other Cherenkov if desired
 		{
