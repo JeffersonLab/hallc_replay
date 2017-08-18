@@ -15,6 +15,11 @@
 #include <TH1.h>
 #include <TH2.h>
 
+const Int_t        fhgc_pmts = 4;
+const Int_t        fngc_pmts = 4;
+const Double_t     fhgc_zpos = 156.27;
+const Double_t     fngc_zpos = -89.1;
+
 // Header file for the classes stored in the TTree if any.
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
@@ -22,7 +27,6 @@
 class calibration : public TSelector {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
-   Int_t           fNumberOfEvents;
    Bool_t          fFullRead;
    Bool_t          fFullShow;
    Bool_t          fNGC;
@@ -30,18 +34,12 @@ public :
    Bool_t          fCut;
    Bool_t          fPions;
 
-   // Declaration of detector specific constants
-   Int_t           fhgc_pmts;
-   Double_t        fhgc_zpos;
-   Int_t           fngc_pmts;
-   Double_t        fngc_zpos;
-
    // Declaration of histograms
-   TH1F *fPulseInt[4];
-   TH1F *fPulseInt_quad[4][4];
-   TH2F *fCut_everything;
-   TH2F *fCut_electron;
-   TH2F *fCut_pion;
+   TH1F          **fPulseInt;
+   TH1F         ***fPulseInt_quad;
+   TH2F           *fCut_everything;
+   TH2F           *fCut_electron;
+   TH2F           *fCut_pion;
 
    // Declaration of histograms used in fitting/analysis
    TH1F *fscaled[4];
@@ -1697,7 +1695,7 @@ public :
    TBranch        *b_Event_Branch_fEvtHdr_fTargetPol;   //!
    TBranch        *b_Event_Branch_fEvtHdr_fRun;   //!
    
- calibration(TTree * /*tree*/ =0) : fChain(0), fNumberOfEvents(0), fhgc_pmts(4), fhgc_zpos(156.27), fngc_pmts(4), fngc_zpos(-89.1) { }
+ calibration(TTree * /*tree*/ =0) : fChain(0) {fPulseInt = 0, fPulseInt_quad = 0, fCut_everything = 0, fCut_electron = 0, fCut_pion = 0, fFullRead = kFALSE, fFullShow = kFALSE, fNGC = kFALSE, fTrack = kFALSE, fCut = kFALSE, fPions = kFALSE;}
    virtual ~calibration() { }
    virtual Int_t   Version() const { return 2; }
    virtual void    Begin(TTree *tree);
@@ -2557,6 +2555,30 @@ Bool_t calibration::Notify()
    // user if needed. The return value is currently not used.
 
    return kTRUE;
+}
+
+//Poisson distribution is used to remove background from larger values of NPE
+Double_t poisson(Double_t *x, Double_t *par)
+{
+  Double_t result1 = (par[1]*pow(par[0],x[0])*exp(-par[0]))/(tgamma(x[0]+1));
+  return result1;
+}
+//Gaussian distribution is used to find the mean of the SPE and determine spacing between subsequent NPE
+Double_t gauss(Double_t *x, Double_t *par)
+{
+  Double_t result1 = par[0]*exp((-0.5)*(pow((x[0] - par[1]),2)/pow((par[2]),2)));
+  Double_t result2 = par[3]*exp((-0.5)*(pow((x[0] - par[4]),2)/pow((par[5]),2)));
+  Double_t result3 = par[6]*exp((-0.5)*(pow((x[0] - par[7]),2)/pow((par[8]),2)));
+  Double_t result4 = par[9]*exp((-0.5)*(pow((x[0] - par[10]),2)/pow((par[11]),2)));
+  Double_t result5 = par[12]*exp((-0.5)*(pow((x[0] - par[13]),2)/pow((par[14]),2)));
+  return result1 + result2 + result3 + result4 + result5;
+}
+
+//A simple linear equation is used to determine how linear the means of the NPE are
+Double_t linear(Double_t *x, Double_t *par)
+{
+  Double_t result1 = par[0]*x[0] + par[1];
+  return result1;
 }
 
 #endif // #ifdef calibration_cxx

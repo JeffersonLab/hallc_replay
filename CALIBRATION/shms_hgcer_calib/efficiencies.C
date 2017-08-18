@@ -29,6 +29,7 @@
 #include <TPaveStats.h>
 #include <iostream>
 #include <iomanip>
+#include <TRegexp.h>
 
 void efficiencies::Begin(TTree * /*tree*/)
 {
@@ -38,10 +39,34 @@ void efficiencies::Begin(TTree * /*tree*/)
   printf("\n\n");
 
   TString option = GetOption();
+  //Regular expression to extract the specified photoelectron cutoff
+  TRegexp re("[0-9]+[.][0-9]+");
+
   Info("Begin", "Starting calibration process with option: %s", option.Data());
   Info("Begin", "To show details of calculation, use option showall (will open lots of windows)");
   Info("Begin", "Default detector is HGC, use option NGC if desired");
   Info("Begin", "If cut desired on other Cherenkov, use option Chercut");
+  Info("Begin", "Photoelectron cut is taken as first decimal number entered. Default is 2.0");
+  Info("Begin", "If cut on other Chenekov is requested, it will be taken as the second decimal number. Default is 2.0");
+  printf("\n\n");
+
+  //Check option
+  
+  if (option.Contains("showall")) fShowall = kTRUE;
+  if (option.Contains("Chercut")) fChercut = kTRUE;
+  if (option.Contains("NGC")) fNGC = kTRUE;
+
+  //if a number is entered as %f.%f take that as the photoelectron cutoff
+  if (option.Contains(re))
+    {   
+      TString cut_val = option.operator()(re);
+      fNGC ? fNGC_cut =  cut_val.Atof() : fHGC_cut = cut_val.Atof(); 
+      if (fChercut)
+	{
+	  TString cut_val = option.operator()(re, option.Index(re)+1);
+	  fNGC ? fHGC_cut =  cut_val.Atof() : fNGC_cut = cut_val.Atof(); 
+	}
+    }
 }
 
 void efficiencies::SlaveBegin(TTree * /*tree*/)
@@ -52,36 +77,31 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
 
   printf("\n\n");
   TString option = GetOption();
-  
-  //Determine how much to show
-  fShowall = kFALSE;
-  //Determine if cut on other Cherenkov is desired
-  fChercut = kFALSE;
-  //Which Detector is the efficiency for
-  fNGC = kFALSE;
-
+  TRegexp re("[0-9]+[.][0-9]+");
   //Check option
   if (option.Contains("showall")) fShowall = kTRUE;
   if (option.Contains("Chercut")) fChercut = kTRUE;
   if (option.Contains("NGC")) fNGC = kTRUE;
+  if (option.Contains(re))
+    { 
+      TString cut_val = option.operator()(re);
+      fNGC ? fNGC_cut =  cut_val.Atof() : fHGC_cut = cut_val.Atof(); 
+      if (fChercut)
+	{
+	  TString cut_val = option.operator()(re, option.Index(re)+1);
+	  fNGC ? fHGC_cut =  cut_val.Atof() : fNGC_cut = cut_val.Atof(); 
+	}
+    }
 
   Info("SlaveBegin", "%s showing", fShowall ? "full" : "minimal");
   Info("SlaveBegin", "%s other Cherenkov for particle ID", fChercut ? "using" : "ignoring");
   Info("SlaveBegin", "efficiency for %s is found", fNGC ? "NGC" : "HGC");
+  Info("SlaveBegin", "Number of photoelectrons to cut on is %f", fNGC ? fNGC_cut : fHGC_cut);
+  if (fChercut) Info("SlaveBegin", "Number of photoelectrons to cut on in other Cherenkov %f", fNGC ? fHGC_cut : fNGC_cut);
 
   printf("\n");
 
-  //Obtain value for detector cut
-  cout << Form("Enter number of photoelectrons in %s to cut on: ", fNGC ? "NGC" : "HGC");
-  fNGC ? cin >> fNGC_cut : cin >> fHGC_cut;
   
-  //Obtain value for other Cherenkov cut if desired
-  if (fChercut)
-    {
-      cout << Form("Enter number of photoelectrons in %s to cut on: ", fNGC ? "HGC" : "NGC");
-      fNGC ? cin >> fHGC_cut : cin >> fNGC_cut;
-    }
-
   //Initialize the histograms.
   Int_t NPE_min;
   Int_t NPE_max;
@@ -91,38 +111,81 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
   NPE_max = 20;
   bins = (NPE_min + NPE_max)*10;
 
+  fNPE_eNoDet = new TH1F*[4];
   fNPE_eNoDet[0] = new TH1F("NPE_eNoDet_PMT1", "NPE in PMT1 No Detector Cut", bins, NPE_min, NPE_max);
   fNPE_eNoDet[1] = new TH1F("NPE_eNoDet_PMT2", "NPE in PMT2 No Detector Cut", bins, NPE_min, NPE_max);
   fNPE_eNoDet[2] = new TH1F("NPE_eNoDet_PMT3", "NPE in PMT3 No Detector Cut", bins, NPE_min, NPE_max);
   fNPE_eNoDet[3] = new TH1F("NPE_eNoDet_PMT4", "NPE in PMT4 No Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_eNoDet[0]);
+  GetOutputList()->Add(fNPE_eNoDet[1]);
+  GetOutputList()->Add(fNPE_eNoDet[2]);
+  GetOutputList()->Add(fNPE_eNoDet[3]);
+  
+
+  fNPE_eDet = new TH1F*[4];
   fNPE_eDet[0] = new TH1F("NPE_eDet_PMT1", "NPE in PMT1 with Detector Cut", bins, NPE_min, NPE_max);
   fNPE_eDet[1] = new TH1F("NPE_eDet_PMT2", "NPE in PMT2 with Detector Cut", bins, NPE_min, NPE_max);
   fNPE_eDet[2] = new TH1F("NPE_eDet_PMT3", "NPE in PMT3 with Detector Cut", bins, NPE_min, NPE_max);
   fNPE_eDet[3] = new TH1F("NPE_eDet_PMT4", "NPE in PMT4 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_Full_eNoDet = new TH1F("NPE_Full_eNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max); 
-  fNPE_Full_eDet = new TH1F("NPE_Full_eDet", "NPE in All PMTs with Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_eDet[0]);
+  GetOutputList()->Add(fNPE_eDet[1]);
+  GetOutputList()->Add(fNPE_eDet[2]);
+  GetOutputList()->Add(fNPE_eDet[3]);
 
+  fNPE_Full_eNoDet = new TH1F("NPE_Full_eNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_Full_eNoDet); 
+  
+  fNPE_Full_eDet = new TH1F("NPE_Full_eDet", "NPE in All PMTs with Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_Full_eDet);
+
+  fNPE_piNoDet = new TH1F*[4];
   fNPE_piNoDet[0] = new TH1F("NPE_piNoDet_PMT1", "NPE in PMT1 No Detector Cut", bins, NPE_min, NPE_max);
   fNPE_piNoDet[1] = new TH1F("NPE_piNoDet_PMT2", "NPE in PMT2 No Detector Cut", bins, NPE_min, NPE_max);
   fNPE_piNoDet[2] = new TH1F("NPE_piNoDet_PMT3", "NPE in PMT3 No Detector Cut", bins, NPE_min, NPE_max);
   fNPE_piNoDet[3] = new TH1F("NPE_piNoDet_PMT4", "NPE in PMT4 No Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_piNoDet[0]);
+  GetOutputList()->Add(fNPE_piNoDet[1]);
+  GetOutputList()->Add(fNPE_piNoDet[2]);
+  GetOutputList()->Add(fNPE_piNoDet[3]);
+
+  fNPE_piDet = new TH1F*[4];
   fNPE_piDet[0] = new TH1F("NPE_piDet_PMT1", "NPE in PMT1 with Detector Cut", bins, NPE_min, NPE_max);
   fNPE_piDet[1] = new TH1F("NPE_piDet_PMT2", "NPE in PMT2 with Detector Cut", bins, NPE_min, NPE_max);
   fNPE_piDet[2] = new TH1F("NPE_piDet_PMT3", "NPE in PMT3 with Detector Cut", bins, NPE_min, NPE_max);
   fNPE_piDet[3] = new TH1F("NPE_piDet_PMT4", "NPE in PMT4 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_Full_piNoDet = new TH1F("NPE_Full_piNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max); 
+  GetOutputList()->Add(fNPE_piDet[0]);
+  GetOutputList()->Add(fNPE_piDet[1]);
+  GetOutputList()->Add(fNPE_piDet[2]);
+  GetOutputList()->Add(fNPE_piDet[3]);
+
+  fNPE_Full_piNoDet = new TH1F("NPE_Full_piNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_Full_piNoDet); 
+
   fNPE_Full_piDet = new TH1F("NPE_Full_piDet", "NPE in All PMTs with Detector Cut", bins, NPE_min, NPE_max);
+  GetOutputList()->Add(fNPE_Full_piDet);
 
   //Histograms examining various cuts for "good" hits
   fBeta_Cut = new TH1F("Beta_Cut", "Beta cut used for 'good' hits", 1000, -5, 5);
+  GetOutputList()->Add(fBeta_Cut);
+
   fBeta_Full = new TH1F("Beta_Full", "Full beta for events", 1000, -5, 5);
+  GetOutputList()->Add(fBeta_Full);
+
   fTiming_Cut = new TH1F("Timing_Cut", "Timing cut used for 'good' hits", 10000, 0, 5000);
+  GetOutputList()->Add(fTiming_Cut);
+
   fTiming_Full = new TH1F("Timing_Full", "Full timing information for events", 10000, 1, 5000);
+  GetOutputList()->Add(fTiming_Full);
 
   //Histograms examining particle ID cuts
   fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID from calorimeter & preshower", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  GetOutputList()->Add(fFly_Pr_Full);
+  
   fFly_Pr_eCut = new TH2F("Fly_Pr_eCut", "calorimeter & preshower electrons", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  GetOutputList()->Add(fFly_Pr_eCut);
+
   fFly_Pr_piCut = new TH2F("Fly_Pr_piCut", "calorimeter & preshower pions", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  GetOutputList()->Add(fFly_Pr_piCut);
 
   printf("\n\n");
 }
@@ -148,12 +211,7 @@ Bool_t efficiencies::Process(Long64_t entry)
    // The return value is currently not used.
 
   //Output to verify script is working, and store the total number of events
-  if (entry % 100000 == 0) printf("Processing Entry number %lld\n",entry);
-  ++fNumberOfEvents;
-
-  //Define quantities to loop over
-  Int_t fpmts;
-  fpmts = fhgc_pmts;
+  //if (entry % 100000 == 0) printf("Processing Entry number %lld\n",entry);
 
   //Get the entry to loop over 
   b_Ndata_P_tr_p->GetEntry(entry);
@@ -171,7 +229,7 @@ Bool_t efficiencies::Process(Long64_t entry)
       fBeta_Cut->Fill(P_tr_beta[itrack]);
 
       //Filling the histograms
-      for (Int_t ipmt = 0; ipmt < fpmts; ipmt++)
+      for (Int_t ipmt = 0; ipmt < fhgc_pmts; ipmt++)
 	{
 	  //Require the signal passes a timing cut
 	  fNGC ? b_P_ngcer_goodAdcPulseTime->GetEntry(entry) : b_P_hgcer_goodAdcPulseTime->GetEntry(entry);
@@ -258,7 +316,6 @@ void efficiencies::SlaveTerminate()
    // The SlaveTerminate() function is called after all entries or objects
    // have been processed. When running with PROOF SlaveTerminate() is called
    // on each slave server.
-
 }
 
 void efficiencies::Terminate()
@@ -266,7 +323,29 @@ void efficiencies::Terminate()
    // The Terminate() function is the last function to be called during
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
+  printf("\n\n");
+  Info("Terminate", "%s showing", fShowall ? "full" : "minimal");
+  Info("Terminate", "%s other Cherenkov for particle ID", fChercut ? "using" : "ignoring");
+  Info("Terminate", "efficiency for %s is found", fNGC ? "NGC" : "HGC");
+  Info("Terminate", "Number of photoelectrons to cut on is %f", fNGC ? fNGC_cut : fHGC_cut);
+  if (fChercut) Info("Terminate", "Number of photoelectrons to cut on in other Cherenkov %f", fNGC ? fHGC_cut : fNGC_cut);
+
+  //Need to exact the histograms from the OutputList
+  TH1F* NPE_eNoDet[4];
+  TH1F* NPE_eDet[4];
+  TH1F* NPE_piNoDet[4];
+  TH1F* NPE_piDet[4];
+
+  for (Int_t ipmt = 0; ipmt < 4; ipmt++)
+    {
+      NPE_eNoDet[ipmt] = dynamic_cast<TH1F*> (GetOutputList()->FindObject(Form("NPE_eNoDet_PMT%d",ipmt+1)));
+      NPE_eDet[ipmt] = dynamic_cast<TH1F*> (GetOutputList()->FindObject(Form("NPE_eDet_PMT%d",ipmt+1)));
+      NPE_piNoDet[ipmt] = dynamic_cast<TH1F*> (GetOutputList()->FindObject(Form("NPE_piNoDet_PMT%d",ipmt+1)));
+      NPE_piDet[ipmt] = dynamic_cast<TH1F*> (GetOutputList()->FindObject(Form("NPE_piDet_PMT%d",ipmt+1)));
+    }
   
+
+
   //Canvases to display efficiency information
   if (fShowall)
     {
@@ -319,27 +398,23 @@ void efficiencies::Terminate()
       TCanvas *Det_eCut;
       Det_eCut = new TCanvas("Det_eCut","Effect of performing cut for electrons per PMT");
       Det_eCut->Divide(2,4);
-      for (Int_t ipad = 1; ipad <= 7; ipad += 2)
+      for (Int_t ipad = 0; ipad < 8; ipad += 2)
 	{
-	  Det_eCut->cd(ipad);
-	  fNPE_eNoDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
-	  fNPE_eNoDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
-	  fNPE_eNoDet[(ipad-1)/2]->Draw();
-	  gPad->Update();
-	  TPaveStats *s = (TPaveStats*) gPad->GetPrimitive("stats");
-	  s->SetTextSize(0.1);
-	  s->SetX1NDC(0.7);
-	  s->SetY1NDC(0.5);
-
 	  Det_eCut->cd(ipad+1);
-	  fNPE_eDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
-	  fNPE_eDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
-	  fNPE_eDet[(ipad-1)/2]->Draw();
+	  NPE_eNoDet[ipad/2]->GetXaxis()->SetTitle("NPE");
+	  NPE_eNoDet[ipad/2]->GetYaxis()->SetTitle("Counts");
+	  NPE_eNoDet[ipad/2]->Draw();
+	  gPad->Update();
+	  TPaveStats *s1 = (TPaveStats*) gPad->GetPrimitive("stats");
+	  s1->SetTextSize(0.1), s1->SetX1NDC(0.7), s1->SetY1NDC(0.5);
+
+	  Det_eCut->cd(ipad+2);
+	  NPE_eDet[ipad/2]->GetXaxis()->SetTitle("NPE");
+	  NPE_eDet[ipad/2]->GetYaxis()->SetTitle("Counts");
+	  NPE_eDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s2 = (TPaveStats*) gPad->GetPrimitive("stats");
-	  s2->SetTextSize(0.1);
-	  s2->SetX1NDC(0.7);
-	  s2->SetY1NDC(0.5);
+	  s2->SetTextSize(0.1), s2->SetX1NDC(0.7), s2->SetY1NDC(0.5);
 	}
 
       TCanvas *Det_eCut_Full;
@@ -359,29 +434,25 @@ void efficiencies::Terminate()
       TCanvas *Det_piCut;
       Det_piCut = new TCanvas("Det_piCut","Effect of performing cut for pions per PMT");
       Det_piCut->Divide(2,4);
-      for (Int_t ipad = 1; ipad <= 7; ipad += 2)
+      for (Int_t ipad = 0; ipad < 8; ipad += 2)
 	{
-	  Det_piCut->cd(ipad);
-	  fNPE_piNoDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
-	  fNPE_piNoDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
-	  fNPE_piNoDet[(ipad-1)/2]->Draw();
+	  Det_piCut->cd(ipad+1);
+	  NPE_piNoDet[ipad/2]->GetXaxis()->SetTitle("NPE");
+	  NPE_piNoDet[ipad/2]->GetYaxis()->SetTitle("Counts");
+	  NPE_piNoDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s3 = (TPaveStats*) gPad->GetPrimitive("stats");
-	  s3->SetTextSize(0.1);
-	  s3->SetX1NDC(0.7);
-	  s3->SetY1NDC(0.5);
+	  s3->SetTextSize(0.1), s3->SetX1NDC(0.7), s3->SetY1NDC(0.5);
 
-	  Det_piCut->cd(ipad+1);
-	  fNPE_piDet[(ipad-1)/2]->GetXaxis()->SetTitle("NPE");
-	  fNPE_piDet[(ipad-1)/2]->GetYaxis()->SetTitle("Counts");
-	  fNPE_piDet[(ipad-1)/2]->Draw();
+	  Det_piCut->cd(ipad+2);
+	  NPE_piDet[ipad/2]->GetXaxis()->SetTitle("NPE");
+	  NPE_piDet[ipad/2]->GetYaxis()->SetTitle("Counts");
+	  NPE_piDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s4 = (TPaveStats*) gPad->GetPrimitive("stats");
-	  s4->SetTextSize(0.1);
-	  s4->SetX1NDC(0.7);
-	  s4->SetY1NDC(0.5);
+	  s4->SetTextSize(0.1), s4->SetX1NDC(0.7), s4->SetY1NDC(0.5);
 	}
-
+      	
       TCanvas *Det_piCut_Full;
       Det_piCut_Full = new TCanvas("Det_piCut_Full","Effect of performing cut for pions");
       Det_piCut_Full->Divide(2,1);
@@ -396,10 +467,10 @@ void efficiencies::Terminate()
     }
   
   //Output the actual efficiency information i.e. ratio of detected particles
-  cout << Form("\n\nEfficiencies for the %s with a cut at %.1f are:\nPMT#  electrons  pions", fNGC ? "NGC" : "HGC", fNGC ? fNGC_cut : fHGC_cut) << endl;
-  for (Int_t i=0; i<4; i++)
+  cout << Form("\nEfficiencies for the %s with a cut at %.1f are:\nPMT#  electrons  pions", fNGC ? "NGC" : "HGC", fNGC ? fNGC_cut : fHGC_cut) << endl;
+  for (Int_t ipmt = 0; ipmt < 4; ipmt++)
     {
-      printf("PMT%d: %2.2f%%     %2.2f%%\n",i+1, (fNPE_eDet[i]->GetEntries()/fNPE_eNoDet[i]->GetEntries())*100.0, (fNPE_piDet[i]->GetEntries()/fNPE_piNoDet[i]->GetEntries())*100.0);
-    }
+      printf("PMT1: %2.2f%%     %2.2f%%\n", (NPE_eDet[ipmt]->GetEntries()/NPE_eNoDet[ipmt]->GetEntries())*100.0, (NPE_piDet[ipmt]->GetEntries()/NPE_piNoDet[ipmt]->GetEntries())*100.0);
+    }  
   printf("Full: %2.2f%%     %2.2f%%\n\n",(fNPE_Full_eDet->GetEntries()/fNPE_Full_eNoDet->GetEntries())*100.0,(fNPE_Full_piDet->GetEntries()/fNPE_Full_piNoDet->GetEntries())*100.0);
 }
