@@ -16,7 +16,7 @@
 #include <TH1.h>
 #include <TH2.h>
 
-const Int_t fhgc_pmts = 4;
+const Int_t hgc_pmts = 4;
 
 // Header file for the classes stored in the TTree if any.
 

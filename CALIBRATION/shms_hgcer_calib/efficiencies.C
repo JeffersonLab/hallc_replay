@@ -229,7 +229,7 @@ Bool_t efficiencies::Process(Long64_t entry)
       fBeta_Cut->Fill(P_tr_beta[itrack]);
 
       //Filling the histograms
-      for (Int_t ipmt = 0; ipmt < fhgc_pmts; ipmt++)
+      for (Int_t ipmt = 0; ipmt < hgc_pmts; ipmt++)
 	{
 	  //Require the signal passes a timing cut
 	  fNGC ? b_P_ngcer_goodAdcPulseTime->GetEntry(entry) : b_P_hgcer_goodAdcPulseTime->GetEntry(entry);
