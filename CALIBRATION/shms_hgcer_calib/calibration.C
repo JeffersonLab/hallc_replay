@@ -444,7 +444,6 @@ void calibration::Terminate()
 	}
     }
 
-
   //Show the particle cuts performed in the histogram forming
   if (fCut)
     {
@@ -830,7 +829,6 @@ void calibration::Terminate()
 	  pmt_calib_mk2[ipmt] = abs(1.0 - Gauss1->GetParameter(1));
 
 	} //This brace marks the end of TracksFired strategy
-      
 
       //Begin investigation of Poisson-like behaviour of calibrated spectra  
       fscaled_combined[ipmt] = new TH1F(Form("fscaled_combined%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
