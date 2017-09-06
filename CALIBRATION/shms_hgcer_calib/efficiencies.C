@@ -42,7 +42,7 @@ void efficiencies::Begin(TTree * /*tree*/)
   //Regular expression to extract the specified photoelectron cutoff
   TRegexp re("[0-9]+[.][0-9]+");
 
-  Info("Begin", "Starting calibration process with option: %s", option.Data());
+  Info("Begin", "Starting efficiency process with option: %s", option.Data());
   Info("Begin", "To show details of calculation, use option showall (will open lots of windows)");
   Info("Begin", "Default detector is HGC, use option NGC if desired");
   Info("Begin", "If cut desired on other Cherenkov, use option Chercut");

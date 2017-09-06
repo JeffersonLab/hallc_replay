@@ -37,6 +37,7 @@
 #include <TMath.h>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 using namespace TMath;
 
@@ -99,8 +100,8 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   if (fNGC) //Set up histograms for NGC
     {
       ADC_min = 0;
-      ADC_max = 12000;
-      bins = abs(ADC_min) + abs(ADC_max);
+      ADC_max = 9000;
+      bins = (abs(ADC_min) + abs(ADC_max));
     }
 
   if (!fNGC) //Set up histograms for HGC
@@ -118,20 +119,20 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   fPulseInt_quad[3] = new TH1F*[4];
   for (Int_t ipmt = 0; ipmt < 4; ipmt++)
     {
-      fPulseInt[ipmt] = new TH1F(Form("PulseInt_PMT%d",ipmt+1),Form("Pulse Integral PMT%d",ipmt+1), bins, ADC_min, ADC_max);
+      fPulseInt[ipmt] = new TH1F(Form("PulseInt_PMT%d",ipmt+1),Form("Pulse Integral PMT%d; ADC Channel; Counts",ipmt+1), bins, ADC_min, ADC_max);
       GetOutputList()->Add(fPulseInt[ipmt]);
       for (Int_t iquad = 0; iquad < 4; iquad++)
 	{
-	  fPulseInt_quad[iquad][ipmt] = new TH1F(Form("PulseInt_quad%d_PMT%d",iquad+1,ipmt+1),Form("Pulse Integral PMT%d quad%d",ipmt+1,iquad+1),bins,ADC_min,ADC_max);
+	  fPulseInt_quad[iquad][ipmt] = new TH1F(Form("PulseInt_quad%d_PMT%d",iquad+1,ipmt+1),Form("Pulse Integral PMT%d quad%d; ADC Channel; Counts",ipmt+1,iquad+1),bins,ADC_min,ADC_max);
 	  GetOutputList()->Add(fPulseInt_quad[iquad][ipmt]);
 	}
     }
 
-  fCut_everything = new TH2F("Cut_everything", "Visualization of no cuts", 1000, 0, 4.0, 1000, 0, 4.0);
+  fCut_everything = new TH2F("Cut_everything", "Visualization of no cuts; Calorimeter Energy (GeV); Pre-Shower Energy (GeV)", 1000, 0, 4.0, 1000, 0, 4.0);
   GetOutputList()->Add(fCut_everything);
-  fCut_electron = new TH2F("Cut_electron", "Visualization of electron cut", 1000, 0, 4.0, 1000, 0, 4.0);
+  fCut_electron = new TH2F("Cut_electron", "Visualization of electron cut; Calorimeter Energy (GeV); Pre-Shower Energy (GeV)", 1000, 0, 4.0, 1000, 0, 4.0);
   GetOutputList()->Add(fCut_electron);
-  fCut_pion = new TH2F("Cut_pion", "Visualization of pion cut", 1000, 0, 4.0, 1000, 0, 4.0);
+  fCut_pion = new TH2F("Cut_pion", "Visualization of pion cut; Calorimeter Energy (GeV); Pre-Shower Energy (GeV)", 1000, 0, 4.0, 1000, 0, 4.0);
   GetOutputList()->Add(fCut_pion);
   
   printf("\n\n");
@@ -429,8 +430,19 @@ void calibration::Terminate()
   // The Terminate() function is the last function to be called during
   // a query. It always runs on the client, it can be used to present
   // the results graphically or save the results to file.
+  printf("\n");
 
   Info("Terminate", "Histograms formed, now starting calibration.\n 'Peak Buffer full' is a good warning!\n");
+
+  Info("Terminate", "'%s' reading", (fFullRead ? "full" : "optimized"));
+  Info("Terminate", "calibrating '%s'", (fNGC ? "NGC" : "HGC"));
+  Info("Terminate", "'%s' showing", (fFullShow ? "full" : "minimal"));
+  Info("Terminate", "'%s' strategy", (fTrack ? "tracking" : "quadrant"));
+  Info("Terminate", "cuts %s performed", (fCut ? "are" : "are not"));
+  if (fCut) Info("Terminate", "cutting for '%s'", (fPions ? "pions" : "electrons"));
+  printf("\n");
+
+  gStyle->SetOptStat(1000000001);
 
   //Have to extract the histograms from the OutputList
   TH1F* PulseInt[4];
@@ -484,7 +496,6 @@ void calibration::Terminate()
 	}
       fNGC ? PulseInt[ipmt]->Rebin(25) : PulseInt[ipmt]->Rebin(25);
     }
- 
       
   //An array is used to store the means for the SPE, and to determine NPE spacing
   Double_t mean[3];
@@ -495,6 +506,7 @@ void calibration::Terminate()
 
   //Array to hold the Poisson character of the calibrations
   Double_t Pois_Chi[2];
+  Pois_Chi[0] = 0.0, Pois_Chi[1] = 0.0;
 
   gStyle->SetOptFit(111);
 
@@ -544,7 +556,7 @@ void calibration::Terminate()
 	      if (xpeaks[1] != 0.0 && PulseInt_quad[iquad][ipmt]->GetBinContent(PulseInt_quad[iquad][ipmt]->GetXaxis()->FindBin(xpeaks[1])) > 90) mean[ipad-1] = Gauss1->GetParameter(1); 
 	      ipad++;
 	    }
-
+	  
 	  //Obtain the conversion from ADC to NPE by taking the average of the SPE means
 	  Double_t xscale = 0.0;
 	  Double_t num_peaks = 0.0;
@@ -582,7 +594,7 @@ void calibration::Terminate()
 	  nbins = (PulseInt[ipmt]->GetXaxis()->GetNbins());
 
 	  //With the scale of ADC to NPE create a histogram that has the conversion applied
-	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), 280, 0, fNGC ? 30 : 20);
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 	  
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -600,13 +612,13 @@ void calibration::Terminate()
 	  //Begin the removal of the Poisson-like background
 	  if (fFullShow) background_ipmt = new TCanvas(Form("backgrounf_pmt%d",ipmt), Form("NPE spectra for PMT%d with Poisson-like background",ipmt+1));
 	  if (fFullShow) background_ipmt->cd(1);
-	  Poisson->SetParameter(0, 6.0);
+	  Poisson->SetParameter(0, 6.5);
 	  Poisson->SetParameter(1, 0.25);
-	  Poisson->SetParLimits(0, 5.5, 8.0);
+	  Poisson->SetParLimits(0, 6.0, 8.0);
 	  fFullShow ? fscaled[ipmt]->Fit("Poisson","RQ") : fscaled[ipmt]->Fit("Poisson","RQN");
 
 	  //Make and fill histogram with the background removed
-	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d",ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
@@ -629,12 +641,15 @@ void calibration::Terminate()
 	  Gauss3->SetParLimits(8, 0.2, 0.5);
 	  fFullShow ? fscaled_nobackground[ipmt]->Fit("Gauss3","RQ") : fscaled_nobackground[ipmt]->Fit("Gauss3","RQN");
 	  if (fFullShow) fscaled_nobackground[ipmt]->GetXaxis()->SetRangeUser(0,5);
+	  if (fFullShow) fscaled_nobackground[ipmt]->GetYaxis()->SetRangeUser(0,0.2);
 
 	  //Create a TGraphErrors to determine the spacing of the NPE
 	  y_npe[0] = Gauss3->GetParameter(1), y_npe[1] = Gauss3->GetParameter(4), y_npe[2] = Gauss3->GetParameter(7);
 	  y_err[0] = Gauss3->GetParError(1), y_err[1] = Gauss3->GetParError(4), y_err[2] = Gauss3->GetParError(7);
 	  x_npe[0] = 1, x_npe[1] = 2, x_npe[2] = 3;
 	  TGraphErrors *gr_npe = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
+	  gr_npe->GetXaxis()->SetTitle("NPE number");
+	  gr_npe->GetYaxis()->SetTitle("Photoelectron peak (NPE)");
 
 	  //Plot this graph with the NPE spectra
 	  if (fFullShow) final_spectra_ipmt->cd(2);
@@ -646,10 +661,10 @@ void calibration::Terminate()
       
 	  //Initial calibration constant has been obtained. Now I multiply it by the slope of the spacing of the NPE (should be approx. 1) for a second estimate
 
-	  Double_t xscale_mk2 = xscale * Linear->GetParameter(0);
+	  Double_t xscale_mk2 = xscale * Gauss3->GetParameter(1);
 
 	  //Take this new xscale and repeat the exact same procedure as before
-	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 	  
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -667,13 +682,13 @@ void calibration::Terminate()
 	  //Begin the removal of the Poisson-like background
 	  if (fFullShow) background_mk2_ipmt = new TCanvas(Form("background_mk2_pmt%d",ipmt), Form("NPE spectra for PMT%d with Poisson-like background",ipmt+1));
 	  if (fFullShow) background_mk2_ipmt->cd(1);
-	  Poisson->SetParameter(0, 6.0);
+	  Poisson->SetParameter(0, 6.5);
 	  Poisson->SetParameter(1, 0.25);
-	  Poisson->SetParLimits(0, 5.5, 8.0);
+	  Poisson->SetParLimits(0, 6.0, 8.0);
 	  fFullShow ? fscaled_mk2[ipmt]->Fit("Poisson","RQ"):fscaled_mk2[ipmt]->Fit("Poisson","RQN");
 
 	  //Make and fill histogram with the background removed
-	  fscaled_mk2_nobackground[ipmt] = new TH1F(Form("fscaled_mk2_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d",ipmt+1), 280, 0, fNGC ? 30 : 20);
+	  fscaled_mk2_nobackground[ipmt] = new TH1F(Form("fscaled_mk2_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
@@ -696,12 +711,15 @@ void calibration::Terminate()
 	  Gauss3->SetParLimits(8, 0.2, 0.5);
 	  fFullShow ? fscaled_mk2_nobackground[ipmt]->Fit("Gauss3","RQ") : fscaled_mk2_nobackground[ipmt]->Fit("Gauss3","RQN");
 	  if (fFullShow) fscaled_mk2_nobackground[ipmt]->GetXaxis()->SetRangeUser(0,5);
+	  if (fFullShow) fscaled_mk2_nobackground[ipmt]->GetYaxis()->SetRangeUser(0,0.2);
 
 	  //Create a TGraphErrors to determine the spacing of the NPE
 	  y_npe[0] = Gauss3->GetParameter(1), y_npe[1] = Gauss3->GetParameter(4), y_npe[2] = Gauss3->GetParameter(7);
 	  y_err[0] = Gauss3->GetParError(1), y_err[1] = Gauss3->GetParError(4), y_err[2] = Gauss3->GetParError(7);
 	  x_npe[0] = 1, x_npe[1] = 2, x_npe[2] = 3;
 	  TGraphErrors *gr_npe_mk2 = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
+	  gr_npe_mk2->GetXaxis()->SetTitle("NPE number");
+	  gr_npe_mk2->GetYaxis()->SetTitle("Photoelectron peak (NPE)");
 
 	  //Plot this graph with the NPE spectra
 	  if (fFullShow) final_spectra_mk2_ipmt->cd(2);
@@ -766,7 +784,7 @@ void calibration::Terminate()
 	  Int_t nbins;
 	  nbins = PulseInt_quad[ipmt][ipmt]->GetXaxis()->GetNbins();
 
-	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), 300, 0, fNGC ? 30 : 20);
 
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -781,7 +799,7 @@ void calibration::Terminate()
 	  //Normalize the histogram for ease of fitting
 	  fscaled[ipmt]->Scale(1.0/fscaled[ipmt]->Integral(), "width");
 	  
-	  if (fFullShow) final_spectra_ipmt = new TCanvas(Form("final_Spectra_%d",ipmt), Form("Calibrated spectra for PMT%d",ipmt+1));
+	  if (fFullShow) final_spectra_ipmt = new TCanvas(Form("final_Spectra_%d",ipmt), Form("Calibrated spectra for PMT%d; NPE; Counts",ipmt+1));
 	  if (fFullShow) final_spectra_ipmt->cd(1);
 
 	  //Find the location of the SPE and subtract from 1.0 to determine accuracy of calibration
@@ -798,7 +816,7 @@ void calibration::Terminate()
 	  pmt_calib[ipmt] = abs(1.0 - Gauss1->GetParameter(1));
 
 	  //Scale full ADC spectra according to the mean of the SPE. This requires filling a new histogram with the same number of bins but scaled min/max
-	  fscaled_mk2[ipmt] = new TH1F(Form("fscaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d",ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled_mk2[ipmt] = new TH1F(Form("fscaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), 300, 0, fNGC ? 30 : 20);
 
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -813,7 +831,7 @@ void calibration::Terminate()
 	  //Normalize the histogram for ease of fitting
 	  fscaled_mk2[ipmt]->Scale(1.0/fscaled_mk2[ipmt]->Integral(), "width");
 	  
-	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("Calibrated spectra for PMT%d",ipmt+1));
+	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("Calibrated spectra for PMT%d; NPE; Counts",ipmt+1));
 	  if (fFullShow) final_spectra_mk2_ipmt->cd(1);
 
 	  //Find the location of the SPE and subtract from 1.0 to determine accuracy of calibration
@@ -830,63 +848,71 @@ void calibration::Terminate()
 
 	} //This brace marks the end of TracksFired strategy
 
-      //Begin investigation of Poisson-like behaviour of calibrated spectra  
-      fscaled_combined[ipmt] = new TH1F(Form("fscaled_combined%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
 
-      fscaled_combined_mk2[ipmt] = new TH1F(Form("fscaled_combined_mk2%d",ipmt+1), Form("Scaled ADC spectra with Second Calibration for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
-  
-      Int_t nbins = PulseInt[ipmt]->GetXaxis()->GetNbins();
-      Double_t xmean = calibration_mk1[ipmt];
-      Double_t xmean_mk2 = calibration_mk2[ipmt];
-
-      fscaled_temp[ipmt] = new TH1F(Form("fscaled_temp_pmt%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
-      fscaled_temp_mk2[ipmt] = new TH1F(Form("fscaled_temp_mk2_pmt%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
-
-      //Fill this histogram bin by bin
-      for (Int_t ibin=0; ibin < nbins; ibin++)
+      //Begin investigation of Poisson-like behaviour of calibrated spectra..only valid if particle ID is applied
+      if (fCut)
 	{
-	  Double_t y = PulseInt[ipmt]->GetBinContent(ibin);
-	  Double_t x = PulseInt[ipmt]->GetXaxis()->GetBinCenter(ibin);
-	  Double_t x_scaled_mk1 = x/xmean;
-	  Double_t x_scaled_mk2 = x/xmean_mk2;
-	  Int_t bin_scaled_mk1 = fscaled_temp[ipmt]->GetXaxis()->FindBin(x_scaled_mk1); 
-	  Int_t bin_scaled_mk2 = fscaled_temp_mk2[ipmt]->GetXaxis()->FindBin(x_scaled_mk2);
-	  fscaled_temp[ipmt]->SetBinContent(bin_scaled_mk1,y);
-	  fscaled_temp_mk2[ipmt]->SetBinContent(bin_scaled_mk2,y);
-	}
-      fscaled_combined[ipmt]->Add(fscaled_temp[ipmt]);
-      fscaled_combined_mk2[ipmt]->Add(fscaled_temp_mk2[ipmt]);	
+	  fscaled_combined[ipmt] = new TH1F(Form("fscaled_combined%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
 
-      //Normalize the histogram for ease of fitting
-      fscaled_combined[ipmt]->Scale(1.0/fscaled_combined[ipmt]->Integral(), "width");
-      fscaled_combined_mk2[ipmt]->Scale(1.0/fscaled_combined[ipmt]->Integral(), "width");
+	  fscaled_combined_mk2[ipmt] = new TH1F(Form("fscaled_combined_mk2%d",ipmt+1), Form("Scaled ADC spectra with Second Calibration for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
+  
+	  Int_t nbins = PulseInt[ipmt]->GetXaxis()->GetNbins();
+	  Double_t xmean = calibration_mk1[ipmt];
+	  Double_t xmean_mk2 = calibration_mk2[ipmt];
+
+	  fscaled_temp[ipmt] = new TH1F(Form("fscaled_temp_pmt%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled_temp_mk2[ipmt] = new TH1F(Form("fscaled_temp_mk2_pmt%d",ipmt+1), Form("Scaled ADC spectra for PMT %d", ipmt+1), 300, 0, fNGC ? 30 : 20);
+
+	  //Fill this histogram bin by bin
+	  for (Int_t ibin=0; ibin < nbins; ibin++)
+	    {
+	      Double_t y = PulseInt[ipmt]->GetBinContent(ibin);
+	      Double_t x = PulseInt[ipmt]->GetXaxis()->GetBinCenter(ibin);
+	      Double_t x_scaled_mk1 = x/xmean;
+	      Double_t x_scaled_mk2 = x/xmean_mk2;
+	      Int_t bin_scaled_mk1 = fscaled_temp[ipmt]->GetXaxis()->FindBin(x_scaled_mk1); 
+	      Int_t bin_scaled_mk2 = fscaled_temp_mk2[ipmt]->GetXaxis()->FindBin(x_scaled_mk2);
+	      fscaled_temp[ipmt]->SetBinContent(bin_scaled_mk1,y);
+	      fscaled_temp_mk2[ipmt]->SetBinContent(bin_scaled_mk2,y);
+	    }
+	  fscaled_combined[ipmt]->Add(fscaled_temp[ipmt]);
+	  fscaled_combined_mk2[ipmt]->Add(fscaled_temp_mk2[ipmt]);	
+
+	  //Normalize the histogram for ease of fitting
+	  fscaled_combined[ipmt]->Scale(1.0/fscaled_combined[ipmt]->Integral(), "width");
+	  fscaled_combined_mk2[ipmt]->Scale(1.0/fscaled_combined[ipmt]->Integral(), "width");
+	}
+
     } // This brace marks the end of the loop over PMTs
 
   //Combine each PMT into one final histogram
-  fscaled_total = new TH1F("fscaled_total", "Scaled ADC spectra for all PMTs", 300, 0, fNGC ? 30 : 20);
-  fscaled_total_mk2 = new TH1F("fscaled_total_mk2", "Scaled ADC spectra for all PMTs", 300, 0, fNGC ? 30 : 20);
-  for (Int_t i=0; i<4; i++)
+  if (fCut)
     {
-      fscaled_total->Add(fscaled_combined[i]);
-      fscaled_total_mk2->Add(fscaled_combined_mk2[i]);
+      fscaled_total = new TH1F("fscaled_total", "Scaled ADC spectra for all PMTs", 300, 0, fNGC ? 30 : 20);
+      fscaled_total_mk2 = new TH1F("fscaled_total_mk2", "Scaled ADC spectra for all PMTs", 300, 0, fNGC ? 30 : 20);
+      for (Int_t i=0; i<4; i++)
+	{
+	  fscaled_total->Add(fscaled_combined[i]);
+	  fscaled_total_mk2->Add(fscaled_combined_mk2[i]);
+	}
+
+      fscaled_total->Scale(1.0/fscaled_total->Integral(), "width");
+      fscaled_total_mk2->Scale(1.0/fscaled_total_mk2->Integral(), "width");
+
+      //Display the Poisson characteristics of the ADC spectra
+      if (fFullShow) scaled_total = new TCanvas("scaled_total", "Scaled ADC of all PMTs showing Poisson Fit");
+      if (fFullShow) scaled_total->Divide(2,1);
+      if (fFullShow) scaled_total->cd(1);
+      Poisson->SetRange(0, fNGC ? 30 : 20);
+      Poisson->SetParameter(0, Poisson_mean);
+      Poisson->SetParameter(1, 0.8);
+      Poisson->SetParLimits(0, Poisson_mean - 1.0, Poisson_mean + 3.0);
+      fFullShow ? fscaled_total->Fit("Poisson","RQ") : fscaled_total->Fit("Poisson","RQN");
+      Pois_Chi[0] = Poisson->GetChisquare();
+      if (fFullShow) scaled_total->cd(2);
+      fFullShow ? fscaled_total_mk2->Fit("Poisson","RQ") : fscaled_total_mk2->Fit("Poisson","RQN");
+      Pois_Chi[1] = Poisson->GetChisquare();
     }
-
-  fscaled_total->Scale(1.0/fscaled_total->Integral(), "width");
-  fscaled_total_mk2->Scale(1.0/fscaled_total_mk2->Integral(), "width");
-
-  //Display the Poisson characteristics of the ADC spectra
-  if (fFullShow) scaled_total = new TCanvas("scaled_total", "Scaled ADC of all PMTs showing Poisson Fit");
-  if (fFullShow) scaled_total->Divide(2,1);
-  if (fFullShow) scaled_total->cd(1);
-  Poisson->SetRange(0, fNGC ? 30 : 20);
-  Poisson->SetParameter(0, Poisson_mean);
-  Poisson->SetParameter(1, 0.8);
-  Poisson->SetParLimits(0, Poisson_mean - 1.0, Poisson_mean + 3.0);
-  fFullShow ? fscaled_total->Fit("Poisson","RQ") : fscaled_total->Fit("Poisson","RQN");
-  Pois_Chi[0] = Poisson->GetChisquare();
-  if (fFullShow) scaled_total->cd(2);
-  fFullShow ? fscaled_total_mk2->Fit("Poisson","RQ") : fscaled_total_mk2->Fit("Poisson","RQN");
-  Pois_Chi[1] = Poisson->GetChisquare();
 
   printf("\n\n");
 
@@ -899,5 +925,24 @@ void calibration::Terminate()
 
   printf("\n");
 
-  cout << (Pois_Chi[0] < Pois_Chi[1] ? "First Guess":"Second Guess") << " better characterizes the full Poisson character" << endl;
+  if (fCut) cout << (Pois_Chi[0] < Pois_Chi[1] ? "First Guess":"Second Guess") << " better characterizes the full Poisson character" << endl;
+
+  //Start the process of writing the calibration information to file
+ 
+  ofstream calibration;
+  calibration.open("calibration_temp.txt", ios::out);
+
+  if (!calibration.is_open()) cout << "Problem saving calibration constants, may have to update constants manually!" << endl;
+
+  else
+    {
+      calibration << "phgcer_adc_to_npe = "; 
+      for (Int_t ipmt = 0; ipmt < 4; ipmt++)
+	{
+	  calibration << Form("1./%3.0f. ", (pmt_calib[ipmt] < pmt_calib_mk2[ipmt]) ? calibration_mk1[ipmt] : calibration_mk2[ipmt]);
+	}
+
+      calibration.close();
+    }
+
 }
