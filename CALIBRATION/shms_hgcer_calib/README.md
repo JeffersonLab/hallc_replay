@@ -26,4 +26,4 @@ ch.Process("calibration.C+", "options");
 * **showall** - display all calibration details (lots of windows)
 * **Chercut** - use the other Cherenkov detector in particle ID
 * **NGC** - calibrate the nobel gas Cherenkov
-* **[0-9].[0-9] - number of photoelectrons to cut on. If a cut on the other Cherenkov is desired, the second number entered will be taken as that Cherenkov;s cut parameter.
+* **[0-9].[0-9]** - number of photoelectrons to cut on. If a cut on the other Cherenkov is desired, the second number entered will be taken as that Cherenkov's cut parameter.
