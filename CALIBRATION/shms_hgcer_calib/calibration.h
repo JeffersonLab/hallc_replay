@@ -754,6 +754,18 @@ public :
    Double_t        P_dc_xp_fp;
    Double_t        P_dc_y_fp;
    Double_t        P_dc_yp_fp;
+   Double_t        P_gtr_beta;
+   Double_t        P_gtr_dp;
+   Double_t        P_gtr_index;
+   Double_t        P_gtr_ok;
+   Double_t        P_gtr_p;
+   Double_t        P_gtr_ph;
+   Double_t        P_gtr_px;
+   Double_t        P_gtr_py;
+   Double_t        P_gtr_pz;
+   Double_t        P_gtr_th;
+   Double_t        P_gtr_x;
+   Double_t        P_gtr_y;
    Double_t        P_hgcer_npeSum;
    Double_t        P_hgcer_totNumGoodAdcHits;
    Double_t        P_hgcer_totNumTracksFired;
@@ -1569,6 +1581,18 @@ public :
    TBranch        *b_P_dc_xp_fp;   //!
    TBranch        *b_P_dc_y_fp;   //!
    TBranch        *b_P_dc_yp_fp;   //!
+   TBranch        *b_P_gtr_beta;   //!
+   TBranch        *b_P_gtr_dp;   //!
+   TBranch        *b_P_gtr_index;   //!
+   TBranch        *b_P_gtr_ok;   //!
+   TBranch        *b_P_gtr_p;   //!
+   TBranch        *b_P_gtr_ph;   //!
+   TBranch        *b_P_gtr_px;   //!
+   TBranch        *b_P_gtr_py;   //!
+   TBranch        *b_P_gtr_pz;   //!
+   TBranch        *b_P_gtr_th;   //!
+   TBranch        *b_P_gtr_x;   //!
+   TBranch        *b_P_gtr_y;   //!
    TBranch        *b_P_hgcer_npeSum;   //!
    TBranch        *b_P_hgcer_totNumGoodAdcHits;   //!
    TBranch        *b_P_hgcer_totNumTracksFired;   //!
@@ -2419,6 +2443,18 @@ void calibration::Init(TTree *tree)
    fChain->SetBranchAddress("P.dc.xp_fp", &P_dc_xp_fp, &b_P_dc_xp_fp);
    fChain->SetBranchAddress("P.dc.y_fp", &P_dc_y_fp, &b_P_dc_y_fp);
    fChain->SetBranchAddress("P.dc.yp_fp", &P_dc_yp_fp, &b_P_dc_yp_fp);
+   fChain->SetBranchAddress("P.gtr.beta", &P_gtr_beta, &b_P_gtr_beta);
+   fChain->SetBranchAddress("P.gtr.dp", &P_gtr_dp, &b_P_gtr_dp);
+   fChain->SetBranchAddress("P.gtr.index", &P_gtr_index, &b_P_gtr_index);
+   fChain->SetBranchAddress("P.gtr.ok", &P_gtr_ok, &b_P_gtr_ok);
+   fChain->SetBranchAddress("P.gtr.p", &P_gtr_p, &b_P_gtr_p);
+   fChain->SetBranchAddress("P.gtr.ph", &P_gtr_ph, &b_P_gtr_ph);
+   fChain->SetBranchAddress("P.gtr.px", &P_gtr_px, &b_P_gtr_px);
+   fChain->SetBranchAddress("P.gtr.py", &P_gtr_py, &b_P_gtr_py);
+   fChain->SetBranchAddress("P.gtr.pz", &P_gtr_pz, &b_P_gtr_pz);
+   fChain->SetBranchAddress("P.gtr.th", &P_gtr_th, &b_P_gtr_th);
+   fChain->SetBranchAddress("P.gtr.x", &P_gtr_x, &b_P_gtr_x);
+   fChain->SetBranchAddress("P.gtr.y", &P_gtr_y, &b_P_gtr_y);
    fChain->SetBranchAddress("P.hgcer.npeSum", &P_hgcer_npeSum, &b_P_hgcer_npeSum);
    fChain->SetBranchAddress("P.hgcer.totNumGoodAdcHits", &P_hgcer_totNumGoodAdcHits, &b_P_hgcer_totNumGoodAdcHits);
    fChain->SetBranchAddress("P.hgcer.totNumTracksFired", &P_hgcer_totNumTracksFired, &b_P_hgcer_totNumTracksFired);

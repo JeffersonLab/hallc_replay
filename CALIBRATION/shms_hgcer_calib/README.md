@@ -1,4 +1,9 @@
-# Calibrating the Cherenkovs
+# Calibrating the Cherenkovs & Determining Efficiency
+* To automatically run the calibration & efficiency
+```
+root -l run_cal.C
+```
+* To manually run the scripts:
 * Link your ROOT file
 * Run the script with options (listed after script is executed)
 ```

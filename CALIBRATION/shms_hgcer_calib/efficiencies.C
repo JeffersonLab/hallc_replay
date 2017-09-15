@@ -112,10 +112,10 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
   bins = (NPE_min + NPE_max)*10;
 
   fNPE_eNoDet = new TH1F*[4];
-  fNPE_eNoDet[0] = new TH1F("NPE_eNoDet_PMT1", "NPE in PMT1 No Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_eNoDet[1] = new TH1F("NPE_eNoDet_PMT2", "NPE in PMT2 No Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_eNoDet[2] = new TH1F("NPE_eNoDet_PMT3", "NPE in PMT3 No Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_eNoDet[3] = new TH1F("NPE_eNoDet_PMT4", "NPE in PMT4 No Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_eNoDet[0] = new TH1F("NPE_eNoDet_PMT1", "NPE in PMT1 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_eNoDet[1] = new TH1F("NPE_eNoDet_PMT2", "NPE in PMT2 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_eNoDet[2] = new TH1F("NPE_eNoDet_PMT3", "NPE in PMT3 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_eNoDet[3] = new TH1F("NPE_eNoDet_PMT4", "NPE in PMT4 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_eNoDet[0]);
   GetOutputList()->Add(fNPE_eNoDet[1]);
   GetOutputList()->Add(fNPE_eNoDet[2]);
@@ -123,68 +123,68 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
   
 
   fNPE_eDet = new TH1F*[4];
-  fNPE_eDet[0] = new TH1F("NPE_eDet_PMT1", "NPE in PMT1 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_eDet[1] = new TH1F("NPE_eDet_PMT2", "NPE in PMT2 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_eDet[2] = new TH1F("NPE_eDet_PMT3", "NPE in PMT3 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_eDet[3] = new TH1F("NPE_eDet_PMT4", "NPE in PMT4 with Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_eDet[0] = new TH1F("NPE_eDet_PMT1", "NPE in PMT1 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_eDet[1] = new TH1F("NPE_eDet_PMT2", "NPE in PMT2 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_eDet[2] = new TH1F("NPE_eDet_PMT3", "NPE in PMT3 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_eDet[3] = new TH1F("NPE_eDet_PMT4", "NPE in PMT4 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_eDet[0]);
   GetOutputList()->Add(fNPE_eDet[1]);
   GetOutputList()->Add(fNPE_eDet[2]);
   GetOutputList()->Add(fNPE_eDet[3]);
 
-  fNPE_Full_eNoDet = new TH1F("NPE_Full_eNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_Full_eNoDet = new TH1F("NPE_Full_eNoDet", "NPE in All PMTs with no Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_Full_eNoDet); 
   
-  fNPE_Full_eDet = new TH1F("NPE_Full_eDet", "NPE in All PMTs with Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_Full_eDet = new TH1F("NPE_Full_eDet", "NPE in All PMTs with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_Full_eDet);
 
   fNPE_piNoDet = new TH1F*[4];
-  fNPE_piNoDet[0] = new TH1F("NPE_piNoDet_PMT1", "NPE in PMT1 No Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_piNoDet[1] = new TH1F("NPE_piNoDet_PMT2", "NPE in PMT2 No Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_piNoDet[2] = new TH1F("NPE_piNoDet_PMT3", "NPE in PMT3 No Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_piNoDet[3] = new TH1F("NPE_piNoDet_PMT4", "NPE in PMT4 No Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_piNoDet[0] = new TH1F("NPE_piNoDet_PMT1", "NPE in PMT1 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_piNoDet[1] = new TH1F("NPE_piNoDet_PMT2", "NPE in PMT2 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_piNoDet[2] = new TH1F("NPE_piNoDet_PMT3", "NPE in PMT3 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_piNoDet[3] = new TH1F("NPE_piNoDet_PMT4", "NPE in PMT4 No Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_piNoDet[0]);
   GetOutputList()->Add(fNPE_piNoDet[1]);
   GetOutputList()->Add(fNPE_piNoDet[2]);
   GetOutputList()->Add(fNPE_piNoDet[3]);
 
   fNPE_piDet = new TH1F*[4];
-  fNPE_piDet[0] = new TH1F("NPE_piDet_PMT1", "NPE in PMT1 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_piDet[1] = new TH1F("NPE_piDet_PMT2", "NPE in PMT2 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_piDet[2] = new TH1F("NPE_piDet_PMT3", "NPE in PMT3 with Detector Cut", bins, NPE_min, NPE_max);
-  fNPE_piDet[3] = new TH1F("NPE_piDet_PMT4", "NPE in PMT4 with Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_piDet[0] = new TH1F("NPE_piDet_PMT1", "NPE in PMT1 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_piDet[1] = new TH1F("NPE_piDet_PMT2", "NPE in PMT2 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_piDet[2] = new TH1F("NPE_piDet_PMT3", "NPE in PMT3 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
+  fNPE_piDet[3] = new TH1F("NPE_piDet_PMT4", "NPE in PMT4 with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_piDet[0]);
   GetOutputList()->Add(fNPE_piDet[1]);
   GetOutputList()->Add(fNPE_piDet[2]);
   GetOutputList()->Add(fNPE_piDet[3]);
 
-  fNPE_Full_piNoDet = new TH1F("NPE_Full_piNoDet", "NPE in All PMTs with no Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_Full_piNoDet = new TH1F("NPE_Full_piNoDet", "NPE in All PMTs with no Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_Full_piNoDet); 
 
-  fNPE_Full_piDet = new TH1F("NPE_Full_piDet", "NPE in All PMTs with Detector Cut", bins, NPE_min, NPE_max);
+  fNPE_Full_piDet = new TH1F("NPE_Full_piDet", "NPE in All PMTs with Detector Cut;NPE;Counts", bins, NPE_min, NPE_max);
   GetOutputList()->Add(fNPE_Full_piDet);
 
   //Histograms examining various cuts for "good" hits
-  fBeta_Cut = new TH1F("Beta_Cut", "Beta cut used for 'good' hits", 1000, -5, 5);
+  fBeta_Cut = new TH1F("Beta_Cut", "Beta cut used for 'good' hits;Beta;Counts", 1000, -5, 5);
   GetOutputList()->Add(fBeta_Cut);
 
-  fBeta_Full = new TH1F("Beta_Full", "Full beta for events", 1000, -5, 5);
+  fBeta_Full = new TH1F("Beta_Full", "Full beta for events;Beta;Counts", 1000, -5, 5);
   GetOutputList()->Add(fBeta_Full);
 
-  fTiming_Cut = new TH1F("Timing_Cut", "Timing cut used for 'good' hits", 10000, 0, 5000);
+  fTiming_Cut = new TH1F("Timing_Cut", "Timing cut used for 'good' hits;Time (ns);Counts", 10000, 0, 5000);
   GetOutputList()->Add(fTiming_Cut);
 
-  fTiming_Full = new TH1F("Timing_Full", "Full timing information for events", 10000, 1, 5000);
+  fTiming_Full = new TH1F("Timing_Full", "Full timing information for events;Time (ns);Counts", 10000, 1, 5000);
   GetOutputList()->Add(fTiming_Full);
 
   //Histograms examining particle ID cuts
-  fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID from calorimeter & preshower", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID from calorimeter & preshower;Calorimeter.Fly.Earray;Calorimeter.Pr.Eplane", 200, 0.0, 1.0, 200, 0.0, 1.0);
   GetOutputList()->Add(fFly_Pr_Full);
   
-  fFly_Pr_eCut = new TH2F("Fly_Pr_eCut", "calorimeter & preshower electrons", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  fFly_Pr_eCut = new TH2F("Fly_Pr_eCut", "calorimeter & preshower electrons;Calorimeter.Fly.Earray;Calorimeter.Pr.Eplane", 200, 0.0, 1.0, 200, 0.0, 1.0);
   GetOutputList()->Add(fFly_Pr_eCut);
 
-  fFly_Pr_piCut = new TH2F("Fly_Pr_piCut", "calorimeter & preshower pions", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  fFly_Pr_piCut = new TH2F("Fly_Pr_piCut", "calorimeter & preshower pions;Calorimeter.Fly.Earray;Calorimeter.Pr.Eplane", 200, 0.0, 1.0, 200, 0.0, 1.0);
   GetOutputList()->Add(fFly_Pr_piCut);
 
   printf("\n\n");
@@ -354,12 +354,8 @@ void efficiencies::Terminate()
       Beta = new TCanvas("Beta", "Beta information for events");
       Beta->Divide(2,1);
       Beta->cd(1);
-      fBeta_Full->GetXaxis()->SetTitle("Beta");
-      fBeta_Full->GetYaxis()->SetTitle("Counts");
       fBeta_Full->Draw();
       Beta->cd(2);
-      fBeta_Cut->GetXaxis()->SetTitle("Beta");
-      fBeta_Cut->GetYaxis()->SetTitle("Counts");
       fBeta_Cut->Draw();
 
       //Canvas to show timing cut information
@@ -367,12 +363,9 @@ void efficiencies::Terminate()
       Timing = new TCanvas("Timing", "Timing information for events");
       Timing->Divide(2,1);
       Timing->cd(1);
-      fTiming_Full->GetXaxis()->SetTitle("Time (ns)");
-      fTiming_Full->GetYaxis()->SetTitle("Counts");
       fTiming_Full->Draw();
       Timing->cd(2);
-      fTiming_Cut->GetXaxis()->SetTitle("Time (ns)");
-      fTiming_Cut->GetYaxis()->SetTitle("Counts");
+
       fTiming_Cut->Draw();
 
       //Canvas to show Particle ID cut information
@@ -380,16 +373,10 @@ void efficiencies::Terminate()
       Fly_Pr = new TCanvas("Fly_Pr", "Particle ID info from calorimeter & Preshower");
       Fly_Pr->Divide(3,1);
       Fly_Pr->cd(1);
-      fFly_Pr_Full->GetXaxis()->SetTitle("Calorimeter.Fly.Earray");
-      fFly_Pr_Full->GetYaxis()->SetTitle("Calorimeter.Pr.Eplane");
       fFly_Pr_Full->Draw("Colz");
       Fly_Pr->cd(2);
-      fFly_Pr_eCut->GetXaxis()->SetTitle("Calorimeter.Fly.Earray");
-      fFly_Pr_eCut->GetYaxis()->SetTitle("Calorimeter.Pr.Eplane");
       fFly_Pr_eCut->Draw("Colz");
       Fly_Pr->cd(3);
-      fFly_Pr_piCut->GetXaxis()->SetTitle("Calorimeter.Fly.Earray");
-      fFly_Pr_piCut->GetYaxis()->SetTitle("Calorimeter.Pr.Eplane");
       fFly_Pr_piCut->Draw("Colz");
 
       //Canvases to show Effects of HGC cut
@@ -401,16 +388,12 @@ void efficiencies::Terminate()
       for (Int_t ipad = 0; ipad < 8; ipad += 2)
 	{
 	  Det_eCut->cd(ipad+1);
-	  NPE_eNoDet[ipad/2]->GetXaxis()->SetTitle("NPE");
-	  NPE_eNoDet[ipad/2]->GetYaxis()->SetTitle("Counts");
 	  NPE_eNoDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s1 = (TPaveStats*) gPad->GetPrimitive("stats");
 	  s1->SetTextSize(0.1), s1->SetX1NDC(0.7), s1->SetY1NDC(0.5);
 
 	  Det_eCut->cd(ipad+2);
-	  NPE_eDet[ipad/2]->GetXaxis()->SetTitle("NPE");
-	  NPE_eDet[ipad/2]->GetYaxis()->SetTitle("Counts");
 	  NPE_eDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s2 = (TPaveStats*) gPad->GetPrimitive("stats");
@@ -421,12 +404,8 @@ void efficiencies::Terminate()
       Det_eCut_Full = new TCanvas("Det_eCut_Full","Effect of performing cut for electrons");
       Det_eCut_Full->Divide(2,1);
       Det_eCut_Full->cd(1);
-      fNPE_Full_eNoDet->GetXaxis()->SetTitle("NPE");
-      fNPE_Full_eNoDet->GetYaxis()->SetTitle("Counts");
       fNPE_Full_eNoDet->Draw();
       Det_eCut_Full->cd(2);
-      fNPE_Full_eDet->GetXaxis()->SetTitle("NPE");
-      fNPE_Full_eDet->GetYaxis()->SetTitle("Counts");
       fNPE_Full_eDet->Draw();
 
       //End with Pions
@@ -437,16 +416,12 @@ void efficiencies::Terminate()
       for (Int_t ipad = 0; ipad < 8; ipad += 2)
 	{
 	  Det_piCut->cd(ipad+1);
-	  NPE_piNoDet[ipad/2]->GetXaxis()->SetTitle("NPE");
-	  NPE_piNoDet[ipad/2]->GetYaxis()->SetTitle("Counts");
 	  NPE_piNoDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s3 = (TPaveStats*) gPad->GetPrimitive("stats");
 	  s3->SetTextSize(0.1), s3->SetX1NDC(0.7), s3->SetY1NDC(0.5);
 
 	  Det_piCut->cd(ipad+2);
-	  NPE_piDet[ipad/2]->GetXaxis()->SetTitle("NPE");
-	  NPE_piDet[ipad/2]->GetYaxis()->SetTitle("Counts");
 	  NPE_piDet[ipad/2]->Draw();
 	  gPad->Update();
 	  TPaveStats *s4 = (TPaveStats*) gPad->GetPrimitive("stats");
@@ -457,20 +432,16 @@ void efficiencies::Terminate()
       Det_piCut_Full = new TCanvas("Det_piCut_Full","Effect of performing cut for pions");
       Det_piCut_Full->Divide(2,1);
       Det_piCut_Full->cd(1);
-      fNPE_Full_piNoDet->GetXaxis()->SetTitle("NPE");
-      fNPE_Full_piNoDet->GetYaxis()->SetTitle("Counts");
       fNPE_Full_piNoDet->Draw();
       Det_piCut_Full->cd(2);
-      fNPE_Full_piDet->GetXaxis()->SetTitle("NPE");
-      fNPE_Full_piDet->GetYaxis()->SetTitle("Counts");
       fNPE_Full_piDet->Draw();
     }
   
   //Output the actual efficiency information i.e. ratio of detected particles
-  cout << Form("\nEfficiencies for the %s with a cut at %.1f are:\nPMT#  electrons  pions", fNGC ? "NGC" : "HGC", fNGC ? fNGC_cut : fHGC_cut) << endl;
+  cout << Form("\nEfficiencies for the %s with a cut at %.1f are:\nPMT#  electrons  pions:electron", fNGC ? "NGC" : "HGC", fNGC ? fNGC_cut : fHGC_cut) << endl;
   for (Int_t ipmt = 0; ipmt < 4; ipmt++)
     {
-      printf("PMT1: %2.2f%%     %2.2f%%\n", (NPE_eDet[ipmt]->GetEntries()/NPE_eNoDet[ipmt]->GetEntries())*100.0, (NPE_piDet[ipmt]->GetEntries()/NPE_piNoDet[ipmt]->GetEntries())*100.0);
+      printf("PMT%d: %2.2f%%         1:%.f\n", ipmt+1, (NPE_eDet[ipmt]->GetEntries()/NPE_eNoDet[ipmt]->GetEntries())*100.0, NPE_eDet[ipmt]->GetEntries()/NPE_piDet[ipmt]->GetEntries());
     }  
-  printf("Full: %2.2f%%     %2.2f%%\n\n",(fNPE_Full_eDet->GetEntries()/fNPE_Full_eNoDet->GetEntries())*100.0,(fNPE_Full_piDet->GetEntries()/fNPE_Full_piNoDet->GetEntries())*100.0);
+  printf("Full: %2.2f%%         1:%.f\n\n\n",(fNPE_Full_eDet->GetEntries()/fNPE_Full_eNoDet->GetEntries())*100.0, fNPE_Full_eDet->GetEntries()/fNPE_Full_piDet->GetEntries());
 }

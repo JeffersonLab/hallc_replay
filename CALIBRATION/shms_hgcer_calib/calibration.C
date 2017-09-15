@@ -100,7 +100,7 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   if (fNGC) //Set up histograms for NGC
     {
       ADC_min = 0;
-      ADC_max = 9000;
+      ADC_max = 12000;
       bins = (abs(ADC_min) + abs(ADC_max));
     }
 
@@ -198,21 +198,24 @@ Bool_t calibration::Process(Long64_t entry)
 	      //Retrieve particle ID information
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
+	      if (!fFullRead) b_P_gtr_dp->GetEntry(entry);
+	      Float_t central_p = 3.0;
+	      Float_t p = ((P_gtr_dp/100.0)*central_p) + central_p;
 
 	      //Fill histogram visualizaing the electron selection
-	      fCut_everything->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+	      fCut_everything->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
 
 	      //Cut on Shower vs preshower is a tilted ellipse, this requires an angle of rotation (in radians), x/y center, semimajor and semiminor axis
-	      Float_t eangle = 3.2*3.14159/4;
-	      Float_t ex_center = 1.8;
-	      Float_t ey_center = 1.0;
-	      Float_t esemimajor_axis = 0.6;
-	      Float_t esemiminor_axis = 0.20;
-	      if (pow((P_cal_fly_earray - ex_center)*cos(eangle) + (P_cal_pr_eplane - ey_center)*sin(eangle),2)/pow(esemimajor_axis,2) + 
-		  pow((P_cal_fly_earray - ex_center)*sin(eangle) - (P_cal_pr_eplane - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
+	      Float_t eangle = 3.0*3.14159/4.0;
+	      Float_t ex_center = 0.66;
+	      Float_t ey_center = 0.35;
+	      Float_t esemimajor_axis = 0.28;
+	      Float_t esemiminor_axis = 0.04;
+	      if (pow((P_cal_fly_earray/p - ex_center)*cos(eangle) + (P_cal_pr_eplane/p - ey_center)*sin(eangle),2)/pow(esemimajor_axis,2) + 
+		  pow((P_cal_fly_earray/p - ex_center)*sin(eangle) - (P_cal_pr_eplane/p - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
 		{
 		  //Fill histogram visualizing the electron selection
-		  fCut_electron->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+		  fCut_electron->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
 
 		  //Retrieve information for particle tracking from focal plane
 		  if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
@@ -250,21 +253,24 @@ Bool_t calibration::Process(Long64_t entry)
 	      //Retrieve particle ID information
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
+	      if (!fFullRead) b_P_gtr_dp->GetEntry(entry);
+	      Float_t central_p = 3.0;
+	      Float_t p = ((P_gtr_dp/100.0)*central_p) + central_p;
 
 	      //Fill histogram visualizaing the pion selection
-	      fCut_everything->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+	      fCut_everything->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
 
 	      //Cut on Shower vs preshower is a tilted ellipse, this requires an angle of rotation (in radians), x/y center, semimajor and semiminor axis
 	      Float_t piangle = 0.0;
-	      Float_t pix_center = 0.75;
-	      Float_t piy_center = 0.09;
-	      Float_t pisemimajor_axis = 0.3;
-	      Float_t pisemiminor_axis = 0.05;
-	      if (pow((P_cal_fly_earray - pix_center)*cos(piangle) + (P_cal_pr_eplane - piy_center)*sin(piangle),2)/pow(pisemimajor_axis,2) + 
-		  pow((P_cal_fly_earray - pix_center)*sin(piangle) - (P_cal_pr_eplane - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
+	      Float_t pix_center = 0.26;
+	      Float_t piy_center = 0.03;
+	      Float_t pisemimajor_axis = 0.1;
+	      Float_t pisemiminor_axis = 0.02;
+	      if (pow((P_cal_fly_earray/p - pix_center)*cos(piangle) + (P_cal_pr_eplane/p - piy_center)*sin(piangle),2)/pow(pisemimajor_axis,2) + 
+		  pow((P_cal_fly_earray/p - pix_center)*sin(piangle) - (P_cal_pr_eplane/p - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
 		{
 		  //Fill histogram visualizaing the pion selection
-		  fCut_pion->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+		  fCut_pion->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
 
 		  //Retrieve information for particle tracking from focal plane
 		  if (!fFullRead) b_P_tr_y->GetEntry(entry), b_P_tr_ph->GetEntry(entry);
@@ -347,21 +353,24 @@ Bool_t calibration::Process(Long64_t entry)
 	      //Retrieve particle ID information
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
+	      if (!fFullRead) b_P_gtr_dp->GetEntry(entry);
+	      Float_t central_p = 3.0;
+	      Float_t p = ((P_gtr_dp/100.0)*central_p) + central_p;
 
 	      //Fill histogram visualizaing the electron selection
-	      fCut_everything->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+	      fCut_everything->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
 
 	      //Cut on Shower vs preshower is a tilted ellipse, this requires an angle of rotation (in radians), x/y center, semimajor and semiminor axis
-	      Float_t eangle = 3.2*3.14159/4;
-	      Float_t ex_center = 1.8;
-	      Float_t ey_center = 1.0;
-	      Float_t esemimajor_axis = 0.6;
-	      Float_t esemiminor_axis = 0.20;
-	      if (pow((P_cal_fly_earray - ex_center)*cos(eangle) + (P_cal_pr_eplane - ey_center)*sin(eangle),2)/pow(esemimajor_axis,2) + 
-		  pow((P_cal_fly_earray - ex_center)*sin(eangle) - (P_cal_pr_eplane - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
+	      Float_t eangle = 3.0*3.14159/4;
+	      Float_t ex_center = 0.66;
+	      Float_t ey_center = 0.35;
+	      Float_t esemimajor_axis = 0.28;
+	      Float_t esemiminor_axis = 0.04;
+	      if (pow((P_cal_fly_earray/p - ex_center)*cos(eangle) + (P_cal_pr_eplane/p - ey_center)*sin(eangle),2)/pow(esemimajor_axis,2) + 
+		  pow((P_cal_fly_earray/p - ex_center)*sin(eangle) - (P_cal_pr_eplane/p - ey_center)*cos(eangle),2)/pow(esemiminor_axis,2) < 1)
 		{
 		  //Fill histogram visualizing the electron selection
-		  fCut_electron->Fill(P_cal_fly_earray, P_cal_pr_eplane);
+		  fCut_electron->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
 
 		  //Fill histogram of the full PulseInt spectra for each PMT
 		  fNGC ? fPulseInt[ipmt]->Fill(P_ngcer_goodAdcPulseInt[ipmt]) : fPulseInt[ipmt]->Fill(P_hgcer_goodAdcPulseInt[ipmt]);
@@ -382,18 +391,21 @@ Bool_t calibration::Process(Long64_t entry)
 	      //Retrieve particle ID information
 	      if (!fFullRead) b_P_cal_fly_earray->GetEntry(entry);
 	      if (!fFullRead) b_P_cal_pr_eplane->GetEntry(entry);
+	      if (!fFullRead) b_P_gtr_dp->GetEntry(entry);
+	      Float_t central_p = 3.0;
+	      Float_t p = ((P_gtr_dp/100.0)*central_p) + central_p;
 
 	      //Fill histogram visualizaing the electron selection
 	      fCut_everything->Fill(P_cal_fly_earray, P_cal_pr_eplane);
 
 	      //Cut on Shower vs preshower is a tilted ellipse, this requires an angle of rotation (in radians), x/y center, semimajor and semiminor axis
 	      Float_t piangle = 0.0;
-	      Float_t pix_center = 0.75;
-	      Float_t piy_center = 0.09;
-	      Float_t pisemimajor_axis = 0.3;
-	      Float_t pisemiminor_axis = 0.05;
-	      if (pow((P_cal_fly_earray - pix_center)*cos(piangle) + (P_cal_pr_eplane - piy_center)*sin(piangle),2)/pow(pisemimajor_axis,2) + 
-		  pow((P_cal_fly_earray - pix_center)*sin(piangle) - (P_cal_pr_eplane - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
+	      Float_t pix_center = 0.26;
+	      Float_t piy_center = 0.03;
+	      Float_t pisemimajor_axis = 0.1;
+	      Float_t pisemiminor_axis = 0.02;
+	      if (pow((P_cal_fly_earray/p - pix_center)*cos(piangle) + (P_cal_pr_eplane/p - piy_center)*sin(piangle),2)/pow(pisemimajor_axis,2) + 
+		  pow((P_cal_fly_earray/p - pix_center)*sin(piangle) - (P_cal_pr_eplane/p - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
 		{
 		  //Fill histogram visualizing the electron selection
 		  fCut_pion->Fill(P_cal_fly_earray, P_cal_pr_eplane);
@@ -431,15 +443,14 @@ void calibration::Terminate()
   // a query. It always runs on the client, it can be used to present
   // the results graphically or save the results to file.
   printf("\n");
-
-  Info("Terminate", "Histograms formed, now starting calibration.\n 'Peak Buffer full' is a good warning!\n");
-
   Info("Terminate", "'%s' reading", (fFullRead ? "full" : "optimized"));
   Info("Terminate", "calibrating '%s'", (fNGC ? "NGC" : "HGC"));
   Info("Terminate", "'%s' showing", (fFullShow ? "full" : "minimal"));
   Info("Terminate", "'%s' strategy", (fTrack ? "tracking" : "quadrant"));
   Info("Terminate", "cuts %s performed", (fCut ? "are" : "are not"));
   if (fCut) Info("Terminate", "cutting for '%s'", (fPions ? "pions" : "electrons"));
+  printf("\n");
+  Info("Terminate", "Histograms formed, now starting calibration.\n'Peak Buffer full' is a good warning!\n");
   printf("\n");
 
   gStyle->SetOptStat(1000000001);
@@ -594,7 +605,7 @@ void calibration::Terminate()
 	  nbins = (PulseInt[ipmt]->GetXaxis()->GetNbins());
 
 	  //With the scale of ADC to NPE create a histogram that has the conversion applied
-	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 	  
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -618,7 +629,7 @@ void calibration::Terminate()
 	  fFullShow ? fscaled[ipmt]->Fit("Poisson","RQ") : fscaled[ipmt]->Fit("Poisson","RQN");
 
 	  //Make and fill histogram with the background removed
-	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
@@ -648,6 +659,7 @@ void calibration::Terminate()
 	  y_err[0] = Gauss3->GetParError(1), y_err[1] = Gauss3->GetParError(4), y_err[2] = Gauss3->GetParError(7);
 	  x_npe[0] = 1, x_npe[1] = 2, x_npe[2] = 3;
 	  TGraphErrors *gr_npe = new TGraphErrors(3, x_npe, y_npe, x_err, y_err);
+	  gr_npe->SetTitle(Form("Linear Spacing of PE for PMT%d",ipmt+1));
 	  gr_npe->GetXaxis()->SetTitle("NPE number");
 	  gr_npe->GetYaxis()->SetTitle("Photoelectron peak (NPE)");
 
@@ -664,7 +676,7 @@ void calibration::Terminate()
 	  Double_t xscale_mk2 = xscale * Gauss3->GetParameter(1);
 
 	  //Take this new xscale and repeat the exact same procedure as before
-	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 	  
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -688,7 +700,7 @@ void calibration::Terminate()
 	  fFullShow ? fscaled_mk2[ipmt]->Fit("Poisson","RQ"):fscaled_mk2[ipmt]->Fit("Poisson","RQN");
 
 	  //Make and fill histogram with the background removed
-	  fscaled_mk2_nobackground[ipmt] = new TH1F(Form("fscaled_mk2_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled_mk2_nobackground[ipmt] = new TH1F(Form("fscaled_mk2_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
 
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
@@ -784,7 +796,7 @@ void calibration::Terminate()
 	  Int_t nbins;
 	  nbins = PulseInt_quad[ipmt][ipmt]->GetXaxis()->GetNbins();
 
-	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), 300, 0, fNGC ? 30 : 20);
 
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -799,7 +811,7 @@ void calibration::Terminate()
 	  //Normalize the histogram for ease of fitting
 	  fscaled[ipmt]->Scale(1.0/fscaled[ipmt]->Integral(), "width");
 	  
-	  if (fFullShow) final_spectra_ipmt = new TCanvas(Form("final_Spectra_%d",ipmt), Form("Calibrated spectra for PMT%d; NPE; Counts",ipmt+1));
+	  if (fFullShow) final_spectra_ipmt = new TCanvas(Form("final_Spectra_%d",ipmt), Form("Calibrated spectra for PMT%d; NPE; Normalized Counts",ipmt+1));
 	  if (fFullShow) final_spectra_ipmt->cd(1);
 
 	  //Find the location of the SPE and subtract from 1.0 to determine accuracy of calibration
@@ -816,7 +828,7 @@ void calibration::Terminate()
 	  pmt_calib[ipmt] = abs(1.0 - Gauss1->GetParameter(1));
 
 	  //Scale full ADC spectra according to the mean of the SPE. This requires filling a new histogram with the same number of bins but scaled min/max
-	  fscaled_mk2[ipmt] = new TH1F(Form("fscaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Counts",ipmt+1), 300, 0, fNGC ? 30 : 20);
+	  fscaled_mk2[ipmt] = new TH1F(Form("fscaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), 300, 0, fNGC ? 30 : 20);
 
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -831,7 +843,7 @@ void calibration::Terminate()
 	  //Normalize the histogram for ease of fitting
 	  fscaled_mk2[ipmt]->Scale(1.0/fscaled_mk2[ipmt]->Integral(), "width");
 	  
-	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("Calibrated spectra for PMT%d; NPE; Counts",ipmt+1));
+	  if (fFullShow) final_spectra_mk2_ipmt = new TCanvas(Form("final_Spectra_mk2_%d",ipmt), Form("Calibrated spectra for PMT%d; NPE; Normalized Counts",ipmt+1));
 	  if (fFullShow) final_spectra_mk2_ipmt->cd(1);
 
 	  //Find the location of the SPE and subtract from 1.0 to determine accuracy of calibration
@@ -888,8 +900,8 @@ void calibration::Terminate()
   //Combine each PMT into one final histogram
   if (fCut)
     {
-      fscaled_total = new TH1F("fscaled_total", "Scaled ADC spectra for all PMTs", 300, 0, fNGC ? 30 : 20);
-      fscaled_total_mk2 = new TH1F("fscaled_total_mk2", "Scaled ADC spectra for all PMTs", 300, 0, fNGC ? 30 : 20);
+      fscaled_total = new TH1F("fscaled_total", "Scaled ADC spectra for all PMTs;NPE;Normalized Counts", 300, 0, fNGC ? 30 : 20);
+      fscaled_total_mk2 = new TH1F("fscaled_total_mk2", "Scaled ADC spectra for all PMTs;NPE;Normalized Counts", 300, 0, fNGC ? 30 : 20);
       for (Int_t i=0; i<4; i++)
 	{
 	  fscaled_total->Add(fscaled_combined[i]);
