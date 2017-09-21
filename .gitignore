@@ -5,6 +5,7 @@ ROOTfiles/*
 ROOTfiles.old/*
 bck/*
 #*
+*#*
 hcana
 raw
 .root_history
