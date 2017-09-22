@@ -14,6 +14,7 @@ RawDecode_master  1
 
 Block: Decode
 
+hms_trigs         HMS_event
 edtm_accepted     T.hms.hHODO_EDTM_tdcTime != 0.0
 physics_accepted  T.hms.hHODO_EDTM_tdcTime == 0.0
 triggers_accepted T.hms.hT1_tdcTime == 0.0
