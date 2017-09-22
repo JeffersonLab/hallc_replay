@@ -1,7 +1,5 @@
 Block: RawDecode
 
-scalar_event       g.evtyp == 129
-
 HMS_trig_1_event   g.evtyp == 1
 HMS_trig_2_event   g.evtyp == 2
 HMS_trig_3_event   g.evtyp == 3
@@ -9,16 +7,6 @@ HMS_trig_4_event   g.evtyp == 4
 HMS_trig_5_event   g.evtyp == 5
 HMS_trig_6_event   g.evtyp == 6
 HMS_event          HMS_trig_1_event || HMS_trig_2_event || HMS_trig_3_event || HMS_trig_4_event || HMS_trig_5_event || HMS_trig_6_event
-
-SHMS_trig_1_event   g.evtyp == 1
-SHMS_trig_2_event   g.evtyp == 2
-SHMS_trig_3_event   g.evtyp == 3
-SHMS_trig_4_event   g.evtyp == 4
-SHMS_trig_5_event   g.evtyp == 5
-SHMS_trig_6_event   g.evtyp == 6
-SHMS_event          SHMS_trig_1_event || SHMS_trig_2_event || SHMS_trig_3_event || SHMS_trig_4_event || SHMS_trig_5_event || SHMS_trig_6_event
-
-all_event          HMS_event || SHMS_event
 
 RawDecode_master 1
 
