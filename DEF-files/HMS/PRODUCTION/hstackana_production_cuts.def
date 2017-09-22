@@ -14,6 +14,8 @@ RawDecode_master  1
 
 Block: Decode
 
+hms_trigs        HMS_event
+
 Decode_master     HMS_event
 
 Block: CoarseTracking
