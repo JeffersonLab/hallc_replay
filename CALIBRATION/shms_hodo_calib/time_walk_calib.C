@@ -57,7 +57,7 @@ TString *tdcTimeRawName;
 // Declare directories for output ROOT file
 TDirectory *trigRawDir, *hodoRawDir, *hodoUncalibDir;
 TDirectory *planeRawDir[NPLANES], *sideRawDir[NPLANES][NSIDES], *planeUncalibDir[NPLANES], *sideUncalibDir[NPLANES][NSIDES];
-TDirectory *paddleAdcTimeWalkDir[NPLANES][NSIDES];
+TDirectory *adcTimeWalkDir[NPLANES][NSIDES], *tdcTimeWalkDir[NPLANES][NSIDES], *adcTdcTimeDiffWalkDir[NPLANES][NSIDES];
 // Declare histos
 // 1D histos
 TH1F *h1_refAdcPulseTimeRaw, *h1_refAdcPulseAmpRaw, *h1_refAdcMultiplicity;
@@ -72,19 +72,20 @@ TH2F *h2_adcPulseTime[NPLANES][NSIDES];
 TH2F *h2_tdcTime[NPLANES][NSIDES];
 TH2F *h2_adcTdcTimeDiff[NPLANES][NSIDES];
 TH2F *h2_adcTimeWalk[NPLANES][NSIDES][MAXNBARS];
+TH2F *h2_tdcTimeWalk[NPLANES][NSIDES][MAXNBARS];
+TH2F *h2_adcTdcTimeDiffWalk[NPLANES][NSIDES][MAXNBARS];
 
 // Declare event data objects
-UInt_t nentries, ievent;
+UInt_t nentries, ievent, adcPaddleNum, tdcPaddleNum;
 
 Int_t numAdcHits, numTdcHits;
 
-Double_t adcPaddleNum, adcErrorFlag, adcPulseTimeRaw, adcPulseTime, adcPulseAmp;
-Double_t tdcPaddleNum, tdcTimeRaw, tdcTime, adcTdcTimeDiff;
+Double_t adcErrorFlag, adcPulseTimeRaw, adcPulseTime, adcPulseAmp;
+Double_t tdcTimeRaw, tdcTime, adcTdcTimeDiff;
 
 Bool_t adcRefMultiplicityCut, adcRefPulseAmpRawCut, adcRefPulseTimeRawCut;
 Bool_t edtmCut, adcErrorFlagCut, adcAndTdcHitCut;
 
-//void generatePlots(UInt_t iplane, UInt_t iside) {
 void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
 
   // Create trigger aparatus directory
@@ -99,8 +100,7 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!h1_refT1TdcTimeRaw) h1_refT1TdcTimeRaw = new TH1F("h1_refT1TdcTimeRaw", "ROC2 T1 Raw TDC Reference TDC Time (Slot 20, Channel 15); Raw TDC Time (ns); Number of Entries / 100 ps", 4000, 0, 400);
   if (!h1_refT2TdcTimeRaw) h1_refT2TdcTimeRaw = new TH1F("h1_refT2TdcTimeRaw", "ROC2 T2 Raw TDC Reference TDC Time (Slot 19, Channel 31); Raw TDC Time (ns); Number of Entries / 100 ps", 4000, 0, 400);
   if (!h1_refT3TdcTimeRaw) h1_refT3TdcTimeRaw = new TH1F("h1_refT3TdcTimeRaw", "ROC2 T3 Raw TDC Reference TDC Time (Slot 19, Channel 38); Raw TDC Time (ns); Number of Entries / 100 ps", 4000, 0, 400);
-  //outFile->cd("../");
-
+  
   // Create plane directory for raw hodoscope quantities
   hodoRawDir = dynamic_cast <TDirectory*> (outFile->Get("hodoRaw"));
   if (!hodoRawDir) {hodoRawDir = outFile->mkdir("hodoRaw"); hodoRawDir->cd();}
@@ -117,8 +117,7 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!h2_adcPulseTimeRaw[iplane][iside]) h2_adcPulseTimeRaw[iplane][iside] = new TH2F("h2_adcPulseTimeRaw", "Raw FADC Pulse Time Plane "+planeNames[iplane]+" Side "+sideNames[iside]+"; PMT Number; Raw FADC Pulse Time (ns) / 100 ps", 13, 0.5, 13.5, 4000, 0, 400);
   if (!h2_adcPulseAmp[iplane][iside])     h2_adcPulseAmp[iplane][iside]     = new TH2F("h2_adcPulseAmp", "FADC Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+"; PMT Number; FADC Pulse Amplitude (channels) / 1 Channel", 13, 0.5, 13.5, 4000, 0, 4000);
   if (!h2_tdcTimeRaw[iplane][iside])      h2_tdcTimeRaw[iplane][iside]      = new TH2F("h2_tdcTimeRaw", "Raw TDC Time Plane "+planeNames[iplane]+" Side "+sideNames[iside]+"; PMT Number; Raw TDC Time (ns) / 100 ps", 13, 0.5, 13.5, 4000, 0, 400);
-  //outFile->cd("../../../");
-
+  
   // Create plane directory for uncalibrated hodoscope quantities
   hodoUncalibDir = dynamic_cast <TDirectory*> (outFile->Get("hodoUncalib"));
   if (!hodoUncalibDir) {hodoUncalibDir = outFile->mkdir("hodoUncalib"); hodoUncalibDir->cd();}
@@ -135,11 +134,23 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!h2_tdcTime[iplane][iside])        h2_tdcTime[iplane][iside]        = new TH2F("h2_tdcTime", "TDC Time Plane "+planeNames[iplane]+" Side "+sideNames[iside]+"; PMT Number;  TDC Time (ns) / 100 ps", 13, 0.5, 13.5, 8000, -400, 400);
   if (!h2_adcTdcTimeDiff[iplane][iside]) h2_adcTdcTimeDiff[iplane][iside] = new TH2F("h2_adcTdcTimeDiff", "TDC-ADC Time Plane "+planeNames[iplane]+" Side "+sideNames[iside]+"; PMT Number;  TDC - ADC Time (ns) / 100 ps", 13, 0.5, 13.5, 16000, -800, 800);
   // Create ADC time-walk directory
-  paddleAdcTimeWalkDir[iplane][iside] = dynamic_cast <TDirectory*> (sideUncalibDir[iplane][iside]->Get("paddleAdcTimeWalk"));
-  if (!paddleAdcTimeWalkDir[iplane][iside]) {paddleAdcTimeWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("paddleAdcTimeWalk"); paddleAdcTimeWalkDir[iplane][iside]->cd();}
-  else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/paddleAdcTimeWalk"));
+  adcTimeWalkDir[iplane][iside] = dynamic_cast <TDirectory*> (sideUncalibDir[iplane][iside]->Get("adcTimeWalk"));
+  if (!adcTimeWalkDir[iplane][iside]) {adcTimeWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("adcTimeWalk"); adcTimeWalkDir[iplane][iside]->cd();}
+  else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/adcTimeWalk"));
   // Book histos
-  if (!h2_adcTimeWalk[iplane][iside][ipaddle]) h2_adcTimeWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTimeWalk_paddle_%d", ipaddle+1), "ADC Time vs. Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+" Paddle "+"; Pulse Amplitude / 1 Channel;  ADC Time (ns) / 100 ps", 4000, 0, 4000, 8000, -400, 400);
+  if (!h2_adcTimeWalk[iplane][iside][ipaddle]) h2_adcTimeWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTimeWalk_paddle_%d", ipaddle+1), "ADC Time vs. Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+" Paddle "+"; Pulse Amplitude / 10 Channels;  ADC Time (ns) / 100 ps", 400, 0, 4000, 4000, -200, 200);
+  // Create TDC time-walk directory
+  tdcTimeWalkDir[iplane][iside] = dynamic_cast <TDirectory*> (sideUncalibDir[iplane][iside]->Get("tdcTimeWalk"));
+  if (!tdcTimeWalkDir[iplane][iside]) {tdcTimeWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("tdcTimeWalk"); tdcTimeWalkDir[iplane][iside]->cd();}
+  else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/tdcTimeWalk"));
+  // Book histos
+  if (!h2_tdcTimeWalk[iplane][iside][ipaddle]) h2_tdcTimeWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_tdcTimeWalk_paddle_%d", ipaddle+1), "TDC Time vs. Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+" Paddle "+"; Pulse Amplitude / 10 Channels;  TDC Time (ns) / 100 ps", 400, 0, 4000, 4000, -300, 100);
+  // Create TDC-ADC time-walk directory
+  adcTdcTimeDiffWalkDir[iplane][iside] = dynamic_cast <TDirectory*> (sideUncalibDir[iplane][iside]->Get("adcTdcTimeDiffWalk"));
+  if (!adcTdcTimeDiffWalkDir[iplane][iside]) {adcTdcTimeDiffWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("adcTdcTimeDiffWalk"); adcTdcTimeDiffWalkDir[iplane][iside]->cd();}
+  else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/adcTdcTimeDiffWalk"));
+  // Book histos
+  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC - ADC Time vs. Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+" Paddle "+"; Pulse Amplitude / 10 Channels;  TDC- ADC Time (ns) / 100 ps", 400, 0, 4000, 4000, -200, 200);
   
 } // generatePlots()
 
@@ -150,7 +161,8 @@ void time_walk_calib() {
   t = clock();
 
   // Obtain the replay data file and create new output ROOT file
-  replayFile = new TFile("phodo_replay_1145.root", "READ");
+  // replayFile = new TFile("phodo_replay_1145.root", "READ");
+  replayFile = new TFile("phodo_replay_1205.root", "READ");
   outFile    = new TFile("time_walk_calib.root", "RECREATE");
   // Obtain the tree
   rawDataTree = dynamic_cast <TTree*> (replayFile->Get("T"));
@@ -220,8 +232,8 @@ void time_walk_calib() {
   } // Plane loop
 
     // Loop over the events and fill histograms
-    //nentries = rawDataTree->GetEntries();
-  nentries = 100000;
+  nentries = rawDataTree->GetEntries();
+  //nentries = 1000;
   cout << "\n******************************************"    << endl;
   cout << nentries << " Events Will Be Processed"           << endl;
   cout << "******************************************\n"    << endl;
@@ -289,8 +301,8 @@ void time_walk_calib() {
 
 	    // Define cuts
 	  adcRefMultiplicityCut = (refAdcMultiplicity != 1.0);
-	  adcRefPulseAmpRawCut  = (TMath::Abs(refAdcPulseAmpRaw - 2250.0) > 250.0);
-	  adcRefPulseTimeRawCut = (TMath::Abs(refAdcPulseTimeRaw*adcChanToTime - 196.) > 3.0);
+	  adcRefPulseAmpRawCut  = (TMath::Abs(refAdcPulseAmpRaw - 760.0) > 20.0);
+	  adcRefPulseTimeRawCut = (TMath::Abs(refAdcPulseTimeRaw - 3750.) > 100.0);
 	  // Implement cuts
 	  if (adcRefMultiplicityCut || adcRefPulseAmpRawCut || adcRefPulseTimeRawCut) continue;	  
 	  //if (adcRefMultiplicityCut || adcRefPulseAmpRawCut) continue;
@@ -307,7 +319,7 @@ void time_walk_calib() {
 		  numAdcHits = adcHits[iplane][iside][isignal];
 		  for (Int_t iadchit = 0; iadchit < numAdcHits; iadchit++) {
 		    // Obtain variables
-		    adcPaddleNum    = adcPaddle[iplane][iside][isignal][iadchit];
+		    adcPaddleNum    = UInt_t (adcPaddle[iplane][iside][isignal][iadchit]);
 		    adcErrorFlag    = hodoAdcErrorFlag[iplane][iside][isignal][iadchit];
 		    adcPulseTimeRaw = hodoAdcPulseTimeRaw[iplane][iside][isignal][iadchit]*adcChanToTime;
 		    adcPulseTime    = adcPulseTimeRaw - refAdcPulseTimeRaw*adcChanToTime;
@@ -327,7 +339,7 @@ void time_walk_calib() {
 		      if (edtmCut) continue;
 		      for (Int_t itdchit = 0; itdchit < numTdcHits; itdchit++) {
 			// Obtain variables
-			tdcPaddleNum   = tdcPaddle[iplane][iside][jsignal][itdchit];
+			tdcPaddleNum   = UInt_t (tdcPaddle[iplane][iside][jsignal][itdchit]);
 			tdcTimeRaw     = hodoTdcTimeRaw[iplane][iside][jsignal][itdchit]*tdcChanToTime;
 			tdcTime        = tdcTimeRaw - refT1TdcTimeRaw*tdcChanToTime;
 			adcTdcTimeDiff = tdcTime - adcPulseTime;
@@ -336,7 +348,9 @@ void time_walk_calib() {
 			// Implement cuts
 			if (adcAndTdcHitCut) continue;
 			h2_adcTdcTimeDiff[iplane][iside]->Fill(tdcPaddleNum, adcTdcTimeDiff);
-			h2_adcTimeWalk[iplane][iside][Int_t (tdcPaddleNum-1)]->Fill(adcPulseAmp, adcPulseTime);
+			h2_adcTimeWalk[iplane][iside][tdcPaddleNum-1]->Fill(adcPulseAmp, adcPulseTime);
+			h2_tdcTimeWalk[iplane][iside][tdcPaddleNum-1]->Fill(adcPulseAmp, tdcTime);
+			h2_adcTdcTimeDiffWalk[iplane][iside][tdcPaddleNum-1]->Fill(adcPulseAmp, adcTdcTimeDiff);
 		      } // TDC hit loop
 		    } // TDC signal loop
 		  } // ADC hit loop
