@@ -72,7 +72,7 @@ for plane in range (0,12):
         text_file.close()
             
         # open root in hcana, run the file, and exit
-        subprocess.call("./hcana -b -q 'SCRIPTS/SHMS/PRODUCTION/replay_aligndc_shms.C (%d,%d)'" % (rNUM, evNUM),shell=True)
+        subprocess.call("./hcana -b -q 'CALIBRATION/shms_dc_calib/scripts/replay_aligndc_shms.C (%d,%d)'" % (rNUM, evNUM),shell=True)
             
         # move the output file and rename
         os.rename("ROOTfiles/shms_replay_production_%d_%d.root" % (rNUM,evNUM), "CALIBRATION/shms_dc_calib/output_align/shms_replay_%d_xpos_%.3f.root" %(plane, xpos))
@@ -95,7 +95,7 @@ for plane in range (0,12):
         text_file.close()
     
         # open root in hcana, run the file, and exit
-        subprocess.call("./hcana/bin/hcana -b -q 'SCRIPTS/SHMS/PRODUCTION/replay_aligndc_shms.C (%d,%d)'" % (rNUM, evNUM),shell=True)
+        subprocess.call("./hcana -b -q 'CALIBRATION/shms_dc_calib/scripts/replay_aligndc_shms.C (%d,%d)'" % (rNUM, evNUM),shell=True)
             
         # move the output file and rename
         os.rename("ROOTfiles/shms_replay_production_%d_%d.root" % (rNUM,evNUM), "CALIBRATION/shms_dc_calib/output_align/shms_replay_%d_ypos_%.3f.root" %(plane, ypos))
