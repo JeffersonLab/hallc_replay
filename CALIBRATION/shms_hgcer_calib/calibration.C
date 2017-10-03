@@ -467,6 +467,17 @@ void calibration::Terminate()
 	}
     }
 
+  //Rebin the histograms into something more sensible, add functionality to bin HGC & NGC independently
+  for (Int_t ipmt=0; ipmt < (fNGC ? fngc_pmts : fhgc_pmts); ipmt++)
+    {
+      for (Int_t iquad=0; iquad<4; iquad++)
+	{
+	  fNGC ? PulseInt_quad[iquad][ipmt]->Rebin(25) : PulseInt_quad[iquad][ipmt]->Rebin(25);
+	}
+      fNGC ? PulseInt[ipmt]->Rebin(25) : PulseInt[ipmt]->Rebin(25);
+    }
+
+
   //Show the particle cuts performed in the histogram forming
   if (fCut)
     {
@@ -478,6 +489,57 @@ void calibration::Terminate()
       fPions ? fCut_pion->Draw("Colz") : fCut_electron->Draw("Colz");
     }
  
+  //Single Gaussian to find mean/std. dev. of peaks
+  TF1 *Gauss1 = new TF1("Gauss1",gauss,-500,7000,3);
+  Gauss1->SetParNames("Amplitude","Mean","Std. Dev.");
+
+  //Quantities to keep track of
+
+  Float_t scale = 0.0;                //average amplitude of SPE signals (channels ADC)
+  Float_t sigma = 0.0;                //standard dev. of the pedistal fir (channels ADC)
+  
+  gStyle->SetOptFit(111);
+
+  Int_t passes = 0;                   //Used to tell # of entries is scale
+  //Main loop for calibration
+  for (Int_t ipmt=0; ipmt < (fNGC ? fngc_pmts : fhgc_pmts); ipmt++)
+    {	
+      //TSpectrum class is used to find the SPE peak using the search method
+      TSpectrum *s = new TSpectrum(2);  
+
+      //Create Canvas to see the search result for the SPE  
+      quad_cuts_ipmt = new TCanvas(Form("quad_cuts_%d",ipmt), Form("First Photoelectron peaks PMT%d",ipmt+1));
+      quad_cuts_ipmt->Divide(2,2);  
+	  
+      for (Int_t iquad=0; iquad<4; iquad++)
+	{
+	  quad_cuts_ipmt->cd(iquad+1);
+	  s->Search(PulseInt_quad[iquad][ipmt], 2.5, "nobackground", 0.001);
+	  TList *functions = PulseInt_quad[iquad][ipmt]->GetListOfFunctions();
+	  TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
+	  Double_t *xpeaks = pm->GetX();
+	  if (iquad != ipmt)
+	    {
+	      Gauss1->SetRange(xpeaks[0]-150, xpeaks[0]+150);
+	      Gauss1->SetParameter(1, xpeaks[0]);
+	      Gauss1->SetParameter(2, 200.);
+	      Gauss1->SetParLimits(0, 0., 2000.);
+	      Gauss1->SetParLimits(1, xpeaks[0]-150, xpeaks[0]+150);
+	      Gauss1->SetParLimits(2, 10., 500.);
+	      PulseInt_quad[iquad][ipmt]->Fit("Gauss1","RQ");
+
+	      //Store std. dev. of pedistal and mean of SPE
+	      scale += xpeaks[1];
+	      sigma += Gauss1->GetParameter(2);
+	    }
+	}
+      scale = scale/3;
+      sigma = sigma/3;
+      cout << Form("The values for 'scale' and 'sigma' for PMT%d are:\n", ipmt+1) << scale << "    " << sigma << "\n"; 
+    }
+
+
+  /*
   //Single Gaussian to find mean of SPE
   TF1 *Gauss1 = new TF1("Gauss1",gauss,-500,7000,3);
   Gauss1->SetParNames("Amplitude","Mean","Std. Dev.");
@@ -956,5 +1018,5 @@ void calibration::Terminate()
 
       calibration.close();
     }
-
+  */
 }
