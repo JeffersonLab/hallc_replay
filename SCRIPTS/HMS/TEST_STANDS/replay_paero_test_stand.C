@@ -1,4 +1,4 @@
-void replay_paero_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
+void replay_haero_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -16,16 +16,16 @@ void replay_paero_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   }
 
   // Create file name patterns.
-  const char* RunFileNamePattern = "shms_all_%05d.dat";
+  const char* RunFileNamePattern = "hms_all_%05d.dat";
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
     pathList.push_back("./cache");
 
-  const char* ROOTFileNamePattern = "ROOTfiles/paero_replay_%d.root";
+  const char* ROOTFileNamePattern = "ROOTfiles/haero_replay_%d.root";
   // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
-  gHcParms->AddString("g_ctp_database_filename", "DBASE/SHMS/STD/standard.database");
+  gHcParms->AddString("g_ctp_database_filename", "DBASE/HMS/STD/standard.database");
 
   // Load varibles from files to global list.
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
@@ -35,26 +35,26 @@ void replay_paero_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
   gHcParms->Load(gHcParms->GetString("g_ctp_calib_filename"));
   // Load params for HMS trigger configuration
-  gHcParms->Load("PARAM/TRIG/tshms.param");
+  gHcParms->Load("PARAM/TRIG/thms.param");
 
   // Load the Hall C style detector map
   gHcDetectorMap = new THcDetectorMap();
-  gHcDetectorMap->Load("MAPS/SHMS/DETEC/AERO/paero_ptrig.map");
-  gHcParms->Load("PARAM/SHMS/GEN/p_fadc_debug.param");
+  gHcDetectorMap->Load("MAPS/HMS/DETEC/AERO/haero_ptrig.map");
+  gHcParms->Load("PARAM/HMS/GEN/p_fadc_debug.param");
 
   // Set up the equipment to be analyzed.
-  THaApparatus* HMS = new THcHallCSpectrometer("P", "SHMS");
+  THaApparatus* HMS = new THcHallCSpectrometer("H", "HMS");
   gHaApps->Add(HMS);
   // Add aeroscope to HMS apparatus
   THcAerogel* aero = new THcAerogel("aero", "Aerogel");
-  SHMS->AddDetector(aero);
+  HMS->AddDetector(aero);
 
   // Add trigger apparatus
   THaApparatus* TRG = new THcTrigApp("T", "TRG");
   gHaApps->Add(TRG);
   // Add trigger detector to trigger apparatus
-  THcTrigDet* shms = new THcTrigDet("shms", "SHMS Trigger Information");
-  TRG->AddDetector(shms);
+  THcTrigDet* shms = new THcTrigDet("hms", "HMS Trigger Information");
+  TRG->AddDetector(hms);
 
   // Add handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
@@ -92,8 +92,8 @@ void replay_paero_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
  analyzer->SetEvent(event);
  analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
  analyzer->SetOutFile(ROOTFileName.Data());
- analyzer->SetOdefFile("DEF-files/HMS/TEST_STANDS/AERO/paeroana.def");
- analyzer->SetCutFile("DEF-files/HMS/TEST_STANDS/AERO/paeroana_cuts.def");    // optional
+ analyzer->SetOdefFile("DEF-files/HMS/TEST_STANDS/AERO/haeroana.def");
+ analyzer->SetCutFile("DEF-files/HMS/TEST_STANDS/AERO/haeroana_cuts.def");    // optional
 
  // File to record cuts accounting information
  //analyzer->SetSummaryFile("summary_example.log");    // optional
