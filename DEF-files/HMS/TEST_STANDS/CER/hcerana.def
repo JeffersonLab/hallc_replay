@@ -8,7 +8,7 @@ TH2F hcer_adcErrFlg2D 'HMS Cherenkov FPGA Error Flag; Number of Entries' H.cer.a
 
 # HMS CER Raw Occupancy and Multiplicity
 TH1F hcer_raw_occ 'HMS Cherenkov Raw Occupancy; PMT Number; Number of Entries' H.cer.adcCounter 2 0.5 2.5
-TH1F hcer_raw_mult 'HMS Cherenkov Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' H.cer.totNumAdcHits 2 0.5 2.5
+TH1F hcer_raw_mult 'HMS Cherenkov Raw Multiplicity; Number of PMTs Hit; Total Number of Raw ADC Hits / PMT' H.cer.totNumAdcHits 1.8 0.4 2.3
 
 # HMS CER Good Occupancy and Multiplity
 TH1F hcer_good_occ 'HMS Cherenkov Good Occupancy; PMT Number; Number of Entries' H.cer.numGoodAdcHits 2 0.5 2.5
