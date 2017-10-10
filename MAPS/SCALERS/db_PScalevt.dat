@@ -290,3 +290,6 @@ variable 0 18 1 .hod.1x5.negScaler SHMS 1X- paddle 5
 variable 0 18 2 .hod.1x5.negScalerRate SHMS 1X- paddle 5
 variable 0 2 1 .hod.1x5.posScaler SHMS 1X+ paddle 5
 variable 0 2 2 .hod.1x5.posScalerRate SHMS 1X+ paddle 5
+variable 7 27 3 .BCM1.scalerCurrent bcm1
+variable 7 28 3 .BCM2.scalerCurrent bcm2
+variable 7 30 3 .Unser.scalerCurrent Unser
