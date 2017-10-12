@@ -12,6 +12,8 @@ variable 2 7 1 .hod.2x8.posScaler SHMS 2X+ paddle 8
 variable 2 7 2 .hod.2x8.posScalerRate SHMS 2X+ paddle 8
 variable 7 30 1 .Unser.scaler Unser
 variable 7 30 2 .Unser.scalerRate Unser
+variable 7 30 3 .Unser.scalerCurrent Unser
+variable 7 30 4 .Unser.scalerCharge Unser
 variable 3 16 1 .hod.2y1.negScaler SHMS 2y- paddle 1
 variable 3 16 2 .hod.2y1.negScalerRate SHMS 2y- paddle 1
 variable 3 30 1 .hod.2y14.negScaler SHMS 2y- paddle 14
@@ -40,6 +42,8 @@ variable 3 29 1 .hod.2y12.negScaler SHMS 2y- paddle 12
 variable 3 29 2 .hod.2y12.negScalerRate SHMS 2y- paddle 12
 variable 7 28 1 .BCM2.scaler bcm2
 variable 7 28 2 .BCM2.scalerRate bcm2
+variable 7 28 3 .BCM2.scalerCurrent bcm2
+variable 7 28 4 .BCM2.scalerCharge bcm2
 variable 1 20 1 .hod.1y2.posScaler SHMS 1Y+ paddle 2
 variable 1 20 2 .hod.1y2.posScalerRate SHMS 1Y+ paddle 2
 variable 0 5 1 .hod.1x4.posScaler SHMS 1X+ paddle 4
@@ -56,6 +60,8 @@ variable 2 12 1 .hod.2x10.posScaler SHMS 2X+ paddle 10
 variable 2 12 2 .hod.2x10.posScalerRate SHMS 2X+ paddle 10
 variable 7 27 1 .BCM1.scaler bcm1
 variable 7 27 2 .BCM1.scalerRate bcm1
+variable 7 27 3 .BCM1.scalerCurrent bcm1
+variable 7 27 4 .BCM1.scalerCharge bcm1
 variable 2 28 1 .hod.2x10.negScaler SHMS 2X- paddle 10
 variable 2 28 2 .hod.2x10.negScalerRate SHMS 2X- paddle 10
 variable 0 1 1 .hod.1x3.posScaler SHMS 1X+ paddle 3
@@ -222,6 +228,7 @@ variable 3 7 1 .hod.2y8.posScaler SHMS 2y+ paddle 8
 variable 3 7 2 .hod.2y8.posScalerRate SHMS 2y+ paddle 8
 variable 7 31 1 .1Mhz.scaler 1MHz
 variable 7 31 2 .1Mhz.scalerRate 1MHz
+variable 7 31 5 .1Mhz.scalerTime 1MHz
 variable 6 5 1 .pTRIG6.scaler SHMS TRIG6
 variable 6 5 2 .pTRIG6.scalerRate SHMS TRIG6
 variable 7 1 1 .S1Y.scaler SHMS S1Y
