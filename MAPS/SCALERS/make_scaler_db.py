@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Deal with args
+# Generate hcana scaler definition files from the xscaler scaler map file
 
 xscalerMapName = 'scaler.map'
 
@@ -74,20 +74,20 @@ with open(xscalerMapName, 'r') as fi:
                 slot = channel.slot-firstslot
                 printname = "." + name[1:] + ".scaler" # Drop prefix
                 detPrefix = name[2:5]
-                printHodoName = "." + detPrefix + "." + name[5:10] + "."
                 if specprefix == channel.spec and slot<nslots:
                     chan = channel.chan
                     slot = channel.slot-firstslot
                     comment = channel.comment
                     if detPrefix == "hod":
+                        printHodoName = "." + detPrefix + "." + name[5:10] + "."
                         if printHodoName.find("+") != -1:
-                            printHodoName = printHodoName.replace("+", "")
-                            printHodoName = printHodoName + "posScaler"
+                            printname = printHodoName.replace("+", "")+"posScaler"
                         if printHodoName.find("-") != -1:
-                            printHodoName = printHodoName.replace("-", "")
-                            printHodoName = printHodoName + "negScaler"
-                        print >>fo, 'variable', slot, chan, 1, printHodoName, comment
-                        print >>fo, 'variable', slot, chan, 2, printHodoName+'Rate', comment
-                    else:    
-                        print >>fo, 'variable', slot, chan, 1, printname, comment
-                        print >>fo, 'variable', slot, chan, 2, printname+'Rate', comment
+                            printname = printHodoName.replace("-", "")+"negScaler"
+                    print >>fo, 'variable', slot, chan, 1, printname, comment
+                    print >>fo, 'variable', slot, chan, 2, printname+'Rate', comment
+                    if name[1:4] == "BCM" or name[1:6] == "Unser":
+                        print >>fo, 'variable', slot, chan, 3, printname+'Current', comment
+                        print >>fo, 'variable', slot, chan, 4, printname+'Charge', comment
+                    elif name[1:5] == "1Mhz":
+                        print >>fo, 'variable', slot, chan, 5, printname+'Time', comment
