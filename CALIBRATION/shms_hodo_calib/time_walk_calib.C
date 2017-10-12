@@ -162,6 +162,7 @@ void time_walk_calib() {
 
   // Obtain the replay data file and create new output ROOT file
   // replayFile = new TFile("phodo_replay_1145.root", "READ");
+  // replayFile = new TFile("phodo_replay_1205_old.root", "READ");
   replayFile = new TFile("phodo_replay_1205.root", "READ");
   outFile    = new TFile("time_walk_calib.root", "RECREATE");
   // Obtain the tree
