@@ -31,6 +31,7 @@ pdc_central_time   = 0, 0, 0, 0, 0, 0  ; -not used in new SHMS chambers
                      0, 0, 0, 0, 0, 0
 pdc_drifttime_sign = 0, 0, 0, 0, 0, 0  ; -not used in new SHMS chambers
                      0, 0, 0, 0, 0, 0
+
 pdc_readoutLR = -1.0, 1.0, -1.0, -1.0, 1.0, -1.0
                  1.0, -1.0, 1.0, 1.0, -1.0, 1.0
 pdc_readoutTB = 1.0, -1.0, 1.0, -1.0, 1.0, -1.0
@@ -42,6 +43,7 @@ pdc_readoutTB = 1.0, -1.0, 1.0, -1.0, 1.0, -1.0
 ; From survey C1771.
 pdc_xcenter = -0.036, 0.008 ;
 pdc_ycenter = 0.019, 0.013 ;
+
 pdc_1_zpos = -40 - 0.656 ;
 pdc_2_zpos =  40 - 0.668 ;
 

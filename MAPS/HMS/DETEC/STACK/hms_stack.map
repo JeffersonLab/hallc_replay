@@ -4,6 +4,7 @@
 ! HSCIN_ID=13      ::  ADC+,ADC-,TDC+,TDC-
 ! HCER_ID=14       ::  (TDC),ADC
 ! HCAL_ID=15       ::  ADC
+! HRASTER_ID=18    ::  ADC
 
 
 DETECTOR=10
@@ -20,13 +21,6 @@ SLOT=17
   14,   1,   7,   0  ! hAERSUM
   15,   1,   8,   0  ! hCERSUM
 
-SLOT=18
-! chan    plane     bar    sig
-     12,      1,      9,     0!  hFRXA
-     13,      1,     10,     0!  hFRYA
-     14,      1,     11,     0!  hFRXB
-     15,      1,     12,     0!  hFRYB 
-
 SLOT=2
 REFINDEX=0
    0,   2,   1,   1  ! h1X
@@ -36,6 +30,7 @@ REFINDEX=0
    4,   2,   5,   1  ! h1T
    5,   2,   6,   1  ! h2T
    6,1000,   0,   0  ! hTref
+   6,   2,   7,   1  ! hT1
    7,   2,   8,   1  ! hASUM
    8,   2,   9,   1  ! hBSUM
    9,   2,  10,   1  ! hCSUM
@@ -43,8 +38,20 @@ REFINDEX=0
   11,   2,  12,   1  ! hPSHWRLO
   12,   2,  13,   1  ! hPSHWRHI
   13,   2,  14,   1  ! hSHWR
-  14,   2,  15,   1  ! hAERSUM
+  14,   2,  15,   1  ! hHODO_EDTM
   15,   2,  16,   1  ! hCERSUM
+  26,   2,  22,   1  ! hTRIG1
+  27,   2,  23,   1  ! hTRIG2
+  28,   2,  24,   1  ! hTRIG3
+  29,   2,  25,   1  ! hTRIG4
+  30,   2,  26,   1  ! hTRIG5
+  31,   2,  27,   1  ! hTRIG6
+  16,   2,  28,   1  ! pTRIG1
+  17,   2,  29,   1  ! pTRIG2
+  18,   2,  30,   1  ! pTRIG3
+  19,   2,  31,   1  ! pTRIG4
+  20,   2,  32,   1  ! pTRIG5
+  21,   2,  33,   1  ! pTRIG6
 
 SLOT=20
  127,   2,  17,   1  ! hT2
@@ -1581,3 +1588,14 @@ SLOT=7
   11,   4,  11,   0  ! hD11+
   12,   4,  12,   0  ! hD12+
   13,   4,  13,   0  ! hD13+
+
+
+DETECTOR=18
+
+ROC=1
+
+SLOT=18
+  12,   1,   1,   0  ! FR-XA
+  13,   1,   2,   0  ! FR-XB
+  14,   1,   3,   0  ! FR-YA
+  15,   1,   4,   0  ! FR-YB
