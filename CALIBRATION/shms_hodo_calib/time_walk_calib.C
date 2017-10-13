@@ -161,9 +161,7 @@ void time_walk_calib() {
   t = clock();
 
   // Obtain the replay data file and create new output ROOT file
-  // replayFile = new TFile("phodo_replay_1145.root", "READ");
-  // replayFile = new TFile("phodo_replay_1205_old.root", "READ");
-  replayFile = new TFile("phodo_replay_1205.root", "READ");
+  replayFile = new TFile("phodo_replay_1248.root", "READ");
   outFile    = new TFile("time_walk_calib.root", "RECREATE");
   // Obtain the tree
   rawDataTree = dynamic_cast <TTree*> (replayFile->Get("T"));
@@ -302,8 +300,8 @@ void time_walk_calib() {
 
 	    // Define cuts
 	  adcRefMultiplicityCut = (refAdcMultiplicity != 1.0);
-	  adcRefPulseAmpRawCut  = (TMath::Abs(refAdcPulseAmpRaw - 760.0) > 20.0);
-	  adcRefPulseTimeRawCut = (TMath::Abs(refAdcPulseTimeRaw - 3750.) > 100.0);
+	  adcRefPulseAmpRawCut  = (TMath::Abs(refAdcPulseAmpRaw - 698.0) > 12.0);
+	  adcRefPulseTimeRawCut = (TMath::Abs(refAdcPulseTimeRaw*adcChanToTime - 239.0) > 6.0);
 	  // Implement cuts
 	  if (adcRefMultiplicityCut || adcRefPulseAmpRawCut || adcRefPulseTimeRawCut) continue;	  
 	  //if (adcRefMultiplicityCut || adcRefPulseAmpRawCut) continue;
@@ -370,7 +368,7 @@ void time_walk_calib() {
   } // rawDataTree event loop  
 
   cout << "\n***************************************" << endl;
-  cout << ievent << " Events Were processed"          << endl;
+  cout << ievent << " Events Were Processed"          << endl;
   cout << "***************************************\n" << endl;
 
   // Calculate the analysis rate
