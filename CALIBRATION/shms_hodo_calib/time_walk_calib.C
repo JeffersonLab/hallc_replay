@@ -34,6 +34,8 @@ static const TString tdcData[NTDCSIGNALS]  = {"TimeRaw"};
 static const Double_t adcChanToTime = 0.0625;
 static const Double_t tdcChanToTime = 0.100;
 
+static const Int_t tdcThresh = 120.0;  // 30 mV in units of FADC channels
+
 // Declare variables to obtain from data tree
 // Number of ADC & TDC hits
 Int_t    adcHits[NPLANES][NSIDES][NSIGNALS], tdcHits[NPLANES][NSIDES][NSIGNALS];
@@ -69,7 +71,7 @@ TH2F *h2_adcPulseAmp[NPLANES][NSIDES];
 TH2F *h2_tdcTimeRaw[NPLANES][NSIDES];
 
 TH2F *h2_adcPulseTime[NPLANES][NSIDES];
-TH2F *h2_tdcTime[NPLANES][NSIDES];
+ TH2F *h2_tdcTime[NPLANES][NSIDES];
 TH2F *h2_adcTdcTimeDiff[NPLANES][NSIDES];
 TH2F *h2_adcTimeWalk[NPLANES][NSIDES][MAXNBARS];
 TH2F *h2_tdcTimeWalk[NPLANES][NSIDES][MAXNBARS];
@@ -85,6 +87,14 @@ Double_t tdcTimeRaw, tdcTime, adcTdcTimeDiff;
 
 Bool_t adcRefMultiplicityCut, adcRefPulseAmpRawCut, adcRefPulseTimeRawCut;
 Bool_t edtmCut, adcErrorFlagCut, adcAndTdcHitCut;
+Bool_t adcPulseAmpCut, adcTdcTimeDiffCut;
+
+Double_t timeWalkFitFunc(Double_t *a, Double_t *c) {
+
+  Double_t timeWalkFitVal = c[0] + c[1]/(TMath::Power((a[0]/tdcThresh), c[2]));
+  return timeWalkFitVal;
+
+}
 
 void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
 
@@ -150,7 +160,7 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!adcTdcTimeDiffWalkDir[iplane][iside]) {adcTdcTimeDiffWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("adcTdcTimeDiffWalk"); adcTdcTimeDiffWalkDir[iplane][iside]->cd();}
   else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/adcTdcTimeDiffWalk"));
   // Book histos
-  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC - ADC Time vs. Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+" Paddle "+"; Pulse Amplitude / 10 Channels;  TDC- ADC Time (ns) / 100 ps", 400, 0, 4000, 4000, -200, 200);
+  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC - ADC Time vs. Pulse Amplitude Plane "+planeNames[iplane]+" Side "+sideNames[iside]+" Paddle "+"; Pulse Amplitude / 10 Channels;  TDC- ADC Time (ns) / 100 ps", 355, 50, 3500, 500, -60, -10);
   
 } // generatePlots()
 
@@ -161,7 +171,7 @@ void time_walk_calib() {
   t = clock();
 
   // Obtain the replay data file and create new output ROOT file
-  replayFile = new TFile("phodo_replay_1248.root", "READ");
+  replayFile = new TFile("ROOTfiles/phodo_replay_1246-1250.root", "READ");
   outFile    = new TFile("time_walk_calib.root", "RECREATE");
   // Obtain the tree
   rawDataTree = dynamic_cast <TTree*> (replayFile->Get("T"));
@@ -231,8 +241,8 @@ void time_walk_calib() {
   } // Plane loop
 
     // Loop over the events and fill histograms
-  nentries = rawDataTree->GetEntries();
-  //nentries = 1000;
+  //nentries = rawDataTree->GetEntries();
+  nentries = 1000;
   cout << "\n******************************************"    << endl;
   cout << nentries << " Events Will Be Processed"           << endl;
   cout << "******************************************\n"    << endl;
@@ -325,8 +335,9 @@ void time_walk_calib() {
 		    adcPulseAmp     = hodoAdcPulseAmp[iplane][iside][isignal][iadchit];
 		    // Define cuts
 		    adcErrorFlagCut = (adcErrorFlag != 0);
+		    adcPulseAmpCut  = (adcPulseAmp < 50.0 || adcPulseAmp > 3500.0);
 		    // Implement cuts
-		    if (adcErrorFlagCut) continue; 
+		    if (adcErrorFlagCut || adcPulseAmpCut) continue; 
 		    // Loop over the TDC data objects
 		    for(UInt_t itdcdata = 0; itdcdata < NTDCSIGNALS; itdcdata++) {
 		      if (tdcData[itdcdata] != "TimeRaw") continue;
@@ -343,9 +354,10 @@ void time_walk_calib() {
 			tdcTime        = tdcTimeRaw - refT1TdcTimeRaw*tdcChanToTime;
 			adcTdcTimeDiff = tdcTime - adcPulseTime;
 			// Define cuts
-			adcAndTdcHitCut = (adcPaddleNum != tdcPaddleNum);
+			adcAndTdcHitCut   = (adcPaddleNum != tdcPaddleNum);
+			adcTdcTimeDiffCut = (adcTdcTimeDiff > -10.0 || adcTdcTimeDiff < -60.0);
 			// Implement cuts
-			if (adcAndTdcHitCut) continue;
+			if (adcAndTdcHitCut || adcTdcTimeDiffCut) continue;
 			h2_adcTdcTimeDiff[iplane][iside]->Fill(tdcPaddleNum, adcTdcTimeDiff);
 			h2_adcTimeWalk[iplane][iside][tdcPaddleNum-1]->Fill(adcPulseAmp, adcPulseTime);
 			h2_tdcTimeWalk[iplane][iside][tdcPaddleNum-1]->Fill(adcPulseAmp, tdcTime);
@@ -365,7 +377,10 @@ void time_walk_calib() {
     if (ievent % 100000 == 0 && ievent != 0)
       cout << ievent << " Events Have Been Processed..." << endl;
 
-  } // rawDataTree event loop  
+  } // rawDataTree event loop
+
+  // Fit the time-walk spectra
+  
 
   cout << "\n***************************************" << endl;
   cout << ievent << " Events Were Processed"          << endl;
