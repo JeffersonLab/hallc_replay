@@ -1,4 +1,4 @@
-// Macro to perform time-walk calibrations for the hodoscopes
+// Macro to generate time-walk histograms for the hodoscopes
 // Author: Eric Pooser, pooser@jlab.org
 
 #include <time.h>
@@ -33,8 +33,6 @@ static const TString tdcData[NTDCSIGNALS]  = {"TimeRaw"};
 
 static const Double_t adcChanToTime = 0.0625;
 static const Double_t tdcChanToTime = 0.100;
-
-static const Int_t tdcThresh = 120.0;  // 30 mV in units of FADC channels
 
 // Declare variables to obtain from data tree
 // Number of ADC & TDC hits
@@ -71,7 +69,7 @@ TH2F *h2_adcPulseAmp[NPLANES][NSIDES];
 TH2F *h2_tdcTimeRaw[NPLANES][NSIDES];
 
 TH2F *h2_adcPulseTime[NPLANES][NSIDES];
- TH2F *h2_tdcTime[NPLANES][NSIDES];
+TH2F *h2_tdcTime[NPLANES][NSIDES];
 TH2F *h2_adcTdcTimeDiff[NPLANES][NSIDES];
 TH2F *h2_adcTimeWalk[NPLANES][NSIDES][MAXNBARS];
 TH2F *h2_tdcTimeWalk[NPLANES][NSIDES][MAXNBARS];
@@ -88,13 +86,6 @@ Double_t tdcTimeRaw, tdcTime, adcTdcTimeDiff;
 Bool_t adcRefMultiplicityCut, adcRefPulseAmpRawCut, adcRefPulseTimeRawCut;
 Bool_t edtmCut, adcErrorFlagCut, adcAndTdcHitCut;
 Bool_t adcPulseAmpCut, adcTdcTimeDiffCut;
-
-Double_t timeWalkFitFunc(Double_t *a, Double_t *c) {
-
-  Double_t timeWalkFitVal = c[0] + c[1]/(TMath::Power((a[0]/tdcThresh), c[2]));
-  return timeWalkFitVal;
-
-}
 
 void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
 
@@ -164,7 +155,7 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   
 } // generatePlots()
 
-void time_walk_calib() {
+void timeWalkHistos() {
 
   // Initialize the analysis clock
   clock_t t;
@@ -172,7 +163,7 @@ void time_walk_calib() {
 
   // Obtain the replay data file and create new output ROOT file
   replayFile = new TFile("ROOTfiles/phodo_replay_1246-1250.root", "READ");
-  outFile    = new TFile("time_walk_calib.root", "RECREATE");
+  outFile    = new TFile("timeWalkHistos.root", "RECREATE");
   // Obtain the tree
   rawDataTree = dynamic_cast <TTree*> (replayFile->Get("T"));
   // Acquire the trigger apparatus data
@@ -241,8 +232,8 @@ void time_walk_calib() {
   } // Plane loop
 
     // Loop over the events and fill histograms
-  //nentries = rawDataTree->GetEntries();
-  nentries = 1000;
+  nentries = rawDataTree->GetEntries();
+  //nentries = 1000;
   cout << "\n******************************************"    << endl;
   cout << nentries << " Events Will Be Processed"           << endl;
   cout << "******************************************\n"    << endl;
@@ -380,6 +371,14 @@ void time_walk_calib() {
   } // rawDataTree event loop
 
   // Fit the time-walk spectra
+  // Loop over the planes, sides, signals, leafs, and fill data arrays
+  for(UInt_t iplane = 0; iplane < NPLANES; iplane++) {
+    for(UInt_t iside = 0; iside < NSIDES; iside++) {
+
+      
+
+    } // Side loop
+  } // Plane loop
   
 
   cout << "\n***************************************" << endl;
