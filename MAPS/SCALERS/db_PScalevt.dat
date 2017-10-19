@@ -146,6 +146,8 @@ variable 6 1 1 .pTRIG2.scaler SHMS TRIG2
 variable 6 1 2 .pTRIG2.scalerRate SHMS TRIG2
 variable 7 29 1 .BCM17.scaler bcm17
 variable 7 29 2 .BCM17.scalerRate bcm17
+variable 7 29 3 .BCM17.scalerCurrent bcm17
+variable 7 29 4 .BCM17.scalerCharge bcm17
 variable 1 18 1 .hod.1y5.posScaler SHMS 1Y+ paddle 5
 variable 1 18 2 .hod.1y5.posScalerRate SHMS 1Y+ paddle 5
 variable 1 2 1 .hod.1y5.negScaler SHMS 1Y- paddle 5
@@ -279,8 +281,12 @@ variable 7 5 1 .S2XS2Y.scaler SHMS S2T
 variable 7 5 2 .S2XS2Y.scalerRate SHMS S2T
 variable 7 25 1 .BCM4A.scaler bcm4a
 variable 7 25 2 .BCM4A.scalerRate bcm4a
+variable 7 25 3 .BCM4A.scalerCurrent bcm4a
+variable 7 25 4 .BCM4A.scalerCharge bcm4a
 variable 7 26 1 .BCM4B.scaler bcm4b
 variable 7 26 2 .BCM4B.scalerRate bcm4b
+variable 7 26 3 .BCM4B.scalerCurrent bcm4b
+variable 7 26 4 .BCM4B.scalerCharge bcm4b
 variable 2 23 1 .hod.2x8.negScaler SHMS 2X- paddle 8
 variable 2 23 2 .hod.2x8.negScalerRate SHMS 2X- paddle 8
 variable 3 19 1 .hod.2y7.negScaler SHMS 2y- paddle 7
