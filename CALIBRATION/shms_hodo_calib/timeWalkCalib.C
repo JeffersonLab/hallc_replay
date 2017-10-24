@@ -97,20 +97,22 @@ Double_t twFitFunc(Double_t *a, Double_t *c) {
   return twFitVal;
 } // twFitFunc()
 
-Double_t calcMin(Double_t *parArray, UInt_t iplane, UInt_t iside) {
+Double_t calcMin(Double_t *array) {
 
-  // cout << "sizeof(parArray[iplane][iside]) = " << sizeof(*parArray[iplane][iside]) << endl;
-  // cout << "sizeof(parArray[iplane][iside][0]) = " << sizeof(*parArray[iplane][iside][0]) << endl;
+  cout << "sizeof(array) = " << sizeof(array) << endl;
+  cout << "sizeof(array[0]) = " << sizeof(array[0]) << endl;
+  cout << "array ptr = " << array << endl;
+  cout << "*array ptr = " << *array << endl;
 
-  //UInt_t  size = sizeof(parArray[iplane][iside])/sizeof(parArray[iplane][iside][0]);
+  UInt_t  size = sizeof(array)/sizeof(array[0]);
 
-  //cout << "size = " << size << endl;
+  cout << "size = " << size << endl;
 
-  //Double_t min = min_element(parArray[iplane][iside], parArray[iplane][iside]+size);
+  Double_t *min = max_element(array, array+size);
 
-  // cout << "min = " << *min << endl;
+  cout << "min = " << *min << endl;
 
-  //return min;
+  return *min;
 }
 
 //=:=:=:=:=:=:
@@ -150,6 +152,15 @@ void doTwFits(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   return;
 } // doTwFits()
 
+
+Bool_t positive(Double_t val) {return (0.0 < val);}
+
+Bool_t negative(Double_t val) {return (val < 0.0);}
+
+Bool_t myfn_pos(Double_t i, Double_t j) {return i > j;}
+Bool_t myfn_neg(Double_t i, Double_t j) {return i < j;}
+
+
 // Calculate the averege of the time-walk fit parameters
 void calcParAvg(UInt_t iplane, UInt_t iside) {
   for (UInt_t ipar = 0; ipar < nTwFitPars; ipar++) {
@@ -175,8 +186,17 @@ void calcParAvg(UInt_t iplane, UInt_t iside) {
 
     // Calculate the minimum value of each parameter for both sides
     // cout << calcMin(*twFitPar[iplane][iside]) << endl;
-    calcMin(twFitPar, iplane, iside);
 
+    cout << sizeof(twFitPar[iplane][iside][ipar]) << endl;
+    cout << sizeof(twFitPar[iplane][iside][ipar][0]) << endl;
+    cout << twFitPar[iplane][iside][ipar] << endl;
+
+    cout << "direct min pos = " << *min_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_pos) << endl;
+    cout << "direct max neg = " << *max_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_neg) << endl;
+    cout << "direct min neg = " << *min_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_neg) << endl;
+    cout << "direct max pos = " << *max_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_pos) << endl;
+    
+    calcMin(twFitPar[iplane][iside][ipar]);
 
   } // Parameter loop
   return;
