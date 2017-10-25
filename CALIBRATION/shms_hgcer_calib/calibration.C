@@ -267,7 +267,7 @@ Bool_t calibration::Process(Long64_t entry)
 	      Float_t pisemimajor_axis = 0.1;
 	      Float_t pisemiminor_axis = 0.02;
 	      if (pow((P_cal_fly_earray/p - pix_center)*cos(piangle) + (P_cal_pr_eplane/p - piy_center)*sin(piangle),2)/pow(pisemimajor_axis,2) + 
-	      pow((P_cal_fly_earray/p - pix_center)*sin(piangle) - (P_cal_pr_eplane/p - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
+		  pow((P_cal_fly_earray/p - pix_center)*sin(piangle) - (P_cal_pr_eplane/p - piy_center)*cos(piangle),2)/pow(pisemiminor_axis,2) < 1)
 		{
 		  //Fill histogram visualizaing the pion selection
 		  fCut_pion->Fill(P_cal_fly_earray/p, P_cal_pr_eplane/p);
@@ -959,5 +959,4 @@ void calibration::Terminate()
 
       calibration.close();
     }
-  
 }
