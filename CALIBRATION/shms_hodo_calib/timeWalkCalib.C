@@ -19,8 +19,9 @@ static const Double_t c2twParInit    = 0.25;
 
 static const Double_t fontSize       = 0.05;
 static const Double_t yTitleOffset   = 0.75;
-static const Double_t errorLineWidth = 1.0;
 static const Double_t markerSize     = 2.0;
+static const Double_t minScale     = 0.75;
+static const Double_t maxScale     = 0.75;
 
 static const UInt_t lineWidth = 4;
 static const UInt_t lineStyle = 7;
@@ -39,13 +40,13 @@ TF1 *twFit[nPlanes][nSides][nBarsMax], *avgParFit[nPlanes][nSides][nTwFitPars];
 Double_t paddleIndex[nPlanes][nSides][nBarsMax];
 Double_t twFitPar[nPlanes][nSides][nTwFitPars][nBarsMax], twFitParErr[nPlanes][nSides][nTwFitPars][nBarsMax];
 Double_t avgPar[nPlanes][nSides][nTwFitPars];
+Double_t minPar[nPlanes][nSides][nTwFitPars], maxPar[nPlanes][nSides][nTwFitPars];
 // Declare canvases
 TCanvas *twFitCan[nPlanes][nSides], *twFitParCan[nTwFitPars];
 // Declare histos
 // 2D histos
 TH2F *h2_adcTdcTimeDiffWalk[nPlanes][nSides][nBarsMax];
 // Declare graphs
-//TGraphErrors *twFitParGraph[nPlanes][nSides][nTwFitPars];
 TGraph *twFitParGraph[nPlanes][nSides][nTwFitPars];
 // Declare multi-graphs
 TMultiGraph *twFitParMultiGraph[nPlanes][nTwFitPars];
@@ -77,11 +78,11 @@ void addColorToGraph(UInt_t style, UInt_t size, UInt_t color, TGraph *graph) {
 
 // Add centered titles to multigraphs
 void modifyMultiGraph(TMultiGraph *mg, TString xtitle, TString ytitle) {
-    mg->GetYaxis()->SetTitle(ytitle);
-    mg->GetYaxis()->CenterTitle();
-    mg->GetXaxis()->SetTitle(xtitle);
-    mg->GetXaxis()->CenterTitle();
-    return;
+  mg->GetYaxis()->SetTitle(ytitle);
+  mg->GetYaxis()->CenterTitle();
+  mg->GetXaxis()->SetTitle(xtitle);
+  mg->GetXaxis()->CenterTitle();
+  return;
 } // modifyMultiGraph()
 
 // Create canvases
@@ -97,23 +98,13 @@ Double_t twFitFunc(Double_t *a, Double_t *c) {
   return twFitVal;
 } // twFitFunc()
 
-Double_t calcMin(Double_t *array) {
-
-  cout << "sizeof(array) = " << sizeof(array) << endl;
-  cout << "sizeof(array[0]) = " << sizeof(array[0]) << endl;
-  cout << "array ptr = " << array << endl;
-  cout << "*array ptr = " << *array << endl;
-
-  UInt_t  size = sizeof(array)/sizeof(array[0]);
-
-  cout << "size = " << size << endl;
-
-  Double_t *min = max_element(array, array+size);
-
-  cout << "min = " << *min << endl;
-
-  return *min;
-}
+// Locate min or max value from input array
+Double_t calcMinOrMax(Double_t *array, UInt_t iplane, TString minOrmax) {
+  auto result = minmax_element(array, array+nbars[iplane]);
+  if      (minOrmax == "min") return *result.first;
+  else if (minOrmax == "max") return *result.second;
+  else return 0.0;
+} // calcMinOrMax()
 
 //=:=:=:=:=:=:
 //=: Level 2
@@ -147,19 +138,11 @@ void doTwFits(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   // Draw the fit parameter text
   twFitParText[iplane][iside][ipaddle]->SetFillColor(kWhite);
   twFitParText[iplane][iside][ipaddle]->SetTextAlign(12);
+  twFitParText[iplane][iside][ipaddle]->SetFillStyle(3003);
   twFitParText[iplane][iside][ipaddle]->Draw();
   gPad->Modified(); gPad->Update();
   return;
 } // doTwFits()
-
-
-Bool_t positive(Double_t val) {return (0.0 < val);}
-
-Bool_t negative(Double_t val) {return (val < 0.0);}
-
-Bool_t myfn_pos(Double_t i, Double_t j) {return i > j;}
-Bool_t myfn_neg(Double_t i, Double_t j) {return i < j;}
-
 
 // Calculate the averege of the time-walk fit parameters
 void calcParAvg(UInt_t iplane, UInt_t iside) {
@@ -182,22 +165,9 @@ void calcParAvg(UInt_t iplane, UInt_t iside) {
     avgPar[iplane][iside][ipar] = avgParFit[iplane][iside][ipar]->GetParameter(0);
     // Add graphs to multi graph
     twFitParMultiGraph[iplane][ipar]->Add(twFitParGraph[iplane][iside][ipar]);
-
-
-    // Calculate the minimum value of each parameter for both sides
-    // cout << calcMin(*twFitPar[iplane][iside]) << endl;
-
-    cout << sizeof(twFitPar[iplane][iside][ipar]) << endl;
-    cout << sizeof(twFitPar[iplane][iside][ipar][0]) << endl;
-    cout << twFitPar[iplane][iside][ipar] << endl;
-
-    cout << "direct min pos = " << *min_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_pos) << endl;
-    cout << "direct max neg = " << *max_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_neg) << endl;
-    cout << "direct min neg = " << *min_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_neg) << endl;
-    cout << "direct max pos = " << *max_element(twFitPar[iplane][iside][ipar], twFitPar[iplane][iside][ipar]+nBarsMax, myfn_pos) << endl;
-    
-    calcMin(twFitPar[iplane][iside][ipar]);
-
+    // Calculate the min and max value of each parameter
+    minPar[iplane][iside][ipar] = calcMinOrMax(twFitPar[iplane][iside][ipar], iplane, "min");
+    maxPar[iplane][iside][ipar] = calcMinOrMax(twFitPar[iplane][iside][ipar], iplane, "max");
   } // Parameter loop
   return;
 } // calcParAvg()
@@ -220,6 +190,31 @@ void drawParams(UInt_t iplane) {
       if (iside == 0) twFitParLegend[iplane][ipar]->AddEntry(twFitParGraph[iplane][iside][ipar], "Positive Side", "p");
       if (iside == 1) twFitParLegend[iplane][ipar]->AddEntry(twFitParGraph[iplane][iside][ipar], "Negative Side", "p");
       avgParLegend[iplane][ipar]->AddEntry(avgParFit[iplane][iside][ipar], "#bar{"+twFitParNames[ipar]+"}"+Form(" = %.2f", avgPar[iplane][iside][ipar]),"l");
+      // Define the time-walk fit parameter multigraph y-axis range
+      if (iside == 0) {
+	// Set y-axis range min
+	if (minPar[iplane][iside][ipar] < 0.0 || minPar[iplane][iside+1][ipar] < 0.0) {
+	  if (minPar[iplane][iside][ipar] < minPar[iplane][iside+1][ipar]) 
+	    twFitParMultiGraph[iplane][ipar]->SetMinimum(minPar[iplane][iside][ipar] + minScale*minPar[iplane][iside][ipar]);
+	  else twFitParMultiGraph[iplane][ipar]->SetMinimum(minPar[iplane][iside+1][ipar] + minScale*minPar[iplane][iside+1][ipar]);
+	}
+	if (minPar[iplane][iside][ipar] > 0.0 || minPar[iplane][iside+1][ipar] > 0.0) {
+	  if (minPar[iplane][iside][ipar] < minPar[iplane][iside+1][ipar]) 
+	    twFitParMultiGraph[iplane][ipar]->SetMinimum(minPar[iplane][iside][ipar] - minScale*minPar[iplane][iside][ipar]);
+	  else twFitParMultiGraph[iplane][ipar]->SetMinimum(minPar[iplane][iside+1][ipar] - minScale*minPar[iplane][iside+1][ipar]);
+	}
+	// Set y-axis range max
+	if (maxPar[iplane][iside][ipar] < 0.0 || maxPar[iplane][iside+1][ipar] < 0.0) {
+	  if (maxPar[iplane][iside][ipar] < maxPar[iplane][iside+1][ipar])
+	    twFitParMultiGraph[iplane][ipar]->SetMaximum(maxPar[iplane][iside+1][ipar] - maxScale*maxPar[iplane][iside+1][ipar]);
+	  else twFitParMultiGraph[iplane][ipar]->SetMaximum(maxPar[iplane][iside][ipar] - maxScale*maxPar[iplane][iside][ipar]);
+	}
+	if (maxPar[iplane][iside][ipar] > 0.0 || maxPar[iplane][iside+1][ipar] > 0.0) {
+	  if (maxPar[iplane][iside][ipar] < maxPar[iplane][iside+1][ipar])
+	    twFitParMultiGraph[iplane][ipar]->SetMaximum(maxPar[iplane][iside+1][ipar] + maxScale*maxPar[iplane][iside+1][ipar]);
+	  else twFitParMultiGraph[iplane][ipar]->SetMaximum(maxPar[iplane][iside][ipar] + maxScale*maxPar[iplane][iside][ipar]);
+	}
+      } // Side index = 0 condition
     } // Side loop
     twFitParLegend[iplane][ipar]->Draw();
     avgParLegend[iplane][ipar]->Draw();
@@ -250,8 +245,8 @@ void timeWalkCalib() {
   for (UInt_t ipar = 0; ipar < nTwFitPars; ipar++)
     twFitParCan[ipar] = makeCan(2, 2, 1600, 800, twFitParCan[ipar], twFitParNames[ipar]+"FitParCan", "Parameter "+twFitParNames[ipar]+" Canvas");
   // Loop over the planes
-  //for(UInt_t iplane = 0; iplane < nPlanes; iplane++) {
-  for(UInt_t iplane = 0; iplane < 1; iplane++) {
+  for(UInt_t iplane = 0; iplane < nPlanes; iplane++) {
+    //for(UInt_t iplane = 0; iplane < 1; iplane++) {
     // Obtain the plane directory
     planeDir[iplane] = dynamic_cast <TDirectory*> (dataDir->FindObjectAny(planeNames[iplane]));
     // Create multigraphs

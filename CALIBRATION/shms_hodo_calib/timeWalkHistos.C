@@ -100,7 +100,7 @@ Int_t numAdcHits, numTdcHits;
 Double_t adcErrorFlag, adcPulseTimeRaw, adcPulseTime, adcPulseAmp;
 Double_t tdcTimeRaw, tdcTime, adcTdcTimeDiff;
 
-Bool_t adcRefMultiplicityCut, adcRefPulseAmpCut, adcRefPulseTimeRawCut;
+Bool_t adcRefMultiplicityCut, adcRefPulseAmpCut, adcRefPulseTimeCut;
 Bool_t edtmCut, adcErrorFlagCut, adcAndTdcHitCut;
 Bool_t adcPulseAmpCut, adcTdcTimeDiffCut;
 
@@ -187,7 +187,9 @@ void timeWalkHistos() {
   t = clock();
 
   // Obtain the replay data file and create new output ROOT file
-  replayFile = new TFile("ROOTfiles/phodo_replay_1246-1251.root", "READ");
+  // replayFile = new TFile("ROOTfiles/phodo_replay_1246-1251.root", "READ");
+  // replayFile = new TFile("ROOTfiles/phodo_replay_1246-1251_1274_1290.root", "READ");
+  replayFile = new TFile("ROOTfiles/phodo_replay_1300.root", "READ");
   outFile    = new TFile("timeWalkHistos.root", "RECREATE");
   // Obtain the tree
   rawDataTree = dynamic_cast <TTree*> (replayFile->Get("T"));
@@ -308,9 +310,9 @@ void timeWalkHistos() {
 	    for(UInt_t itdcdata = 0; itdcdata < nTdcSignals; itdcdata++) {
 	      numTdcHits = tdcHits[iplane][iside][isignal];
 	      // Define cuts
-	      edtmCut = (numTdcHits == nbars[0] || numTdcHits == nbars[2] || numTdcHits == nbars[3]);
+	      //edtmCut = (numTdcHits == nbars[0] || numTdcHits == nbars[2] || numTdcHits == nbars[3]);
 	      // Implement cuts
-	      if (edtmCut) continue;
+	      //if (edtmCut) continue;
 	      for (Int_t itdchit = 0; itdchit < numTdcHits; itdchit++) {
 		// Obtain variables
 		tdcPaddleNum = tdcPaddle[iplane][iside][isignal][itdchit];
@@ -327,9 +329,9 @@ void timeWalkHistos() {
 	    // Define cuts
 	  adcRefMultiplicityCut = (refAdcMultiplicity != 1.0);
 	  adcRefPulseAmpCut     = (refAdcPulseAmp*adcChanTomV < refAdcPulseAmpCutLow || refAdcPulseAmp*adcChanTomV > refAdcPulseAmpCutHigh);
-	  adcRefPulseTimeRawCut = (refAdcPulseTimeRaw*adcChanToTime < refAdcPulseTimeCutLow || refAdcPulseTimeRaw*adcChanToTime > refAdcPulseTimeCutHigh);
+	  adcRefPulseTimeCut    = (refAdcPulseTimeRaw*adcChanToTime < refAdcPulseTimeCutLow || refAdcPulseTimeRaw*adcChanToTime > refAdcPulseTimeCutHigh);
 	  // Implement cuts
-	  if (adcRefMultiplicityCut || adcRefPulseAmpCut || adcRefPulseTimeRawCut) continue;	  
+	  //if (adcRefMultiplicityCut || adcRefPulseAmpCut || adcRefPulseTimeCut) continue;	  
 	  // Acquire the hodoscope ADC data objects
 	  if(signalNames[isignal] == "Adc") { 
 	    // Loop over the signals again
@@ -359,9 +361,9 @@ void timeWalkHistos() {
 		      // Acquire the number of TDC hits
 		      numTdcHits = tdcHits[iplane][iside][jsignal];
 		      // Define cuts
-		      edtmCut = (numTdcHits == nbars[0] || numTdcHits == nbars[2] || numTdcHits == nbars[3]);
+		      //edtmCut = (numTdcHits == nbars[0] || numTdcHits == nbars[2] || numTdcHits == nbars[3]);
 		      // Implement cuts
-		      if (edtmCut) continue;
+		      //if (edtmCut) continue;
 		      for (Int_t itdchit = 0; itdchit < numTdcHits; itdchit++) {
 			// Obtain variables
 			tdcPaddleNum   = UInt_t (tdcPaddle[iplane][iside][jsignal][itdchit]);
