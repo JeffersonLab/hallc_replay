@@ -1,0 +1,3 @@
+; HMS default calibration parameter files are in DBASE/HMS/GEN/general.param
+; this is just a dummy file so that the script will not complain
+;   about missing g_ctp_calib_filename
