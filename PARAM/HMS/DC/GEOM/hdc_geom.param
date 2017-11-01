@@ -34,10 +34,10 @@ hdc_central_time   = 0, 0, 0, 0, 0, 0  ; -not used in new HMS chambers
 hdc_drifttime_sign = 0, 0, 0, 0, 0, 0  ; -not used in new HMS chambers
                      0, 0, 0, 0, 0, 0
 
-hdc_readoutLR = 1.0, -1.0, 1.0, 1.0, 1.0, -1.0
-                -1.0, 1.0, 1.0, 1.0, -1.0, 1.0
-hdc_readoutTB = -1.0, 1.0, -1.0, 1.0, 1.0, -1.0
-                -1.0, 1.0, 1.0, -1.0, 1.0, -1.0             
+hdc_readoutLR = 1, -1, 1, 1, 1, -1
+                -1, 1, 1, 1, -1, 1
+hdc_readoutTB = -1, 1, -1, 1, 1, -1
+                -1, 1, 1, -1, 1, -1             
 
 ; CHAMBER POSITION PARAMETERS
 
