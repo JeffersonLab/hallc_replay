@@ -36,14 +36,17 @@ with open(xscalerMapName, 'r') as fi:
         if line.startswith('DATE') or line.startswith('xscaler-'):
             continue
 
-        splitline = line.split(None,6)
+        splitline = line.split(None,7)
         helicity = splitline[1]
         spec = cratemap[splitline[2]]["spec"]
         name = spec+splitline[0]
         slot = int(splitline[3])+cratemap[splitline[2]]["firstslot"]
         start = int(splitline[4])
         nchan = splitline[5] # This better be 1
-        comment = splitline[6]
+        page = splitline[6] # We ignore this here
+        comment = splitline[7]
+        if comment == "Empty":  # Overwrite name used by xscaler
+            name = spec+"Empty"
         uniquename = name
         count = 2
         while chandict.has_key(uniquename):
