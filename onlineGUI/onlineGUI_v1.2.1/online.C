@@ -980,7 +980,6 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 
 void OnlineGUI::DoDraw()
 {
- 
   // The main Drawing Routine.
  
 #ifdef INTERNALSTYLE
@@ -1004,6 +1003,7 @@ void OnlineGUI::DoDraw()
     }
 #ifdef INTERNALSTYLE
 
+
     gStyle->SetTitleH(0.10);
     gStyle->SetTitleW(0.40);
     //   gStyle->SetLabelSize(0.10,"X");
@@ -1015,8 +1015,10 @@ void OnlineGUI::DoDraw()
     gStyle->SetNdivisions(404,"Y");
     gStyle->SetTitleXOffset(1.1);
     gStyle->SetTitleYOffset(1.45);
-    //  gStyle->SetPalette(1);
-    gROOT->ForceStyle();
+  gStyle->SetTitleSize(0.045,"X");
+  gStyle->SetTitleSize(0.045,"Y");
+  gStyle->SetPalette(1);
+  gROOT->ForceStyle();
 
 #endif
 

@@ -42,6 +42,7 @@ void overlay2(TString hist1name, TString hist2name, TString label1="", TString l
     H2->GetXaxis()->SetLabelSize(0.03);
     H2->GetYaxis()->SetLabelSize(0.03);
 
+
   }
 
   double xpos = H1->GetXaxis()->GetBinCenter(H1->GetXaxis()->GetFirst()+4);
