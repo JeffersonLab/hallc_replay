@@ -36,7 +36,7 @@
 // #define DEBUG
 //#define DEBUG2
 //#define NOISY
-//#define INTERNALSTYLE
+#define INTERNALSTYLE
 
 //TString guiDirectory = "onlineGUI_v1.2.1/";
 TString guiDirectory = "./";
@@ -980,16 +980,12 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 
 void OnlineGUI::DoDraw()
 {
-<<<<<<< Updated upstream
-    // The main Drawing Routine.
-
-=======
+ 
   // The main Drawing Routine.
  
->>>>>>> Stashed changes
 #ifdef INTERNALSTYLE
     gStyle->SetOptStat(1110);
-    gStyle->SetStatFontSize(0.1);
+    gStyle->SetStatFontSize(0.15);
 #endif
     if (fConfig->IsLogx(current_page)) {
         gStyle->SetOptLogx(1);
@@ -1007,41 +1003,29 @@ void OnlineGUI::DoDraw()
         gStyle->SetOptLogz(0);
     }
 #ifdef INTERNALSTYLE
-<<<<<<< Updated upstream
+
     gStyle->SetTitleH(0.10);
     gStyle->SetTitleW(0.40);
     //   gStyle->SetLabelSize(0.10,"X");
     //   gStyle->SetLabelSize(0.10,"Y");
-    gStyle->SetLabelSize(0.05,"X");
-    gStyle->SetLabelSize(0.05,"Y");
-    gStyle->SetPadLeftMargin(0.14);
+    gStyle->SetLabelSize(0.03,"X");
+    gStyle->SetLabelSize(0.03,"Y");
+    gStyle->SetPadLeftMargin(0.10);
     gStyle->SetNdivisions(505,"X");
     gStyle->SetNdivisions(404,"Y");
-    gStyle->SetPalette(1);
+    gStyle->SetTitleXOffset(1.1);
+    gStyle->SetTitleYOffset(1.45);
+    //  gStyle->SetPalette(1);
     gROOT->ForceStyle();
-=======
-  gStyle->SetTitleH(0.10);
-  gStyle->SetTitleW(0.40);
-  //gStyle->SetLabelSize(0.10,"X");
-  //gStyle->SetLabelSize(0.10,"Y");
-  gStyle->SetLabelSize(0.05,"X");
-  gStyle->SetLabelSize(0.05,"Y");
-  gStyle->SetTitleSize(0.045,"X");
-  gStyle->SetTitleSize(0.045,"Y");
-  gStyle->SetPadLeftMargin(0.14);
-  gStyle->SetNdivisions(505,"X");
-  gStyle->SetNdivisions(404,"Y");
-  gStyle->SetPalette(1);
-  gROOT->ForceStyle();
->>>>>>> Stashed changes
+
 #endif
 
     // Determine the dimensions of the canvas..
     UInt_t draw_count = fConfig->GetDrawCount(current_page);
 #ifdef INTERNALSTYLE
     if(draw_count>=8) {
-        gStyle->SetLabelSize(0.08,"X");
-        gStyle->SetLabelSize(0.08,"Y");
+        gStyle->SetLabelSize(0.02,"X");
+        gStyle->SetLabelSize(0.02,"Y");
     }
 #endif
     //   Int_t dim = Int_t(round(sqrt(double(draw_count))));
@@ -1582,6 +1566,10 @@ void OnlineGUI::HistDraw(drawcommand command) {
                 fRootFile.mytemp2d->SetStats(showStat);
                 if(!htitle.IsNull()) fGoldenFile.mytemp2d->SetTitle(htitle);
                 fRootFile.mytemp2d->Draw(type);
+
+// Force TH2s' y-axis to start at 0 if not logy
+                if(gStyle->GetOptLogy() == 0)
+                fRootFile.mytemp2d->SetMinimum(0);
                 fRootFile.mytemp2d->Draw("colz");
             }
         }
