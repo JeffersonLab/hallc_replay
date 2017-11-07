@@ -159,15 +159,15 @@ TH2F hhodo_2y_neg_raw_tdc_time_vs_pad 'HMS 2Y- Raw TDC Time vs. Paddle Number; P
 #-------------------------
 # HMS Hodo Pulse Pedestal
 #-------------------------
-TH2F hhodo_1x_pos_ped_vs_pad 'HMS 1X+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.1x.posAdcCounter  H.hod.1x.posAdcPed 16 0.5 16.5 500 0 1000
-TH2F hhodo_1y_pos_ped_vs_pad 'HMS 1Y+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.1y.posAdcCounter  H.hod.1y.posAdcPed 10 0.5 10.5 500 0 1000
-TH2F hhodo_2x_pos_ped_vs_pad 'HMS 2X+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.2x.posAdcCounter  H.hod.2x.posAdcPed 16 0.5 16.5 500 0 1000
-TH2F hhodo_2y_pos_ped_vs_pad 'HMS 2Y+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.2y.posAdcCounter  H.hod.2y.posAdcPed 10 0.5 10.5 500 0 1000
+TH2F hhodo_1x_pos_ped_vs_pad 'HMS 1X+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.1x.posAdcCounter  H.hod.1x.posAdcPed 16 0.5 16.5 200 0 200
+TH2F hhodo_1y_pos_ped_vs_pad 'HMS 1Y+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.1y.posAdcCounter  H.hod.1y.posAdcPed 10 0.5 10.5 200 0 200
+TH2F hhodo_2x_pos_ped_vs_pad 'HMS 2X+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.2x.posAdcCounter  H.hod.2x.posAdcPed 16 0.5 16.5 200 0 200
+TH2F hhodo_2y_pos_ped_vs_pad 'HMS 2Y+ Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.2y.posAdcCounter  H.hod.2y.posAdcPed 10 0.5 10.5 200 0 200
 
-TH2F hhodo_1x_neg_ped_vs_pad 'HMS 1X- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mv' H.hod.1x.negAdcCounter  H.hod.1x.negAdcPed 16 0.5 16.5 500 0 1000
-TH2F hhodo_1y_neg_ped_vs_pad 'HMS 1Y- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.1y.negAdcCounter  H.hod.1y.negAdcPed 10 0.5 10.5 500 0 1000
-TH2F hhodo_2x_neg_ped_vs_pad 'HMS 2X- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.2x.negAdcCounter  H.hod.2x.negAdcPed 16 0.5 16.5 500 0 1000
-TH2F hhodo_2y_neg_ped_vs_pad 'HMS 2Y- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / 2 mV' H.hod.2y.negAdcCounter  H.hod.2y.negAdcPed 10 0.5 10.5 500 0 1000
+TH2F hhodo_1x_neg_ped_vs_pad 'HMS 1X- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mv' H.hod.1x.negAdcCounter  H.hod.1x.negAdcPed 16 0.5 16.5 200 0 200
+TH2F hhodo_1y_neg_ped_vs_pad 'HMS 1Y- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.1y.negAdcCounter  H.hod.1y.negAdcPed 10 0.5 10.5 200 0 200
+TH2F hhodo_2x_neg_ped_vs_pad 'HMS 2X- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.2x.negAdcCounter  H.hod.2x.negAdcPed 16 0.5 16.5 200 0 200
+TH2F hhodo_2y_neg_ped_vs_pad 'HMS 2Y- Pulse Pedestal vs. Paddle Number; Paddle Number; Pulse Pedestal / mV' H.hod.2y.negAdcCounter  H.hod.2y.negAdcPed 10 0.5 10.5 200 0 200
 
 #-------------------------
 # HMS Hodo Pulse Integral
@@ -280,15 +280,15 @@ TH1F hhodo_2y_good_tdc_occ_neg 'HMS 2Y- Good TDC Occupancy; PMT Number; Number o
 # HMS HODO Good PULSE PEDESTAL
 #------------------------------
 
-TH2F hhodo_1x_good_pped_vs_pmt_pos 'HMS 1X+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.1x.GoodPosAdcPed 16 0.5 16.5 500 0 1000 H.hod.1x.GoodPosAdcPed>0.0
-TH2F hhodo_1y_good_pped_vs_pmt_pos 'HMS 1Y+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.1y.GoodPosAdcPed 10 0.5 10.5 500 0 1000 H.hod.1y.GoodPosAdcPed>0.0
-TH2F hhodo_2x_good_pped_vs_pmt_pos 'HMS 2X+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.2x.GoodPosAdcPed 16 0.5 16.5 500 0 1000 H.hod.2x.GoodPosAdcPed>0.0
-TH2F hhodo_2y_good_pped_vs_pmt_pos 'HMS 2Y+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.2y.GoodPosAdcPed 10 0.5 10.5 500 0 1000 H.hod.2y.GoodPosAdcPed>0.0
+TH2F hhodo_1x_good_pped_vs_pmt_pos 'HMS 1X+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.1x.GoodPosAdcPed 16 0.5 16.5 200 0 200 H.hod.1x.GoodPosAdcPed>0.0
+TH2F hhodo_1y_good_pped_vs_pmt_pos 'HMS 1Y+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.1y.GoodPosAdcPed 10 0.5 10.5 200 0 200 H.hod.1y.GoodPosAdcPed>0.0
+TH2F hhodo_2x_good_pped_vs_pmt_pos 'HMS 2X+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.2x.GoodPosAdcPed 16 0.5 16.5 200 0 200 H.hod.2x.GoodPosAdcPed>0.0
+TH2F hhodo_2y_good_pped_vs_pmt_pos 'HMS 2Y+ Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.2y.GoodPosAdcPed 10 0.5 10.5 200 0 200 H.hod.2y.GoodPosAdcPed>0.0
 
-TH2F hhodo_1x_good_pped_vs_pmt_neg 'HMS 1X- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.1x.GoodNegAdcPed 16 0.5 16.5 500 0 1000 H.hod.1x.GoodNegAdcPed>0.0
-TH2F hhodo_1y_good_pped_vs_pmt_neg 'HMS 1Y- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.1y.GoodNegAdcPed 10 0.5 10.5 500 0 1000 H.hod.1y.GoodNegAdcPed>0.0
-TH2F hhodo_2x_good_pped_vs_pmt_neg 'HMS 2X- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.2x.GoodNegAdcPed 16 0.5 16.5 500 0 1000 H.hod.2x.GoodNegAdcPed>0.0
-TH2F hhodo_2y_good_pped_vs_pmt_neg 'HMS 2Y- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / 2 mV' [I+1]  H.hod.2y.GoodNegAdcPed 10 0.5 10.5 500 0 1000 H.hod.2y.GoodNegAdcPed>0.0
+TH2F hhodo_1x_good_pped_vs_pmt_neg 'HMS 1X- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.1x.GoodNegAdcPed 16 0.5 16.5 200 0 200 H.hod.1x.GoodNegAdcPed>0.0
+TH2F hhodo_1y_good_pped_vs_pmt_neg 'HMS 1Y- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.1y.GoodNegAdcPed 10 0.5 10.5 200 0 200 H.hod.1y.GoodNegAdcPed>0.0
+TH2F hhodo_2x_good_pped_vs_pmt_neg 'HMS 2X- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.2x.GoodNegAdcPed 16 0.5 16.5 200 0 200 H.hod.2x.GoodNegAdcPed>0.0
+TH2F hhodo_2y_good_pped_vs_pmt_neg 'HMS 2Y- Good Pulse Pedestal vs. PMT Number; PMT Number; Good Pulse Pedestal / mV' [I+1]  H.hod.2y.GoodNegAdcPed 10 0.5 10.5 200 0 200 H.hod.2y.GoodNegAdcPed>0.0
 
 #------------------------------
 # HMS HODO Good PULSE INTEGRAL

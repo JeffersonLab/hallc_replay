@@ -1008,15 +1008,15 @@ void OnlineGUI::DoDraw()
     gStyle->SetTitleW(0.40);
     //   gStyle->SetLabelSize(0.10,"X");
     //   gStyle->SetLabelSize(0.10,"Y");
-    gStyle->SetLabelSize(0.03,"X");
-    gStyle->SetLabelSize(0.03,"Y");
+    gStyle->SetLabelSize(0.02,"X");
+    gStyle->SetLabelSize(0.02,"Y");
     gStyle->SetPadLeftMargin(0.10);
     gStyle->SetNdivisions(505,"X");
     gStyle->SetNdivisions(404,"Y");
     gStyle->SetTitleXOffset(1.1);
-    gStyle->SetTitleYOffset(1.45);
-  gStyle->SetTitleSize(0.045,"X");
-  gStyle->SetTitleSize(0.045,"Y");
+    gStyle->SetTitleYOffset(1.1);
+  gStyle->SetTitleSize(0.040,"X");
+  gStyle->SetTitleSize(0.035,"Y");
   gStyle->SetPalette(1);
   gROOT->ForceStyle();
 

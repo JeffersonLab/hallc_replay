@@ -18,18 +18,11 @@ TH1F htrig_h1y_tdc 'HMS h1y TDC Time; TDC Time (ns); Counts / 0.1 ns;' T.hms.h1Y
 TH1F htrig_h2x_tdc 'HMS h2x TDC Time; TDC Time (ns); Counts / 0.1 ns;' T.hms.h2X_tdcTime 4000 0 400
 TH1F htrig_h2y_tdc 'HMS h2y TDC Time; TDC Time (ns); Counts / 0.1 ns;' T.hms.h2Y_tdcTime 4000 0 400
 
-TH1F htrig_h1T_tdc_raw 'HMS h1X/h1Y Coincidence Raw TDC Time; Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.h1T_tdcTimeRaw 4000 0 4000
-TH1F htrig_h2T_tdc_raw 'HMS h2X/h2Y Coincidence Raw TDC Time; Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.h2T_tdcTimeRaw 4000 0 4000
+TH1F htrig_h1T_tdc 'HMS h1X/h1Y Coincidence TDC Time; Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.h1T_tdcTimeRaw 4000 0 4000
+TH1F htrig_h2T_tdc 'HMS h2X/h2Y Coincidence TDC Time; Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.h2T_tdcTimeRaw 4000 0 4000
 
-TH1F htrig_h1T_tdc 'HMS h1x/h1y Coincidence TDC Time; TDC Time (ns); Counts / 0.1 ns;' T.hms.h1T_tdcTime 4000 0 400
-TH1F htrig_h2T_tdc 'HMS h2x/h2y Coincidence TDC Time; TDC Time (ns); Counts / 0.1 ns;' T.hms.h2T_tdcTime 4000 0 400
-
-TH1F htrig_hT1_tdc_raw 'HMS h1X/h1Y/h2X/h2Y Coincidence Raw TDC Time (Slot 2); Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.hT1_tdcTimeRaw 4000 0 4000
-TH1F htrig_hT2_tdc_raw 'HMS h1X/h1Y/h2X/h2Y Coincidence Raw TDC Time (Slot 20); Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.hT2_tdcTimeRaw 4000 0 4000
-
-TH1F htrig_hT1_tdc 'HMS h1X/h1Y/h2X/h2Y Coincidence TDC Time (Slot 2); TDC Time (ns); Counts / 0.1 ns;' T.hms.hT1_tdcTime 4000 0 400
-TH1F htrig_hT2_tdc 'HMS h1X/h1Y/h2X/h2Y Coincidence TDC Time (Slot 20); TDC Time (ns); Counts / 0.1 ns;' T.hms.hT2_tdcTime 4000 0 400
-
+TH1F htrig_hT1_tdc 'HMS h1X/h1Y/h2X/h2Y Coincidence TDC Time (Slot 2); Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.hT1_tdcTimeRaw 4000 0 4000
+TH1F htrig_hT2_tdc 'HMS h1X/h1Y/h2X/h2Y Coincidence TDC Time (Slot 20); Raw TDC Time (TDC Units); Counts / 1 TDC Units;' T.hms.hT2_tdcTimeRaw 4000 0 4000
 
 #----------------------------
 # HMS Raw DC TRIG Reference Time
@@ -130,7 +123,7 @@ TH1F htrig_hdsum_tdc 'HMS hDsum TDC Time;  TDC Time (ns); Counts / 0.1 ns;' T.hm
 # HMS PreShower TRIG Pulse Profile
 #----------------------------------
 
-TH1F htrig_hpreShwr_adc_pped 'HMS Pre-Shower Pulse Pedestal;  Pulse Pedestal (mV); Counts / 2 mV;' T.hms.hPSHWR_adcPed 500 0 1500
+TH1F htrig_hpreShwr_adc_pped 'HMS Pre-Shower Pulse Pedestal;  Pulse Pedestal (mV); Counts / 2 mV;' T.hms.hPSHWR_adcPed 500 -500 500
 TH1F htrig_hpreShwr_adc_pi 'HMS Pre-Shower Pulse Integral;  Pulse Integral (pC); Counts / 0.25 pC;' T.hms.hPSHWR_adcPulseInt 4000 -2000 15000
 TH1F htrig_hpreShwr_adc_pamp 'HMS Pre-Shower Pulse Amplitude;  Pulse Amplitude (mV); Counts / 2 mV;' T.hms.hPSHWR_adcPulseAmp 410 -500 3000
 TH1F htrig_hpreShwr_tdc 'HMS Pre-Shower TDC Time;  TDC Time (ns); Counts / 0.1 ns;' T.hms.hPSHWR_tdcTime 4000 -1000 1000
@@ -139,7 +132,7 @@ TH1F htrig_hpreShwr_tdc 'HMS Pre-Shower TDC Time;  TDC Time (ns); Counts / 0.1 n
 # HMS Shower TRIG Pulse Profile
 #----------------------------------
 
-TH1F htrig_hshwr_adc_pped 'HMS Shower Pulse Pedestal;  Pulse Pedestal (mV); Counts / 2 mV;' T.hms.hSHWR_adcPed 500 600 1200
+TH1F htrig_hshwr_adc_pped 'HMS Shower Pulse Pedestal;  Pulse Pedestal (mV); Counts / 2 mV;' T.hms.hSHWR_adcPed 2500 0 5000
 TH1F htrig_hshwr_adc_pi 'HMS Shower Pulse Integral;  Pulse Integral (pC); Counts / 0.25 pC;' T.hms.hSHWR_adcPulseInt 4000 -2000 15000
 TH1F htrig_hshwr_adc_pamp 'HMS Shower Pulse Amplitude;  Pulse Amplitude (mV); Counts / 2 mV;' T.hms.hSHWR_adcPulseAmp 410 -500 3000
 TH1F htrig_hshwr_tdc 'HMS Shower TDC Time;  TDC Time (ns); Counts / 0.1 ns;' T.hms.hSHWR_tdcTime 4000 -200 600
@@ -158,7 +151,7 @@ TH1F htrig_hcersum_rawtdc 'HMS Cherenkov Sum Raw TDC Time; Raw TDC Time (TDC Uni
 # HMS Gas Cherenkov TRIG Pulse Profile
 #---------------------------------------
 
-TH1F htrig_hcersum_adc_pped 'HMS Cherenkov Sum Pulse Pedestal;  Pulse Pedestal (mV); Counts / 2 mV;' T.hms.hCERSUM_adcPed 500 400 700
+TH1F htrig_hcersum_adc_pped 'HMS Cherenkov Sum Pulse Pedestal;  Pulse Pedestal (mV); Counts / 2 mV;' T.hms.hCERSUM_adcPed 5000 -5000 5000
 TH1F htrig_hcersum_adc_pi 'HMS Cherenkov Sum Pulse Integral;  Pulse Integral (pC); Counts / 0.25 pC;' T.hms.hCERSUM_adcPulseInt 4000 -500 500
 TH1F htrig_hcersum_adc_pamp 'HMS Cherenkov Sum Pulse Amplitude;  Pulse Amplitude (mV); Counts / 2 mV;' T.hms.hCERSUM_adcPulseAmp 410 -200 800
 TH1F htrig_hcersum_tdc 'HMS Cherenkov Sum TDC Time;  TDC Time (ns); Counts / 0.1 ns;' T.hms.hCERSUM_tdcTime 4000 300 350
@@ -205,4 +198,3 @@ TH1F hFRYB 'HMS FRYB; FRYB RAW ADC (chan); Counts' T.hms.pFRYB_adcPulseIntRaw 10
 TH1F hFRYB_V 'HMS FRYB; FRYB RAW ADC (Volts); Counts' FRYB_V 1000 0 1.0
 TH2F hFRA_XvsY 'HMSFRA_XvsY; FRXA RAW ADC (Volts); FRYA RAW ADC (Volts)' FRXA_V FRYA_V 1000 0 1.0 1000 0 1.0
 TH2F hFRB_XvsY 'HMSFRB_XvsY; FRXB RAW ADC (Volts); FRYB RAW ADC (Volts)' FRXB_V FRYB_V 1000 0 1.0 1000 0 1.0
-
