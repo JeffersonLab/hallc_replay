@@ -81,7 +81,7 @@ void overlay2(TString hist1name, TString hist2name, TString label1="", TString l
 
     H2->GetXaxis()->SetTitleOffset(.55);
     H2->GetXaxis()->SetTitleSize(0.075);
-    H2->GetYaxis()->SetTitleOffset(.55);
+    H2->GetYaxis()->SetTitleOffset(.75);
     H2->GetYaxis()->SetTitleSize(0.075);
     }
   }
