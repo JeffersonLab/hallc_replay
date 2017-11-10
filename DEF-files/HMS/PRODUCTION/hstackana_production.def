@@ -1,6 +1,6 @@
 
 #include "DEF-files/HMS/TEST_STANDS/CER/hcerana.def"
-#include "DEF-files/HMS/TEST_STANDS/DC/hdc_6gev_histos.def"
+#include "DEF-files/HMS/TEST_STANDS/DC/hdcana.def"
 #include "DEF-files/HMS/TEST_STANDS/HODO/hhodoana.def"
 #include "DEF-files/HMS/TEST_STANDS/CAL/hcalana.def"
 #include "DEF-files/HMS/TEST_STANDS/TRIG/htrigana.def"

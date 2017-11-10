@@ -93,7 +93,7 @@ void replay_hdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
  analyzer->SetEvent(event);
  analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
  analyzer->SetOutFile(ROOTFileName.Data());
- analyzer->SetOdefFile("DEF-files/HMS/TEST_STANDS/DC/hdc_histos.def");
+ analyzer->SetOdefFile("DEF-files/HMS/TEST_STANDS/DC/hdcana.def");
  analyzer->SetCutFile("DEF-files/HMS/TEST_STANDS/DC/hdcana_cuts.def");    // optional
 
  // File to record cuts accounting information
