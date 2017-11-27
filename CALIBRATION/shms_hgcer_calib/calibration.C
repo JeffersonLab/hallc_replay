@@ -106,9 +106,9 @@ void calibration::SlaveBegin(TTree * /*tree*/)
 
   if (!fNGC) //Set up histograms for HGC
     {
-      ADC_min = -4000;
-      ADC_max = 12000;
-      bins = abs(ADC_min) + abs(ADC_max);
+      ADC_min = -10;
+      ADC_max = 200;
+      bins = 2*(abs(ADC_min) + abs(ADC_max));
     }
 
   fPulseInt = new TH1F*[4];
@@ -119,11 +119,11 @@ void calibration::SlaveBegin(TTree * /*tree*/)
   fPulseInt_quad[3] = new TH1F*[4];
   for (Int_t ipmt = 0; ipmt < 4; ipmt++)
     {
-      fPulseInt[ipmt] = new TH1F(Form("PulseInt_PMT%d",ipmt+1),Form("Pulse Integral PMT%d; ADC Channel; Counts",ipmt+1), bins, ADC_min, ADC_max);
+      fPulseInt[ipmt] = new TH1F(Form("PulseInt_PMT%d",ipmt+1),Form("Pulse Integral PMT%d; ADC Channel (pC); Counts",ipmt+1), bins, ADC_min, ADC_max);
       GetOutputList()->Add(fPulseInt[ipmt]);
       for (Int_t iquad = 0; iquad < 4; iquad++)
 	{
-	  fPulseInt_quad[iquad][ipmt] = new TH1F(Form("PulseInt_quad%d_PMT%d",iquad+1,ipmt+1),Form("Pulse Integral PMT%d quad%d; ADC Channel; Counts",ipmt+1,iquad+1),bins,ADC_min,ADC_max);
+	  fPulseInt_quad[iquad][ipmt] = new TH1F(Form("PulseInt_quad%d_PMT%d",iquad+1,ipmt+1),Form("Pulse Integral PMT%d quad%d; ADC Channel (pC); Counts",ipmt+1,iquad+1),bins,ADC_min,ADC_max);
 	  GetOutputList()->Add(fPulseInt_quad[iquad][ipmt]);
 	}
     }
@@ -468,6 +468,7 @@ void calibration::Terminate()
     }
 
   //Rebin the histograms into something more sensible, add functionality to bin HGC & NGC independently
+  /*
   for (Int_t ipmt=0; ipmt < (fNGC ? fngc_pmts : fhgc_pmts); ipmt++)
     {
       for (Int_t iquad=0; iquad<4; iquad++)
@@ -476,7 +477,7 @@ void calibration::Terminate()
 	}
       fNGC ? PulseInt[ipmt]->Rebin(20) : PulseInt[ipmt]->Rebin(20);
     }
-
+*/
 
   //Show the particle cuts performed in the histogram forming
   if (fCut)
@@ -492,7 +493,7 @@ void calibration::Terminate()
   gStyle->SetOptFit(111);
 
   //Single Gaussian to find mean of SPE
-  TF1 *Gauss1 = new TF1("Gauss1",gauss,-500,7000,3);
+  TF1 *Gauss1 = new TF1("Gauss1",gauss,-10,200,3);
   Gauss1->SetParNames("Amplitude","Mean","Std. Dev.");
 
   //Sum of three Gaussians to determine NPE spacing
@@ -551,23 +552,23 @@ void calibration::Terminate()
 	      if (fFullShow) quad_cuts_ipmt->cd(ipad);
 
 	      //Perform search for the SPE and save the peak into the array xpeaks
-	      fFullShow ? s->Search(PulseInt_quad[iquad][ipmt], 2.5, "nobackground", 0.001) : s->Search(PulseInt_quad[iquad][ipmt], 2.5, "nobackground&&nodraw", 0.001);
+	      fFullShow ? s->Search(PulseInt_quad[iquad][ipmt], 2.0, "nobackground", 0.001) : s->Search(PulseInt_quad[iquad][ipmt], 2.5, "nobackground&&nodraw", 0.001);
 	      TList *functions = PulseInt_quad[iquad][ipmt]->GetListOfFunctions();
 	      TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
 	      Double_t *xpeaks = pm->GetX();
 	      if (xpeaks[1] < xpeaks[0]) xpeaks[1] = xpeaks[0];
 
 	      //Use the peak to fit the SPE with a Gaussian to determine the mean
-	      Gauss1->SetRange(xpeaks[1]-150, xpeaks[1]+150);
+	      Gauss1->SetRange(xpeaks[1]-5, xpeaks[1]+5);
 	      Gauss1->SetParameter(1, xpeaks[1]);
-	      Gauss1->SetParameter(2, 200.);
+	      Gauss1->SetParameter(2, 10.);
 	      Gauss1->SetParLimits(0, 0., 2000.);
-	      Gauss1->SetParLimits(1, xpeaks[1]-150, xpeaks[1]+150);
-	      Gauss1->SetParLimits(2, 10., 500.);
+	      Gauss1->SetParLimits(1, xpeaks[1]-10, xpeaks[1]+10);
+	      Gauss1->SetParLimits(2, 0.5, 10.);
 	      fFullShow ? PulseInt_quad[iquad][ipmt]->Fit("Gauss1","RQ") : PulseInt_quad[iquad][ipmt]->Fit("Gauss1","RQN");
 
 	      //Store the mean of the SPE in the mean array provided it is not zero and passes a loose statistical cut. Note that indexing by ipad-1 is for convienience 
-	      if (xpeaks[1] != 0.0 && PulseInt_quad[iquad][ipmt]->GetBinContent(PulseInt_quad[iquad][ipmt]->GetXaxis()->FindBin(xpeaks[1])) > 90) mean[ipad-1] = Gauss1->GetParameter(1); 
+	      if (xpeaks[1] > 2.0 && PulseInt_quad[iquad][ipmt]->GetBinContent(PulseInt_quad[iquad][ipmt]->GetXaxis()->FindBin(xpeaks[1])) > 90) mean[ipad-1] = Gauss1->GetParameter(1); 
 	      ipad++;
 	    }
 	  
@@ -583,23 +584,23 @@ void calibration::Terminate()
 	  if (num_peaks != 0.0) xscale = xscale/num_peaks;
 
 	  //Perform check if the statistics were too low to get a good estimate of the SPE mean
-	  if (xscale < 10.0)
+	  if (xscale < 1.0)
 	    {
 	      //Repeat the exact same procedure for the SPE of each quadrant, except now its for the full PMT spectra
 	      if(fFullShow) low_stats_ipmt = new TCanvas(Form("low_stats_%d",ipmt),Form("Low stats analysis for PMT%d",ipmt+1));
 	      if(fFullShow) low_stats_ipmt->cd(1);
-	      PulseInt[ipmt]->GetXaxis()->SetRangeUser(0,1000);
+	      PulseInt[ipmt]->GetXaxis()->SetRangeUser(0,20);
 	      fFullShow ? s->Search(PulseInt[ipmt], 3.5, "nobackground", 0.001) : s->Search(PulseInt[ipmt], 2.0, "nobackground&&nodraw", 0.001);
 	      TList *functions = PulseInt[ipmt]->GetListOfFunctions();
 	      TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
 	      Double_t *xpeaks = pm->GetX();
-	      Gauss1->SetRange(xpeaks[1]-100, xpeaks[1]+100);
+	      Gauss1->SetRange(xpeaks[1]-5, xpeaks[1]+5);
 	      Gauss1->SetParameter(1, xpeaks[1]);
-	      Gauss1->SetParameter(2, 200.);
+	      Gauss1->SetParameter(2, 10.);
 	      Gauss1->SetParLimits(0, 0., 2000.);
-	      Gauss1->SetParLimits(1, xpeaks[1]-50, xpeaks[1]+50);
-	      Gauss1->SetParLimits(2, 10., 500.);
-	      PulseInt[ipmt]->GetXaxis()->SetRangeUser(-500,7000);
+	      Gauss1->SetParLimits(1, xpeaks[1]-5, xpeaks[1]+5);
+	      Gauss1->SetParLimits(2, 0.5, 20.);
+	      PulseInt[ipmt]->GetXaxis()->SetRangeUser(-10,200);
 	      fFullShow ? PulseInt[ipmt]->Fit("Gauss1","RQ") : PulseInt[ipmt]->Fit("Gauss1","RQN");
 	      xscale = Gauss1->GetParameter(1);
 	    }	  
@@ -608,7 +609,7 @@ void calibration::Terminate()
 	  nbins = (PulseInt[ipmt]->GetXaxis()->GetNbins());
 
 	  //With the scale of ADC to NPE create a histogram that has the conversion applied
-	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled[ipmt] = new TH1F(Form("fscaled_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 210, -1, fNGC ? 25 : 20);
 	  
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -632,7 +633,7 @@ void calibration::Terminate()
 	  fFullShow ? fscaled[ipmt]->Fit("Poisson","RQ") : fscaled[ipmt]->Fit("Poisson","RQN");
 
 	  //Make and fill histogram with the background removed
-	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled_nobackground[ipmt] = new TH1F(Form("fscaled_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 210, -1, fNGC ? 25 : 20);
 
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
@@ -679,7 +680,7 @@ void calibration::Terminate()
 	  Double_t xscale_mk2 = xscale * Gauss3->GetParameter(1);
 
 	  //Take this new xscale and repeat the exact same procedure as before
-	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled_mk2[ipmt] = new TH1F(Form("fhgc_scaled_mk2_PMT%d", ipmt+1), Form("Scaled ADC spectra for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 210, -1, fNGC ? 25 : 20);
 	  
 	  //Fill this histogram bin by bin
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
@@ -703,7 +704,7 @@ void calibration::Terminate()
 	  fFullShow ? fscaled_mk2[ipmt]->Fit("Poisson","RQ"):fscaled_mk2[ipmt]->Fit("Poisson","RQN");
 
 	  //Make and fill histogram with the background removed
-	  fscaled_mk2_nobackground[ipmt] = new TH1F(Form("fscaled_mk2_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 280, 0, fNGC ? 25 : 20);
+	  fscaled_mk2_nobackground[ipmt] = new TH1F(Form("fscaled_mk2_nobackground_pmt%d", ipmt+1), Form("NPE spectra background removed for PMT%d; NPE; Normalized Counts",ipmt+1), fNGC ? 360 : 210, -1, fNGC ? 25 : 20);
 
 	  for (Int_t ibin=0; ibin<nbins; ibin++)
 	    {
@@ -935,7 +936,7 @@ void calibration::Terminate()
   cout << "Calibration constants are (where the '*' indicates the better value)\nPMT#: First Guess  Second Guess\n" << endl;
   for (Int_t i=0; i<4; i++)
     {
-      cout << Form("PMT%d:", i+1) << setw(8) << Form("%3.0f", calibration_mk1[i]) << (pmt_calib[i] < pmt_calib_mk2[i] ? "*" : " ") << setw(13) << Form("%3.0f", calibration_mk2[i]) << (pmt_calib[i] > pmt_calib_mk2[i] ? "*\n" : "\n");
+      cout << Form("PMT%d:", i+1) << setw(8) << Form("%3.3f", calibration_mk1[i]) << (pmt_calib[i] < pmt_calib_mk2[i] ? "*" : " ") << setw(13) << Form("%3.3f", calibration_mk2[i]) << (pmt_calib[i] > pmt_calib_mk2[i] ? "*\n" : "\n");
     }
 
   printf("\n");
@@ -954,7 +955,7 @@ void calibration::Terminate()
       calibration << "phgcer_adc_to_npe = "; 
       for (Int_t ipmt = 0; ipmt < 4; ipmt++)
 	{
-	  calibration << Form("1./%3.0f. ", (pmt_calib[ipmt] < pmt_calib_mk2[ipmt]) ? calibration_mk1[ipmt] : calibration_mk2[ipmt]);
+	  calibration << Form("1./%3.3f. ", (pmt_calib[ipmt] < pmt_calib_mk2[ipmt]) ? calibration_mk1[ipmt] : calibration_mk2[ipmt]);
 	}
 
       calibration.close();

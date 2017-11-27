@@ -178,13 +178,13 @@ void efficiencies::SlaveBegin(TTree * /*tree*/)
   GetOutputList()->Add(fTiming_Full);
 
   //Histograms examining particle ID cuts
-  fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID from calorimeter & preshower;Calorimeter.Fly.Earray;Calorimeter.Pr.Eplane", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  fFly_Pr_Full = new TH2F("Fly_Pr_Full", "Particle ID from calorimeter & preshower;Calorimeter (GeV);Pre-Shower (GeV)", 200, 0.0, 1.0, 200, 0.0, 1.0);
   GetOutputList()->Add(fFly_Pr_Full);
   
-  fFly_Pr_eCut = new TH2F("Fly_Pr_eCut", "calorimeter & preshower electrons;Calorimeter.Fly.Earray;Calorimeter.Pr.Eplane", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  fFly_Pr_eCut = new TH2F("Fly_Pr_eCut", "calorimeter & preshower electrons;Calorimeter (GeV);Pre-Shower (GeV)", 200, 0.0, 1.0, 200, 0.0, 1.0);
   GetOutputList()->Add(fFly_Pr_eCut);
 
-  fFly_Pr_piCut = new TH2F("Fly_Pr_piCut", "calorimeter & preshower pions;Calorimeter.Fly.Earray;Calorimeter.Pr.Eplane", 200, 0.0, 1.0, 200, 0.0, 1.0);
+  fFly_Pr_piCut = new TH2F("Fly_Pr_piCut", "calorimeter & preshower pions;Calorimeter (GeV);Pre-Shower (GeV)", 200, 0.0, 1.0, 200, 0.0, 1.0);
   GetOutputList()->Add(fFly_Pr_piCut);
 
   printf("\n\n");
