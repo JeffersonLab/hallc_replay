@@ -16,7 +16,7 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   }
 
   // Create file name patterns.
-  const char* RunFileNamePattern = "shms_all_%05d.dat";
+  const char* RunFileNamePattern = "coin_all_%05d.dat";
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
@@ -56,7 +56,7 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add hodoscope to HMS apparatus
   THcHodoscope* hhod = new THcHodoscope("hod", "Hodoscope");
   HMS->AddDetector(hhod);
-  // Add Cherenkov to HMS apparatus
+   // Add Cherenkov to HMS apparatus
   THcCherenkov* hcer = new THcCherenkov("cer", "Heavy Gas Cherenkov");
   HMS->AddDetector(hcer);
   // Add Aerogel Cherenkov to HMS apparatus
@@ -70,8 +70,8 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THaGoldenTrack* hgtr = new THaGoldenTrack("H.gtr", "HMS Golden Track", "H");
   gHaPhysics->Add(hgtr);
   // Add Physics Module to calculate primary (scattered) beam kinematics
-  THcPrimaryKine* hkin_primary = new THcPrimaryKine("H.kin.primary", "HMS Single Arm Kinematics", "H", "IB");
-  gHaPhysics->Add(hkin_primary);
+  // THcPrimaryKine* hkin_primary = new THcPrimaryKine("H.kin.primary", "HMS Single Arm Kinematics", "H", "IB");
+  // gHaPhysics->Add(hkin_primary);
   // Add Physics Module to calculate secondary (scattered) beam kinematics
   // THcSecondaryKine* hkin_secondary = new THcSecondaryKine("H.kin.secondary", "HMS Single Arm Kinematics", "H", "IB");
   // gHaPhysics->Add(hkin_secondary);
@@ -111,8 +111,8 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
   gHaPhysics->Add(gtr);
   // Add Physics Module to calculate primary (scattered) beam kinematics
-  THcPrimaryKine* pkin_primary = new THcPrimaryKine("P.kin.primary", "SHMS Single Arm Kinematics", "P", "IB");
-  gHaPhysics->Add(pkin_primary);
+  // THcPrimaryKine* pkin_primary = new THcPrimaryKine("P.kin.primary", "SHMS Single Arm Kinematics", "P", "IB");
+  // gHaPhysics->Add(pkin_primary);
   // // Add Physics Module to calculate secondary (scattered) beam kinematics
   // THcSecondaryKine* pkin_secondary = new THcSecondaryKine("P.kin.secondary", "SHMS Single Arm Kinematics", "P", "IB");
   // gHaPhysics->Add(pkin_secondary);
@@ -134,7 +134,7 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THcTrigDet* coin = new THcTrigDet("coin", "Coincidence Trigger Information");
   TRG->AddDetector(coin); 
   // Add Ideal Beam Apparatus
-  THaApparatus* beam = new THaIdealBeam("IB", "Ideal Beamline");
+  THaApparatus* beam = new THcRasteredBeam("P.rb", "Rastered Beamline");
   gHaApps->Add(beam);
   // Add event handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
@@ -142,7 +142,7 @@ void replay_production_coin (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add event handler for EPICS events
   THaEpicsEvtHandler* hcepics = new THaEpicsEvtHandler("epics", "HC EPICS event type 180");
   gHaEvtHandlers->Add(hcepics);
-
+ 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
   // The Analyzer controls the reading of the data, executes
