@@ -20,6 +20,7 @@ void replay_pdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
+    pathList.push_back("./raw/../raw.copiedtotape");
     pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/pdc_replay_%d.root";
@@ -35,7 +36,7 @@ void replay_pdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
   gHcParms->Load(gHcParms->GetString("g_ctp_calib_filename"));
   
-  // Load params for HMS DC test stand configuration
+  // Load params for SHMS DC test stand configuration
   //gHcParms->Load("PARAM/SHMS/DC/pdc_test_stand.param");
 
   // Load the Hall C style detector map

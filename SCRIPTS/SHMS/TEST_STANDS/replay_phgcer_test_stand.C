@@ -20,6 +20,7 @@ void replay_phgcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
+    pathList.push_back("./raw/../raw.copiedtotape");
     pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/phgcer_replay_%d.root";
@@ -34,7 +35,7 @@ void replay_phgcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
   gHcParms->Load(gHcParms->GetString("g_ctp_calib_filename"));
-  // Load params for HMS trigger configuration
+  // Load params for SHMS trigger configuration
   gHcParms->Load("PARAM/TRIG/tshms.param");
   gHcParms->Load("PARAM/SHMS/GEN/p_fadc_debug.param");
   // Load the Hall C style detector map
@@ -44,7 +45,7 @@ void replay_phgcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Set up the equipment to be analyzed.
   THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
   gHaApps->Add(SHMS);
-  // Add Cherenkov to HMS apparatus
+  // Add Cherenkov to SHMS apparatus
   THcCherenkov* hgcer = new THcCherenkov("hgcer", "Heavy Gas Cherenkov");
   SHMS->AddDetector(hgcer);
 

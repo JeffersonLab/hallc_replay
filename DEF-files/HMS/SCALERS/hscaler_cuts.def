@@ -2,6 +2,7 @@
 
 Block: RawDecode
 
+Pedestal_event     g.evtyp == 99
 HMS_trig_1_event   g.evtyp == 1
 HMS_trig_2_event   g.evtyp == 2
 HMS_trig_3_event   g.evtyp == 3
@@ -17,7 +18,7 @@ Block: Decode
 hms_trigs         HMS_event
 edtm_accepted     T.hms.hHODO_EDTM_tdcTime != 0.0
 physics_accepted  T.hms.hHODO_EDTM_tdcTime == 0.0
-triggers_accepted T.hms.hT1_tdcTime == 0.0
+triggers_accepted T.hms.hT1_tdcTime == 300.0
 
 Decode_master     HMS_event
 

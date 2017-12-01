@@ -1,5 +1,8 @@
 ; Geometrical parameters
 
+; Chamber version
+ hdc_version = 1
+
 ; Conversion factor from TDC clicks to ns.
 hdc_tdc_time_per_channel = -0.10
 
@@ -10,7 +13,7 @@ hdc_num_chambers = 2
 hdc_num_planes = 12
 
 ; Names of planes.
-hdc_plane_names = "1u1 1u2 1x1 1x2 1v1 1v2 2v2 2v1 2x2 2x1 2u2 2u1";
+hdc_plane_names = "1u1 1u2 1x1 1x2 1v2 1v1 2v1 2v2 2x2 2x1 2u2 2u1";
 
 ; Chamber index for each plane.
 hdc_chamber_planes = 1, 1, 1, 1, 1, 1
@@ -31,16 +34,16 @@ hdc_central_time   = 0, 0, 0, 0, 0, 0  ; -not used in new HMS chambers
 hdc_drifttime_sign = 0, 0, 0, 0, 0, 0  ; -not used in new HMS chambers
                      0, 0, 0, 0, 0, 0
 
-hdc_readoutLR = 1.0, -1.0, 1.0, 1.0, 1.0, -1.0
-                -1.0, 1.0, 1.0, 1.0, -1.0, 1.0
-hdc_readoutTB = -1.0, 1.0, -1.0, 1.0, 1.0, -1.0
-                -1.0, 1.0, 1.0, -1.0, 1.0, -1.0             
+hdc_readoutLR = 1, -1, 1, 1, 1, -1
+                -1, 1, 1, 1, -1, 1
+hdc_readoutTB = -1, 1, -1, 1, 1, -1
+                -1, 1, 1, -1, 1, -1             
 
 ; CHAMBER POSITION PARAMETERS
 
 ; x, y and z position of center for each wire chamber in cm.
-hdc_xcenter = 0.0; TODO - final survey
-hdc_ycenter = 0.0; 
+hdc_xcenter = 0.0,0.0; TODO - final survey
+hdc_ycenter = 0.0,0.0; 
 
 ; 
 hdc_1_zpos = -52.0954;

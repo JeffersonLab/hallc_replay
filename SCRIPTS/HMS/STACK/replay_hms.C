@@ -20,6 +20,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
+    pathList.push_back("./raw/../raw.copiedtotape");
     pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/hms_replay_%d_%d.root";
@@ -107,7 +108,7 @@ void replay_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Define output ROOT file
   analyzer->SetOutFile(ROOTFileName.Data());
   // Define DEF-file
-  analyzer->SetOdefFile("DEF-files/HMS/STACK/hstackana.def");
+  analyzer->SetOdefFile("DEF-files/HMS/STACK/hstack_include.def");
   // Define cuts file
   analyzer->SetCutFile("DEF-files/HMS/STACK/hstackana_cuts.def");  // optional
   // File to record accounting information for cuts

@@ -20,6 +20,7 @@ void replay_pngcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
+    pathList.push_back("./raw/../raw.copiedtotape");
     pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/pngcer_replay_%d.root";
@@ -44,7 +45,7 @@ void replay_pngcer_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Set up the equipment to be analyzed.
   THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
   gHaApps->Add(SHMS);
-  // Add hodoscope to HMS apparatus
+  // Add hodoscope to SHMS apparatus
   THcCherenkov* ngcer = new THcCherenkov("ngcer", "Noble Gas Cherenkov");
   SHMS->AddDetector(ngcer);
 

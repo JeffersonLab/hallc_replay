@@ -20,6 +20,7 @@ void replay_hdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
+    pathList.push_back("./raw/../raw.copiedtotape");
     pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/hdc_replay_%d.root";
@@ -39,7 +40,7 @@ void replay_hdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Load the Hall C style detector map
   gHcDetectorMap = new THcDetectorMap();
   //gHcDetectorMap->Load(gHcParms->GetString("g_decode_map_filename"));
-  gHcDetectorMap->Load("MAPS/HMS/DETEC/DC/hdc_6gev_htrig.map");
+  gHcDetectorMap->Load("MAPS/HMS/DETEC/DC/hdc_htrig.map");
 
   // Set up the equipment to be analyzed.
   THaApparatus* HMS = new THcHallCSpectrometer("H", "HMS");
@@ -60,7 +61,7 @@ void replay_hdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
 
-  
+
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
   // The Analyzer controls the reading of the data, executes
@@ -93,7 +94,7 @@ void replay_hdc_test_stand(Int_t RunNumber=0, Int_t MaxEvent=0) {
  analyzer->SetEvent(event);
  analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
  analyzer->SetOutFile(ROOTFileName.Data());
- analyzer->SetOdefFile("DEF-files/HMS/TEST_STANDS/DC/hdc_6gev_histos.def");
+ analyzer->SetOdefFile("DEF-files/HMS/TEST_STANDS/DC/hdcana.def");
  analyzer->SetCutFile("DEF-files/HMS/TEST_STANDS/DC/hdcana_cuts.def");    // optional
 
  // File to record cuts accounting information

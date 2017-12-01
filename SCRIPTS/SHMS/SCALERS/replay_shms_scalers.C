@@ -20,6 +20,7 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   vector<TString> pathList;
     pathList.push_back(".");
     pathList.push_back("./raw");
+    pathList.push_back("./raw/../raw.copiedtotape");
     pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_scalers_%d_%d.root";
@@ -56,6 +57,9 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   pscaler->AddEvtType(1);
   pscaler->SetUseFirstEvent(kTRUE);
   gHaEvtHandlers->Add(pscaler);
+  // Add event handler for DAQ configuration event
+  THcConfigEvtHandler *pconfig = new THcConfigEvtHandler("pconfig", "Hall C configuration event handler");
+  gHaEvtHandlers->Add(pconfig);
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -71,7 +75,7 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Define the run(s) that we want to analyze.
   // We just set up one, but this could be many.
-  THaRun* run = new THaRun( pathList, Form(RunFileNamePattern, RunNumber) );
+  THcRun* run = new THcRun( pathList, Form(RunFileNamePattern, RunNumber) );
 
   // Eventually need to learn to skip over, or properly analyze
   // the pedestal events
