@@ -94,7 +94,6 @@ ROC=2
 
 SLOT=14
 REFINDEX=3
-  11,   1000,      0,   3  ! pFADC_TREF_ROC2
    0,      1,     10,   0  ! pAERSUM
    1,      1,     11,   0  ! pHGCERSUM
    2,      1,     12,   0  ! pNGCERSUM
