@@ -267,7 +267,7 @@ void timeWalkCalib() {
 	// Obtain the time-walk histos
 	h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = dynamic_cast <TH2F*> (twDir[iplane][iside]->FindObjectAny(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1)));
 	// Perform the time-walk fits while ignoring the S2Y plane (for now)
-	if (planeNames[iplane] == "2y") continue;
+	// if (planeNames[iplane] == "2y") continue;
 	doTwFits(iplane, iside, ipaddle);
       } // Paddle loop
       // Produce the time-walk fit parameter graphs
