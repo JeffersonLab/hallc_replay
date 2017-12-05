@@ -50,12 +50,12 @@ REFINDEX=0
   67,      2,     39,   1  ! pEL_HI
   68,      2,     40,   1  ! pEL_REAL
   69,      2,     41,   1  ! pEL_CLEAN
-  70,      2,     42,   1  ! hSTOF
-  71,      2,     43,   1  ! hEL_LO
-  72,      2,     44,   1  ! hEL_LO_CER
-  73,      2,     45,   1  ! hEL_HI
-  74,      2,     46,   1  ! hEL_REAL
-  75,      2,     47,   1  ! hEL_CLEAN
+  72,      2,     42,   1  ! hSTOF
+  73,      2,     43,   1  ! hEL_LO
+  74,      2,     44,   1  ! hEL_LO_CER
+  75,      2,     45,   1  ! hEL_HI
+  76,      2,     46,   1  ! hEL_REAL
+  77,      2,     47,   1  ! hEL_CLEAN
 
 ROC=6
 
