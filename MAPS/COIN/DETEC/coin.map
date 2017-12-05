@@ -3893,7 +3893,6 @@ REFINDEX=0
   64,   2,  69,   1  ! pSTOF_ROC2
   65,   2,  70,   1  ! pEL_LO_ROC2
   66,   2,  71,   1  ! pEL_LO_CER_ROC2
-
   67,   2,  72,   1  ! pEL_HI_ROC2
   68,   2,  73,   1  ! pEL_REAL_ROC2
   69,   2,  74,   1  ! pEL_CLEAN_ROC2
