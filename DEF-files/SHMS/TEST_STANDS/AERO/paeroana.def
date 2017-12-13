@@ -1,5 +1,5 @@
 # See $ANALYZER/examples/output_example.def for examples
-#
+
 block P.aero.*
 block T.shms.*
 
