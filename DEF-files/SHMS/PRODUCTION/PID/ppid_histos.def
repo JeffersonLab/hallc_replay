@@ -65,3 +65,13 @@ TH2F pcal_delta_etracknorm_pi   'SHMS Delta vs. Cal E/p; Normalized Track Energy
 TH2F pcal_prshwr_good_dtime_vs_pmt_pos 'SHMS PreShower+ Good Hodo Start - Pulse Time vs. PMT Number; PMT Number; Good Hodo Start - Pulse Time / 0.1 ns' [I+1] P.cal.pr.goodPosAdcPulseTime 14 0.5 14.5 4000 -200 200 
 TH2F pcal_prshwr_good_dtime_vs_pmt_neg 'SHMS PreShower-  Good Hodo Start - Pulse Time vs. PMT Number; PMT Number; Good Hodo Start - Pulse Time / 0.1 ns' [I+1] P.cal.pr.goodNegAdcTdcDiffTime 14 0.5 14.5 4000 -200 200 
 TH2F pcal_shwr_good_dtime_vs_pmt 'SHMS Shower Good Hodo Start - Pulse Time vs. PMT Number; PMT Number; Good Hodo Start - Pulse Time / 0.1 ns' [I+1] P.cal.fly.goodAdcPulseTime 224 0.5 224.5 4000 -200 200 
+
+#-----------------------------
+# SHMS Drift Chambers PID Cuts
+#-----------------------------
+
+TH1F pdc_trk_beta_elec  'SHMS DC ElectronTrack Beta; Beta; Number of Entires'  P.tr.beta 300 -1.5 1.5 pCleanTrack&&elec_all
+TH1F pdc_trk_beta_pi    'SHMS DC Pion Track Beta; Beta; Number of Entires'     P.tr.beta 300 -1.5 1.5 pCleanTrack&&pi_all
+
+TH1F pdc_trk_mom_elec   'SHMS DC Electron Track Momentum; P (GeV); Number of Entires / 10 MeV' P.tr.p 600 0 6 pCleanTrack&&elec_all
+TH1F pdc_trk_mom_pi     'SHMS DC Pion Track Momentum; P (GeV); Number of Entires / 10 MeV'     P.tr.p 600 0 6 pCleanTrack&&pi_all
