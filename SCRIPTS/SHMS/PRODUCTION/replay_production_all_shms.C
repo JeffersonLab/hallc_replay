@@ -1,4 +1,4 @@
-void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
+void replay_production_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {

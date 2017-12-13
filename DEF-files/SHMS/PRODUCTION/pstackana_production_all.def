@@ -1,3 +1,5 @@
+#include "DEF-files/SHMS/PRODUCTION/BLOCK/pblock_vars.def"
+
 #include "DEF-files/SHMS/TEST_STANDS/AERO/paeroana_histos.def"
 #include "DEF-files/SHMS/TEST_STANDS/CAL/pcalana_histos.def"
 #include "DEF-files/SHMS/TEST_STANDS/DC/pdcana_histos.def"
