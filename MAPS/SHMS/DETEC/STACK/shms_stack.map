@@ -39,7 +39,9 @@ REFINDEX=0
   39,   2,  10,   1  ! pAERSUM
   40,   2,  11,   1  ! pHGCERSUM
   41,   2,  12,   1  ! pNGCERSUM
-  42,   2,  23,   1  ! pHODO_EDTM
+  42,   2,  23,   1  ! pEDTM
+  43,   2,  48,   1  ! pPRSHWRLO
+  44,   2,  49,   1  ! pPRSHWRHI
   48,   2,  24,   1  ! pTRIG1
   49,   2,  25,   1  ! pTRIG2
   50,   2,  26,   1  ! pTRIG3
@@ -64,6 +66,7 @@ REFINDEX=0
   75,   2,  45,   1  ! hEL_HI
   76,   2,  46,   1  ! hEL_REAL
   77,   2,  47,   1  ! hEL_CLEAN
+
 ROC=6
 
 SLOT=6

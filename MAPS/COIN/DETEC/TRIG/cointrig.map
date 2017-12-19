@@ -131,7 +131,9 @@ REFINDEX=0
   39,      2,     43,   1  ! pAERSUM
   40,      2,     44,   1  ! pHGCERSUM
   41,      2,     45,   1  ! pNGCERSUM
-  42,      2,     56,   1  ! pEDTM
+  42,      2,     56,   1  ! pEDTM   
+  43,      2,     48,   1  ! pPRSHWRLO
+  44,      2,     49,   1  ! pPRSHWRHI
   48,      2,     57,   1  ! pTRIG1_ROC2
   49,      2,     58,   1  ! pTRIG2_ROC2
   50,      2,     59,   1  ! pTRIG3_ROC2
