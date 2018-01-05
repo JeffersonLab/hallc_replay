@@ -1,2 +1,1 @@
-; Calibration constants from HMS run 1212, HV-PMT1 = 2508.6 V and HV-PMT2 = 2574.0 V
-hcer_adc_to_npe = 1./5.735, 1./5.741
+Fall_Comm_2017/hcer_calib_1212.param
