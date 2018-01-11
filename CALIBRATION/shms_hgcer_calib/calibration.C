@@ -700,7 +700,7 @@ void calibration::Terminate()
 	  Gauss3->SetParLimits(6, 0.0, 1.0);
 	  Gauss3->SetParLimits(7, 2.5, 3.5);
 	  Gauss3->SetParLimits(8, 0.2, 0.5);
-	  fFullShow ? fscaled_nobackground[ipmt]->Fit("Gauss3","LRQ") : fscaled_nobackground[ipmt]->Fit("Gauss3","LRQN");
+	  fFullShow ? fscaled_nobackground[ipmt]->Fit("Gauss3","RQ") : fscaled_nobackground[ipmt]->Fit("Gauss3","RQN");
 	  if (fFullShow) fscaled_nobackground[ipmt]->GetXaxis()->SetRangeUser(0,5);
 	  if (fFullShow) fscaled_nobackground[ipmt]->GetYaxis()->SetRangeUser(0,0.3);
 
