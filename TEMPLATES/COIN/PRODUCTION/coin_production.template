@@ -30,7 +30,7 @@ SHMS Beam Cut BCM1  Current       : {P.BCM1.scalerChargeCut/P.1Mhz.scalerTimeCut
 SHMS Beam Cut BCM2  Current       : {P.BCM2.scalerChargeCut/P.1Mhz.scalerTimeCut:%.3f} uA        
 SHMS Beam Cut Unser Current       : {P.Unser.scalerChargeCut/P.1Mhz.scalerTimeCut:%.3f} uA        
 SHMS Beam Cut BCM1  Total Charge  : {P.BCM1.scalerChargeCut:%.3f} uC
-SHMS Beam Cut BCM1  Total Charge  : {P.BCM2.scalerChargeCut:%.3f} uC
+SHMS Beam Cut BCM2  Total Charge  : {P.BCM2.scalerChargeCut:%.3f} uC
 SHMS Beam Cut Unser Total Charge  : {P.Unser.scalerChargeCut:%.3f} uC
 SHMS Beam Cut BCM1  Counts        : {P.BCM1.scalerCut}  
 SHMS Beam Cut BCM2  Counts        : {P.BCM2.scalerCut}  
@@ -43,7 +43,7 @@ HMS BCM2  Current       : {H.BCM2.scalerCharge/H.1Mhz.scalerTime:%.3f} uA
 HMS Unser Current       : {H.Unser.scalerCharge/H.1Mhz.scalerTime:%.3f} uA        
 HMS BCM1  Total Charge  : {H.BCM1.scalerCharge:%.3f} uC
 HMS BCM2  Total Charge  : {H.BCM2.scalerCharge:%.3f} uC 
-HMS BCM2  Total Charge  : {H.Unser.scalerCharge:%.3f} uC
+HMS Unser Total Charge  : {H.Unser.scalerCharge:%.3f} uC
 HMS BCM1  Counts        : {H.BCM1.scaler}       
 HMS BCM2  Counts        : {H.BCM2.scaler}       
 HMS Unser Counts        : {H.Unser.scaler}      
