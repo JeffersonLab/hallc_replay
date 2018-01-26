@@ -27,7 +27,7 @@ hcut_edtm_accepted     T.hms.hEDTM_tdcTime != 0.0
 hcut_physics_accepted  T.hms.hEDTM_tdcTime == 0.0
 ALL_HMS_NO_EDTM        ALL_HMS_events && hcut_physics_accepted
 
-Decode_master          ALL_HMS_NO_EDTM
+
 
 Block: CoarseTracking
 CoarseTracking_master ALL_HMS_events
