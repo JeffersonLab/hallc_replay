@@ -26,6 +26,8 @@ hms_trigs         HMS_event
 hcut_edtm_accepted     T.hms.hEDTM_tdcTime != 0.0
 hcut_physics_accepted  T.hms.hEDTM_tdcTime == 0.0
 
+ALL_events_no_edtm     ALL_events && hcut_physics_accepted
+
 Decode_master     ALL_HMS_events
 
 Block: CoarseTracking
