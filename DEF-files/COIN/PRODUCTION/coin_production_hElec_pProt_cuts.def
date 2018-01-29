@@ -49,6 +49,8 @@ SHMS_physics_accepted  T.coin.pEDTM_tdcTime == 0.0
 HMS_edtm_accepted      T.coin.hEDTM_tdcTime != 0.0
 HMS_physics_accepted   T.coin.hEDTM_tdcTime == 0.0
 
+ALL_events_no_edtm     ALL_events && SHMS_physics_accepted && HMS_physics_accepted
+
 goodctime         ALL_events        #LOOSE CUT AROUND COINTIME PEAK (3 beam buckets)
 tightctime        ALL_events        #TIGHT CUT AROUND COINTIME PEAK (1 beam buckets)
 ranctime          ALL_events        #CUT AWAY FROM COINTIME PEAK (4 beam buckets)
@@ -56,6 +58,7 @@ ranctime          ALL_events        #CUT AWAY FROM COINTIME PEAK (4 beam buckets
 pcut_good_S1_time         T.coin.p1T_tdcTime > 241 && T.coin.p1T_tdcTime < 243
 pcut_good_S2X_time        T.coin.p2X_tdcTime > 180 && T.coin.p2X_tdcTime < 220
 pcut_good_S1_S2X_time     pcut_good_S1_time && pcut_good_S2X_time
+
 
 ALL_COIN_NO_EDTM  T.coin.hEDTM_tdcTime==0.0&&T.coin.pEDTM_tdcTime==0.0&&ALL_events
 
