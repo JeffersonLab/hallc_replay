@@ -192,6 +192,11 @@ void replay_production_ep (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   coin->SetEvtType(1);
   coin->AddEvtType(2);
   TRG->AddDetector(coin); 
+
+  // Miscellaneous decoder data for timestamps
+  THaDecData* decdata = new THaDecData("D","Decoder raw data");
+  gHaApps->Add(decdata);
+
   // Add event handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
@@ -249,5 +254,4 @@ void replay_production_ep (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Create report file from template
   analyzer->PrintReport("TEMPLATES/COIN/PRODUCTION/coin_production_ep.template",
   			Form("REPORT_OUTPUT/COIN/PRODUCTION/replay_coin_production_ep_%d.report", RunNumber));  // optional
-
 }

@@ -16,6 +16,8 @@ block P.hod.*Time
 block P.gtr.*
 block P.kin.*
 
+block D.*
+
 begin epics
 IBC3H00CRCUR4
 hac_bcm_average

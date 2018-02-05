@@ -22,6 +22,7 @@ tightctime        ALL_events        #TIGHT CUT AROUND COINTIME PEAK (1 beam buck
 ranctime          ALL_events        #CUT AWAY FROM COINTIME PEAK (4 beam buckets)
 
 ALL_COIN_NO_EDTM  T.coin.hEDTM_tdcTime==0.0&&T.coin.pEDTM_tdcTime==0.0&&ALL_events
+badsync            (D.timeroc2-D.timeroc1 != 0) ||(D.timeroc3-D.timeroc1 != 0) ||(D.timeroc4-D.timeroc1 != 0) ||(D.timeroc5-D.timeroc1 != 0) ||(D.timeroc6-D.timeroc1 != 0)
 
 
 Decode_master     ALL_COIN_NO_EDTM
@@ -51,3 +52,4 @@ e_cut_cer          P.hgcer.npeSum > 5.0 && P.ngcer.npeSum > 15.0
 select_e_cut       e_cut_cal && e_cut_cer
 betacut_proton     H.gtr.beta > 0.6 && H.gtr.beta < 0.8
 coincut_ep         ccleantrack && select_e_cut && betacut_proton
+
