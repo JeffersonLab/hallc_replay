@@ -94,4 +94,3 @@ e_cut_cer          H.cer.npeSum > 0.5
 select_e_cut       e_cut_cal && e_cut_cer
 betacut_proton     P.gtr.beta > 0.6 && P.gtr.beta < 0.8
 coincut_ep         ccleantrack && select_e_cut && betacut_proton
-
