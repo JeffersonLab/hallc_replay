@@ -175,10 +175,10 @@ void DC_calib::GetDCLeafs()
 
   if (num_evts > nentries)
     {
-      cout << "Number of entries exceeds: " << nentries << endl;
-      cout << "Please input a value that is <=  " << nentries  << " entries" <<  endl;
-      cout << "Exiting NOW! " << endl;
-      exit(EXIT_SUCCESS);
+      cout << "Number of entries entered: " << num_evts << " exeeds MAX number of entries: " << nentries << endl;
+      cout << "Setting the number of entries to:  " << nentries  <<  endl;
+     
+      num_evts = nentries;
       
     }
 
@@ -202,20 +202,24 @@ void DC_calib::GetDCLeafs()
   
   if (spec=="SHMS")
     {
+      cal_etotnorm_name = "P.cal.etotnorm";
       cer_npe_name = "P.ngcer.npeSum";  
       EL_CLEAN_name = "T.shms.pEL_CLEAN_tdcTime";
       //EL_CLEAN_name = "T.coin.pEL_CLEAN_ROC2_tdcTime";
-
+      
+      tree->SetBranchAddress(cal_etotnorm_name, &cal_etot_norm);
       tree->SetBranchAddress(cer_npe_name, &cer_npe);   
       tree->SetBranchAddress(EL_CLEAN_name, &EL_CLEAN);
     }
 
   else if (spec=="HMS")
     {
+      cal_etotnorm_name = "H.cal.etotnorm";
       cer_npe_name = "H.cer.npeSum";  
       EL_CLEAN_name = "T.hms.hEL_CLEAN_tdcTime";
       //EL_CLEAN_name = "T.coin.hEL_CLEAN_ROC2_tdcTime";
 
+      tree->SetBranchAddress(cal_etotnorm_name, &cal_etot_norm);
       tree->SetBranchAddress(cer_npe_name, &cer_npe);   
       tree->SetBranchAddress(EL_CLEAN_name, &EL_CLEAN);
         
@@ -363,6 +367,7 @@ void DC_calib::EventLoop()
       //NO PID Cut, Set Bool_t to always kTRUE
       if(pid=="pid_kFALSE")
 	{
+	  cal_elec = 1;
 	  cer_elec = 1;    
 	  elec_clean = 1;     
 	}
@@ -370,15 +375,17 @@ void DC_calib::EventLoop()
       //PID Cut, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	  cer_elec = cer_npe>1.0;
-	  elec_clean = EL_CLEAN>0;    //tdcTime>0
+	  cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
+	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
 	}
 
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_hadron")
 	{
-	  cer_elec = cer_npe<1.0;
-	  elec_clean = EL_CLEAN==0;    //tdcTime==0 
+	  cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  cer_elec = cer_npe<1.0;      //number of photoelec. < 1 (hadrons)
+	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
 	}
 
       else 
@@ -391,7 +398,7 @@ void DC_calib::EventLoop()
 
       //----------------------------------------------------------------------------
 
-      if (cer_elec&&elec_clean) 
+      if (cer_elec&&elec_clean&&cal_elec) 
 	{
 	  // cout << "passed cut: " << i << endl;
 	  for(Int_t ip=0; ip<NPLANES; ip++)
@@ -945,7 +952,7 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, Set Bool_t to always kTRUE
       if(pid=="pid_kFALSE")
 	{
-	 
+	  cal_elec = 1;
 	  cer_elec = 1;    
 	  elec_clean = 1;    
 	  
@@ -954,18 +961,18 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	 
-	  cer_elec = cer_npe>1.0;
-	  elec_clean = EL_CLEAN>0;    //tdcTime>0
+	  cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  cer_elec = cer_npe>1.0;          //number of photoelec. > 1 (electrons)
+	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
 
 	}
 
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_hadron")
 	{
-	 
-	  cer_elec = cer_npe<1.0;
-	  elec_clean = EL_CLEAN==0;    //tdcTime==0
+	  cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  cer_elec = cer_npe<1.0;       //number of photoelec. < 1 (hadrons)
+	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
 	  
 	}
 
@@ -979,7 +986,7 @@ void DC_calib::ApplyTZeroCorrection()
 
       //--------------------------------------------------------------------------------------
 	  
-      if (cer_elec&&elec_clean) 
+      if (cer_elec&&elec_clean&&cal_elec) 
 	{
 	  
 	  

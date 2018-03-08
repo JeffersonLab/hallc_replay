@@ -56,17 +56,20 @@ class DC_calib
   TString drifttime;
   TString wirenum;
 
+  TString cal_etotnorm_name;   
   TString cer_npe_name;
   TString EL_CLEAN_name;
  
-  Double_t cer_npe;
-  Double_t EL_CLEAN;
+  Double_t cal_etot_norm;   //calorimeter normalized energy
+  Double_t cer_npe;       //cerenkon photoelectron Sum
+  Double_t EL_CLEAN;     //electron clean trigger
 
   Double_t hcer_npe;
 
 
   //Boolean for PID cuts
-  Bool_t cer_elec;     //hms cerenkov cut
+  Bool_t cal_elec;     //calorimeter normalized energy cut
+  Bool_t cer_elec;     //cerenkov cut
   Bool_t elec_clean;    //e- clean trigger tdctime cut
 
 
