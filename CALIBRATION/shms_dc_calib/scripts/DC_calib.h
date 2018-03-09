@@ -56,9 +56,9 @@ class DC_calib
   TString drifttime;
   TString wirenum;
 
-  TString cal_etotnorm_name;   
-  TString cer_npe_name;
-  TString EL_CLEAN_name;
+  TString cal_etotnorm_leaf;   
+  TString cer_npe_leaf;
+  TString EL_CLEAN_leaf;
  
   Double_t cal_etot_norm;   //calorimeter normalized energy
   Double_t cer_npe;       //cerenkon photoelectron Sum
@@ -66,11 +66,17 @@ class DC_calib
 
   Double_t hcer_npe;
 
+  //Boolean for checking if TBranch exists
+  Bool_t status_cal;
+  Bool_t status_cer;
+  Bool_t status_EL_clean;
 
   //Boolean for PID cuts
   Bool_t cal_elec;     //calorimeter normalized energy cut
   Bool_t cer_elec;     //cerenkov cut
   Bool_t elec_clean;    //e- clean trigger tdctime cut
+
+ 
 
 
   Int_t wire;

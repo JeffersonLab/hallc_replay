@@ -200,29 +200,90 @@ void DC_calib::GetDCLeafs()
 						     
     }
   
+  
   if (spec=="SHMS")
     {
-      cal_etotnorm_name = "P.cal.etotnorm";
-      cer_npe_name = "P.ngcer.npeSum";  
-      EL_CLEAN_name = "T.shms.pEL_CLEAN_tdcTime";
-      //EL_CLEAN_name = "T.coin.pEL_CLEAN_ROC2_tdcTime";
+      cal_etotnorm_leaf = "P.cal.etotnorm";
+      cer_npe_leaf = "P.ngcer.npeSum";  
+      EL_CLEAN_leaf = "T.shms.pEL_CLEAN_tdcTime";
+      //EL_CLEAN_leaf = "T.coin.pEL_CLEAN_ROC2_tdcTime";
       
-      tree->SetBranchAddress(cal_etotnorm_name, &cal_etot_norm);
-      tree->SetBranchAddress(cer_npe_name, &cer_npe);   
-      tree->SetBranchAddress(EL_CLEAN_name, &EL_CLEAN);
+      //Check Branch Status
+      status_cal = tree->GetBranchStatus(cal_etotnorm_leaf);
+      status_cer = tree->GetBranchStatus(cer_npe_leaf); 
+      status_EL_clean = tree->GetBranchStatus(EL_CLEAN_leaf);
+
+      
+      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_prot" || pid=="bkg_cut"))
+	{
+	  cout << "*************ATTENTION!**************" << endl;
+	  cout << "" << endl;
+	  cout << " One or more of the following leafs " << endl;
+	  cout << " is *NOT* present in current ROOTfile. " << endl;
+	  cout << "1) " << cal_etotnorm_leaf<< endl;
+	  cout << "2) " << cer_npe_leaf << endl;
+	  cout << "3) " << EL_CLEAN_leaf << endl;
+	  cout << "" << endl;
+	  cout << "Please add them if you want to make " << endl;
+	  cout << "any cuts during calibration." << endl;
+	  cout << "" << endl;
+	  cout << "OR, set the pid flag in main_calib.C " << endl;
+	  cout << "to pid_kFALSE" << endl;
+	  cout << "             Exiting NOW!          " << endl;
+	  cout << "*************************************" << endl;
+
+	  exit (EXIT_SUCCESS);
+	}
+    
+      else
+	{
+	  tree->SetBranchAddress(cal_etotnorm_leaf, &cal_etot_norm);
+	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
+	  tree->SetBranchAddress(EL_CLEAN_leaf, &EL_CLEAN);
+	}
+	
     }
 
   else if (spec=="HMS")
     {
-      cal_etotnorm_name = "H.cal.etotnorm";
-      cer_npe_name = "H.cer.npeSum";  
-      EL_CLEAN_name = "T.hms.hEL_CLEAN_tdcTime";
-      //EL_CLEAN_name = "T.coin.hEL_CLEAN_ROC2_tdcTime";
+      cal_etotnorm_leaf = "H.cal.etotnorm";
+      cer_npe_leaf = "H.cer.npeSum";  
+      EL_CLEAN_leaf = "T.hms.hEL_CLEAN_tdcTime";
+      //EL_CLEAN_leaf = "T.coin.hEL_CLEAN_ROC2_tdcTime";
 
-      tree->SetBranchAddress(cal_etotnorm_name, &cal_etot_norm);
-      tree->SetBranchAddress(cer_npe_name, &cer_npe);   
-      tree->SetBranchAddress(EL_CLEAN_name, &EL_CLEAN);
-        
+      //Check Branch Status with Boolean
+      status_cal = tree->GetBranchStatus(cal_etotnorm_leaf);
+      status_cer = tree->GetBranchStatus(cer_npe_leaf); 
+      status_EL_clean = tree->GetBranchStatus(EL_CLEAN_leaf);
+
+      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_prot" || pid=="bkg_cut"))
+	{
+	  cout << "*************ATTENTION!**************" << endl;
+	  cout << "" << endl;
+	  cout << " One or more of the following leafs " << endl;
+	  cout << " is *NOT* present in current ROOTfile. " << endl;
+	  cout << "1) " << cal_etotnorm_leaf<< endl;
+	  cout << "2) " << cer_npe_leaf << endl;
+	  cout << "3) " << EL_CLEAN_leaf << endl;
+	  cout << "" << endl;
+	  cout << "Please add them if you want to make " << endl;
+	  cout << "any cuts during calibration." << endl;
+	  cout << "" << endl;
+	  cout << "OR, set the pid flag in main_calib.C "<< endl;
+	  cout << "to: pid_kFALSE" << endl;
+	  cout << "             Exiting NOW!          " << endl;
+	  cout << "*************************************" << endl;
+	  exit (EXIT_SUCCESS);
+	}
+
+      else
+	{
+	  tree->SetBranchAddress(cal_etotnorm_leaf, &cal_etot_norm);
+	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
+	  tree->SetBranchAddress(EL_CLEAN_leaf, &EL_CLEAN);
+	}
+ 
+      
     }
 
 
@@ -364,18 +425,18 @@ void DC_calib::EventLoop()
 
       //------READ USER 'pid' input to determine particle type to calibrate----------
       
-      //NO PID Cut, Set Bool_t to always kTRUE
+      //NO PID Cut,
       if(pid=="pid_kFALSE")
 	{
-	  cal_elec = 1;
+	  //cal_elec = 1;
 	  cer_elec = 1;    
 	  elec_clean = 1;     
 	}
 
-      //PID Cut, Set Bool_t to actual value, and see if it passes cut
+      //PID Cut, Set Bool_t to actual leaf value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	  cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  //cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
 	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
 	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
 	}
@@ -383,22 +444,33 @@ void DC_calib::EventLoop()
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_hadron")
 	{
-	  cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  //cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
 	  cer_elec = cer_npe<1.0;      //number of photoelec. < 1 (hadrons)
 	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
 	}
+
+      //PID Cut, BACKGROUND, Set Bool_t to actual value, and see if it passes cut
+      else if (pid=="pid_bkg")
+	{
+	  //cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  cer_elec = 1;      //Set to always true
+	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
+	}
+
+      
 
       else 
 	{
 	  cout << "Enter which particle to calibrate: " << endl;
 	  cout << "For electrons: 'pid_elec' " << endl;
 	  cout << "For hadrons: 'pid_hadron' " << endl;	  
+	  cout << "For background cut (Only EL-CLEAN trigger): 'pid_bkg' " << endl;
 	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
 	}
 
       //----------------------------------------------------------------------------
 
-      if (cer_elec&&elec_clean&&cal_elec) 
+      if (cer_elec&&elec_clean) 
 	{
 	  // cout << "passed cut: " << i << endl;
 	  for(Int_t ip=0; ip<NPLANES; ip++)
@@ -952,7 +1024,7 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, Set Bool_t to always kTRUE
       if(pid=="pid_kFALSE")
 	{
-	  cal_elec = 1;
+	  //cal_elec = 1;
 	  cer_elec = 1;    
 	  elec_clean = 1;    
 	  
@@ -961,7 +1033,7 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	  cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  //cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
 	  cer_elec = cer_npe>1.0;          //number of photoelec. > 1 (electrons)
 	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
 
@@ -970,23 +1042,34 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_hadron")
 	{
-	  cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  //cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
 	  cer_elec = cer_npe<1.0;       //number of photoelec. < 1 (hadrons)
 	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
 	  
 	}
+
+      //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
+      else if (pid=="pid_bkg")
+	{
+	  //cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  cer_elec = 1;       //set to always true
+	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
+	  
+	}
+      
 
       else 
 	{
 	  cout << "Enter which particle to calibrate: " << endl;
 	  cout << "For electrons: 'pid_elec' " << endl;
 	  cout << "For hadrons: 'pid_hadron' " << endl;	  
+	  cout << "For background cut (Only EL-CLEAN trigger): 'pid_bkg' " << endl;
 	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
 	}
 
       //--------------------------------------------------------------------------------------
 	  
-      if (cer_elec&&elec_clean&&cal_elec) 
+      if (cer_elec&&elec_clean) 
 	{
 	  
 	  
