@@ -206,24 +206,24 @@ void DC_calib::GetDCLeafs()
   
   if (spec=="SHMS")
     {
-      cal_etotnorm_leaf = "P.cal.etotnorm";
+      cal_etot_leaf = "P.cal.etotnorm";
       cer_npe_leaf = "P.ngcer.npeSum";  
       EL_CLEAN_leaf = "T.shms.pEL_CLEAN_tdcTime";
       //EL_CLEAN_leaf = "T.coin.pEL_CLEAN_ROC2_tdcTime";
       
       //Check Branch Status
-      status_cal = tree->GetBranchStatus(cal_etotnorm_leaf);
+      status_cal = tree->GetBranchStatus(cal_etot_leaf);
       status_cer = tree->GetBranchStatus(cer_npe_leaf); 
       status_EL_clean = tree->GetBranchStatus(EL_CLEAN_leaf);
 
       
-      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_prot" || pid=="bkg_cut"))
+      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_hadron"))
 	{
 	  cout << "*************ATTENTION!**************" << endl;
 	  cout << "" << endl;
 	  cout << " One or more of the following leafs " << endl;
 	  cout << " is *NOT* present in current ROOTfile. " << endl;
-	  cout << "1) " << cal_etotnorm_leaf<< endl;
+	  cout << "1) " << cal_etot_leaf<< endl;
 	  cout << "2) " << cer_npe_leaf << endl;
 	  cout << "3) " << EL_CLEAN_leaf << endl;
 	  cout << "" << endl;
@@ -240,7 +240,7 @@ void DC_calib::GetDCLeafs()
     
       else
 	{
-	  tree->SetBranchAddress(cal_etotnorm_leaf, &cal_etot_norm);
+	  tree->SetBranchAddress(cal_etot_leaf, &cal_etot);
 	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
 	  tree->SetBranchAddress(EL_CLEAN_leaf, &EL_CLEAN);
 	}
@@ -249,23 +249,23 @@ void DC_calib::GetDCLeafs()
 
   else if (spec=="HMS")
     {
-      cal_etotnorm_leaf = "H.cal.etotnorm";
+      cal_etot_leaf = "H.cal.etotnorm";
       cer_npe_leaf = "H.cer.npeSum";  
       EL_CLEAN_leaf = "T.hms.hEL_CLEAN_tdcTime";
       //EL_CLEAN_leaf = "T.coin.hEL_CLEAN_ROC2_tdcTime";
 
       //Check Branch Status with Boolean
-      status_cal = tree->GetBranchStatus(cal_etotnorm_leaf);
+      status_cal = tree->GetBranchStatus(cal_etot_leaf);
       status_cer = tree->GetBranchStatus(cer_npe_leaf); 
       status_EL_clean = tree->GetBranchStatus(EL_CLEAN_leaf);
 
-      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_prot" || pid=="bkg_cut"))
+      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_hadron"))
 	{
 	  cout << "*************ATTENTION!**************" << endl;
 	  cout << "" << endl;
 	  cout << " One or more of the following leafs " << endl;
 	  cout << " is *NOT* present in current ROOTfile. " << endl;
-	  cout << "1) " << cal_etotnorm_leaf<< endl;
+	  cout << "1) " << cal_etot_leaf<< endl;
 	  cout << "2) " << cer_npe_leaf << endl;
 	  cout << "3) " << EL_CLEAN_leaf << endl;
 	  cout << "" << endl;
@@ -281,7 +281,7 @@ void DC_calib::GetDCLeafs()
 
       else
 	{
-	  tree->SetBranchAddress(cal_etotnorm_leaf, &cal_etot_norm);
+	  tree->SetBranchAddress(cal_etot_leaf, &cal_etot);
 	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
 	  tree->SetBranchAddress(EL_CLEAN_leaf, &EL_CLEAN);
 	}
@@ -441,7 +441,7 @@ void DC_calib::EventLoop()
       //PID Cut, Set Bool_t to actual leaf value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	  //cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  //cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
 	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
 	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
 	}
@@ -449,28 +449,32 @@ void DC_calib::EventLoop()
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_hadron")
 	{
-	  //cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  //cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
 	  cer_elec = cer_npe<1.0;      //number of photoelec. < 1 (hadrons)
-	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
+	  elec_clean = 1;    //set always to true (NOT use e-_clean trigger cut)
 	}
 
       //PID Cut, BACKGROUND, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="pid_bkg")
+      else if (pid=="dc_1hit")
 	{
-	  //cal_elec = cal_etot_norm>0.1;  //normalize energy > 0.1 (bkg cleanup)
+
+	  //Do NOT apply any pid cuts
 	  cer_elec = 1;      //Set to always true
-	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
+	  elec_clean = 1;    //Set to always true
+	  
 	}
 
       
 
       else 
 	{
-	  cout << "Enter which particle to calibrate: " << endl;
+	  cout << "Enter which particle to calibrate in main_calib.C: " << endl;
 	  cout << "For electrons: 'pid_elec' " << endl;
 	  cout << "For hadrons: 'pid_hadron' " << endl;	  
-	  cout << "For background cut (Only EL-CLEAN trigger): 'pid_bkg' " << endl;
+	  cout << "For background cut (ndata==1): 'dc_1hit' " << endl;
 	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
+	  cout << "Exiting NOW!" << endl;
+	  exit (EXIT_SUCCESS);
 	}
 
       //----------------------------------------------------------------------------
@@ -481,12 +485,20 @@ void DC_calib::EventLoop()
 	  for(Int_t ip=0; ip<NPLANES; ip++)
 	    {
 	      // cout << "PLANE: " << ip << endl;
+
+	      //Require single hit in chamber / event / plane
+	      if (pid=="dc_1hit")
+		{ 
+		  single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
+		}
 	      
 	      //-----------------------------------------------------------------------------------------	  
 	      
 	      //Require number of chamber hits per event per plane to be UNITY.
-	      if (ndata_time[ip]==1 && ndata_wirenum[ip]==1)
+	      if (single_hit)
 		{
+
+        
 		  //Loop over number of hits for each trigger in each DC plane 
 		  for(Int_t j = 0, k = 0; j < ndata_time[ip], k < ndata_wirenum[ip]; j++, k++)    
 		    {
@@ -1039,7 +1051,7 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_elec")
 	{
-	  //cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  //cal_elec = cal_etot>0.1;   //normalize energy > 0.1 (reduce bkg events)
 	  cer_elec = cer_npe>1.0;          //number of photoelec. > 1 (electrons)
 	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
 
@@ -1048,29 +1060,32 @@ void DC_calib::ApplyTZeroCorrection()
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
       else if (pid=="pid_hadron")
 	{
-	  //cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  //cal_elec = cal_etot>0.1;   //normalize energy > 0.1 (reduce bkg events)
 	  cer_elec = cer_npe<1.0;       //number of photoelec. < 1 (hadrons)
-	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
+	  elec_clean = 1;    //Set always to true (do NOT make el-clean trigger cuts)
 	  
 	}
 
       //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="pid_bkg")
+      else if (pid=="dc_1hit")
 	{
-	  //cal_elec = cal_etot_norm>0.1;   //normalize energy > 0.1 (reduce bkg events)
+	  //cal_elec = cal_etot>0.1;   //normalize energy > 0.1 (reduce bkg events)
 	  cer_elec = 1;       //set to always true
-	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
+	  elec_clean = 1;    //tdcTime>0 (reduce bkg events)//set always to true
 	  
 	}
       
 
       else 
 	{
-	  cout << "Enter which particle to calibrate: " << endl;
+	  cout << "Enter which particle to calibrate in main_calib.C: " << endl;
 	  cout << "For electrons: 'pid_elec' " << endl;
 	  cout << "For hadrons: 'pid_hadron' " << endl;	  
-	  cout << "For background cut (Only EL-CLEAN trigger): 'pid_bkg' " << endl;
+	  cout << "For background cut (Only ndata==1): 'dc_1hit' " << endl;
 	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
+	  cout << "Exiting NOW!" << endl;
+	  exit (EXIT_SUCCESS);
+		  
 	}
 
       //--------------------------------------------------------------------------------------
@@ -1084,8 +1099,16 @@ void DC_calib::ApplyTZeroCorrection()
 	      //cout << "ApplyTZeroCorr: " << weighted_avg[ip] << endl;
 	      //Loop over number of hits for each trigger in each DC plane 
 
+	      //Require single hit in chamber / event / plane
+	      if (pid=="dc_1hit")
+		{ 
+		  single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
+		}
+	      
+	      //-----------------------------------------------------------------------------------------	  
+	      
 	      //Require number of chamber hits per event per plane to be UNITY.
-	      if (ndata_time[ip]==1 && ndata_wirenum[ip]==1)
+	      if (single_hit)
 		{
 		  for(Int_t j = 0, k = 0; j < ndata_time[ip], k < ndata_wirenum[ip]; j++, k++)    
 		    {

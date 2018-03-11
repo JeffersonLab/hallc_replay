@@ -56,11 +56,11 @@ class DC_calib
   TString drifttime;
   TString wirenum;
 
-  TString cal_etotnorm_leaf;   
+  TString cal_etot_leaf;   
   TString cer_npe_leaf;
   TString EL_CLEAN_leaf;
  
-  Double_t cal_etot_norm;   //calorimeter normalized energy
+  Double_t cal_etot;   //calorimeter normalized energy
   Double_t cer_npe;       //cerenkon photoelectron Sum
   Double_t EL_CLEAN;     //electron clean trigger
 
@@ -75,7 +75,7 @@ class DC_calib
   Bool_t cal_elec;     //calorimeter normalized energy cut
   Bool_t cer_elec;     //cerenkov cut
   Bool_t elec_clean;    //e- clean trigger tdctime cut
-
+  Bool_t single_hit;    //single hit / event / plane to clean background
  
 
 
