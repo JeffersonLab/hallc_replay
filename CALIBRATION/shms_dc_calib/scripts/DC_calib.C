@@ -206,7 +206,7 @@ void DC_calib::GetDCLeafs()
   
   if (spec=="SHMS")
     {
-      cal_etot_leaf = "P.cal.etotnorm";
+      cal_etot_leaf = "P.cal.etot";
       cer_npe_leaf = "P.ngcer.npeSum";  
       EL_CLEAN_leaf = "T.shms.pEL_CLEAN_tdcTime";
       //EL_CLEAN_leaf = "T.coin.pEL_CLEAN_ROC2_tdcTime";
@@ -249,7 +249,7 @@ void DC_calib::GetDCLeafs()
 
   else if (spec=="HMS")
     {
-      cal_etot_leaf = "H.cal.etotnorm";
+      cal_etot_leaf = "H.cal.etot";
       cer_npe_leaf = "H.cer.npeSum";  
       EL_CLEAN_leaf = "T.hms.hEL_CLEAN_tdcTime";
       //EL_CLEAN_leaf = "T.coin.hEL_CLEAN_ROC2_tdcTime";
