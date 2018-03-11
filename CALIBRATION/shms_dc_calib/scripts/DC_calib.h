@@ -12,11 +12,12 @@ class DC_calib
  public:
   
   //consructor and destructor
-  DC_calib(TString a, TString b, const Int_t c, Long64_t d, TString e);
+  DC_calib(string a, TString b, const Int_t c, Long64_t d, TString e);
   ~DC_calib();
 
 
   //Define Functions
+  void setup_Directory();
   void printInitVar();
   void SetPlaneNames();
   void GetDCLeafs();
@@ -45,10 +46,11 @@ class DC_calib
   
   TString SPECTROMETER;
   TString spectre;
-  TString spec;
+  string spec;
   TString DETECTOR;
   TString plane_names[NPLANES];
-
+  string planes[NPLANES];
+  
   TString base_name;
   TString ndatatime;
   TString ndatawirenum;
@@ -78,7 +80,10 @@ class DC_calib
   Bool_t single_hit;    //single hit / event / plane to clean background
  
 
-
+  //Variables for setting up a run_directory to keep track of calibration files
+  const char* dir_log;
+  const char* dir_log_name;
+  
   Int_t wire;
   
   Int_t ndata_time[NPLANES];

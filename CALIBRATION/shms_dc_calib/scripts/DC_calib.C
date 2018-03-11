@@ -5,7 +5,7 @@
 using namespace std;
 
 //_____________________________________________________________
-DC_calib::DC_calib(TString a, TString b, const int c, Long64_t d, TString e)
+DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e)
 
   :spec(a),          //set spectrometer to 'HMS', or 'SHMS'  ex. DC_Calib(HMS, pdc_replay.C, 488, 50000)
    ifile_name(b),    //initialization list
@@ -14,6 +14,8 @@ DC_calib::DC_calib(TString a, TString b, const int c, Long64_t d, TString e)
    pid(e)
 {
   //Initialize pointers
+  dir_log    = NULL;
+  dir_log_name = NULL;
   tree       = NULL;
   in_file    = NULL;
   out_file   = NULL;
@@ -50,7 +52,8 @@ DC_calib::DC_calib(TString a, TString b, const int c, Long64_t d, TString e)
 DC_calib::~DC_calib()
 {
   cout << "calling the destructor " << endl;  
-  
+  delete dir_log;  dir_log = NULL;
+  delete dir_log_name;  dir_log_name = NULL;
   delete in_file;  in_file  = NULL;
   delete out_file; out_file = NULL;             
   delete graph;    graph    = NULL;
@@ -95,6 +98,44 @@ DC_calib::~DC_calib()
 }
 
 //____________________________________________________________
+void DC_calib::setup_Directory()
+{
+
+  
+  if (spec == "HMS")
+    {
+     
+      dir_log = Form("mkdir -p ./%s_DC_Log_%d/", spec.c_str(), run_NUM);
+
+      //Check if directory exists
+      if (system(dir_log) != 0) 
+	{
+	  cout << "Creating Directory to store HMS Calibration Results . . ." << endl; 
+	  system(dir_log);  //create directory to log calibration results
+	}
+
+
+    }
+
+  else if (spec == "SHMS")
+    {
+      
+      dir_log = Form("mkdir -p ./%s_DC_Log_%d/", spec.c_str(), run_NUM);
+
+      //Check if directory exists
+      if (system(dir_log) != 0) 
+	{
+	  cout << "Creating Directory to store SHMS Calibration Results . . ." << endl; 
+	  system(dir_log);  //create directory to log calibration results
+	}
+      
+      
+    }
+
+}
+
+
+//____________________________________________________________
 void DC_calib::printInitVar()
 {
   cout << "Initialization variables: \n"
@@ -121,18 +162,18 @@ void DC_calib::SetPlaneNames()
       SPECTROMETER = "P";
       spectre = "p";
    
-      plane_names[0]="1u1",  nwires[0] = 107;  
-      plane_names[1]="1u2",  nwires[1] = 107;
-      plane_names[2]="1x1",  nwires[2] = 79;
-      plane_names[3]="1x2",  nwires[3] = 79; 
-      plane_names[4]="1v1",  nwires[4] = 107;
-      plane_names[5]="1v2",  nwires[5] = 107;
-      plane_names[6]="2v2",  nwires[6] = 107;
-      plane_names[7]="2v1",  nwires[7] = 107;
-      plane_names[8]="2x2",  nwires[8] = 79;
-      plane_names[9]="2x1",  nwires[9] = 79;
-      plane_names[10]="2u2", nwires[10] = 107;
-      plane_names[11]="2u1", nwires[11] = 107;
+      planes[0] = plane_names[0]="1u1",  nwires[0] = 107; 
+      planes[1] = plane_names[1]="1u2",  nwires[1] = 107; 
+      planes[2] = plane_names[2]="1x1",  nwires[2] = 79;
+      planes[3] = plane_names[3]="1x2",  nwires[3] = 79; 
+      planes[4] = plane_names[4]="1v1",  nwires[4] = 107; 
+      planes[5] = plane_names[5]="1v2",  nwires[5] = 107; 
+      planes[6] = plane_names[6]="2v2",  nwires[6] = 107;
+      planes[7] = plane_names[7]="2v1",  nwires[7] = 107;
+      planes[8] = plane_names[8]="2x2",  nwires[8] = 79;
+      planes[9] = plane_names[9]="2x1",  nwires[9] = 79;
+      planes[10] = plane_names[10]="2u2", nwires[10] = 107;
+      planes[11] = plane_names[11]="2u1", nwires[11] = 107;
    
     }
       
@@ -145,18 +186,18 @@ void DC_calib::SetPlaneNames()
       SPECTROMETER = "H";
       spectre="h";
       
-      plane_names[0]="1u1",  nwires[0] = 96;  
-      plane_names[1]="1u2",  nwires[1] = 96;
-      plane_names[2]="1x1",  nwires[2] = 102;
-      plane_names[3]="1x2",  nwires[3] = 102; 
-      plane_names[4]="1v2",  nwires[4] = 96;
-      plane_names[5]="1v1",  nwires[5] = 96;
-      plane_names[6]="2v1",  nwires[6] = 96;
-      plane_names[7]="2v2",  nwires[7] = 96;
-      plane_names[8]="2x2",  nwires[8] = 102;
-      plane_names[9]="2x1",  nwires[9] = 102;
-      plane_names[10]="2u2", nwires[10] = 96;
-      plane_names[11]="2u1", nwires[11] = 96;
+      planes[0] = plane_names[0]="1u1",  nwires[0] = 96;  
+      planes[1] = plane_names[1]="1u2",  nwires[1] = 96;
+      planes[2] = plane_names[2]="1x1",  nwires[2] = 102;
+      planes[3] = plane_names[3]="1x2",  nwires[3] = 102; 
+      planes[4] = plane_names[4]="1v2",  nwires[4] = 96;
+      planes[5] = plane_names[5]="1v1",  nwires[5] = 96;
+      planes[6] = plane_names[6]="2v1",  nwires[6] = 96;
+      planes[7] = plane_names[7]="2v2",  nwires[7] = 96;
+      planes[8] = plane_names[8]="2x2",  nwires[8] = 102;
+      planes[9] = plane_names[9]="2x1",  nwires[9] = 102;
+      planes[10] = plane_names[10]="2u2", nwires[10] = 96;
+      planes[11] = plane_names[11]="2u1", nwires[11] = 96;
     }
   
 }
@@ -296,6 +337,9 @@ void DC_calib::AllocateDynamicArrays()
 {
  
 
+  dir_log = new char();
+  dir_log_name = new char();
+  
   //Allocate 1D dynamic arrays
   plane_dt      = new TH1F[NPLANES];       //create plane drift time histo 1Darray ( get_pdc_time_histo.C )
   plane_dt_corr = new TH1F[NPLANES];      //create plane drift times to store after applying tzero correction
@@ -824,7 +868,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 
   
   //create output ROOT file to write UnCALIB./CALIB. histos
-  ofile_name = spec+"_DC_driftimes.root";
+  ofile_name = "./"+spec+"_DC_Log_"+std::to_string(run_NUM) +"/"+spec+"_DC_driftimes.root";
   out_file   = new TFile(ofile_name, "RECREATE"); 
 
   
@@ -928,10 +972,11 @@ void DC_calib::WriteToFile(Int_t debug = 0)
     //-----Write 'tzero' values to a TEXT FILE--------------------
     
     //open a text FILE to write
-   
     for (int ip = 0; ip < NPLANES; ip++) 
       {
-	otxtfile_name = "t_zero_values_"+plane_names[ip]+".dat";
+
+	otxtfile_name = Form("./%s_DC_Log_%d/t_zero_values_%s.dat", spec.c_str(), run_NUM, planes[ip].c_str());
+	cout << "*******FILENAME:******* " << otxtfile_name << endl;
 	out_txtFILE.open(otxtfile_name);
 	out_txtFILE << "#Plane_" + plane_names[ip] << endl;
 	out_txtFILE << "#Wire " << setw(12) << "tzero " << setw(12) << "t_zero_err " << setw(12) << "entries" << endl;
@@ -957,7 +1002,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 	gr1_canv = new TCanvas("gr1", "", 2000, 500);
 	gr1_canv->SetGrid();
 	//write TGraph: tzero v. wire number to root file
-	itxtfile_name = "t_zero_values_"+plane_names[ip]+".dat";
+	itxtfile_name =  "./"+spec+"_DC_Log_"+ std::to_string(run_NUM) +"/"+"t_zero_values_"+plane_names[ip]+".dat";
 	graph = new TGraphErrors(itxtfile_name, "%lg %lg %lg");
 	graph->SetName("graph");
 	
@@ -989,7 +1034,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 //__________________________________________________________________________
 void DC_calib::WriteTZeroParam()
 {
-  otxtfile_name =  "./"+spectre+"dc_tzero_per_wire_"+std::to_string(run_NUM)+".param";
+  otxtfile_name =  "./"+spec+"_DC_Log_"+ std::to_string(run_NUM) +"/"+spectre+"dc_tzero_per_wire_"+std::to_string(run_NUM)+".param";
   out_txtFILE.open(otxtfile_name);
   
   for (int ip=0; ip<NPLANES; ip++) { 
@@ -1318,7 +1363,7 @@ void DC_calib::ApplyTZeroCorrection()
 //_________________________________________________________________________________
 void DC_calib::WriteLookUpTable()
 {
-  otxtfile_name = "./"+spectre+"dc_calib_"+std::to_string(run_NUM)+".param";
+  otxtfile_name = "./"+spec+"_DC_Log_"+std::to_string(run_NUM)+"/"+spectre+"dc_calib_"+std::to_string(run_NUM)+".param";
   out_txtFILE.open(otxtfile_name);
   Double_t t_offset_firstbin = 0.0;
   //Set headers for subsequent columns of data
