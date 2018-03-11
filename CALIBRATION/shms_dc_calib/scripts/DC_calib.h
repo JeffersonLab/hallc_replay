@@ -4,9 +4,9 @@
 
 #define NPLANES 12
 #define NBINS 400
-#define MINBIN -50.5
-#define MAXBIN 349.5
-#define TOTAL_BINS 274  
+#define MINBIN -50.0
+#define MAXBIN 350.0
+#define TOTAL_BINS 189  
 class DC_calib
 {
  public:
@@ -164,7 +164,11 @@ class DC_calib
   Double_t std_dev;
   Double_t **t_zero;         
   Double_t **t_zero_err;
-  
+
+  //tzero with tdc offsets taken into account, 
+  //to be written into tzero param file
+  Double_t **t_zero_final; 
+
   //declare variables to make plot of tzero v. wire number
   
   Double_t weighted_avg[NPLANES];
