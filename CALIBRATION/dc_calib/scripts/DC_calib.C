@@ -463,7 +463,7 @@ void DC_calib::CreateHistoNames()
 void DC_calib::EventLoop()
 {
 
-
+  cout << "****Entering Event Loop ****** " << endl;
 
   //Loop over all entries
   for(Long64_t i=0; i<num_evts; i++)
@@ -471,6 +471,7 @@ void DC_calib::EventLoop()
       //cout << "entry: " << i << endl;
       tree->GetEntry(i);  
 
+      
 
       //------READ USER 'pid' input to determine particle type to calibrate----------
       
@@ -498,15 +499,6 @@ void DC_calib::EventLoop()
 	  elec_clean = 1;    //set always to true (NOT use e-_clean trigger cut)
 	}
 
-      //PID Cut, BACKGROUND, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="dc_1hit")
-	{
-
-	  //Do NOT apply any pid cuts
-	  cer_elec = 1;      //Set to always true
-	  elec_clean = 1;    //Set to always true
-	  
-	}
 
       
 
@@ -531,10 +523,9 @@ void DC_calib::EventLoop()
 	      // cout << "PLANE: " << ip << endl;
 
 	      //Require single hit in chamber / event / plane
-	      if (pid=="dc_1hit")
-		{ 
-		  single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
-		}
+	 
+	      single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
+		
 	      
 	      //-----------------------------------------------------------------------------------------	  
 	      
@@ -1111,14 +1102,6 @@ void DC_calib::ApplyTZeroCorrection()
 	  
 	}
 
-      //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="dc_1hit")
-	{
-	  //cal_elec = cal_etot>0.1;   //normalize energy > 0.1 (reduce bkg events)
-	  cer_elec = 1;       //set to always true
-	  elec_clean = 1;    //tdcTime>0 (reduce bkg events)//set always to true
-	  
-	}
       
 
       else 
@@ -1145,10 +1128,9 @@ void DC_calib::ApplyTZeroCorrection()
 	      //Loop over number of hits for each trigger in each DC plane 
 
 	      //Require single hit in chamber / event / plane
-	      if (pid=="dc_1hit")
-		{ 
+	
 		  single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
-		}
+		
 	      
 	      //-----------------------------------------------------------------------------------------	  
 	      
