@@ -19,6 +19,7 @@ class DC_calib
   //Define Functions
   void setup_Directory();
   void SetPlaneNames();
+  void SetTdcOffset();
   void GetDCLeafs();
   void AllocateDynamicArrays();
   void CreateHistoNames();
@@ -193,7 +194,8 @@ class DC_calib
 
   //Declare variables to apply constant offset in time
   //HMS
-  Double_t offset;
+  Double_t **offset;
+  Double_t tdc_offset;
   Double_t max_wire_entry;
 
 };
