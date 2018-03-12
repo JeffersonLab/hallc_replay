@@ -15,7 +15,6 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e)
 {
   //Initialize pointers
   dir_log    = NULL;
-  dir_log_name = NULL;
   tree       = NULL;
   in_file    = NULL;
   out_file   = NULL;
@@ -53,7 +52,6 @@ DC_calib::~DC_calib()
 {
   cout << "calling the destructor " << endl;  
   delete dir_log;  dir_log = NULL;
-  delete dir_log_name;  dir_log_name = NULL;
   delete in_file;  in_file  = NULL;
   delete out_file; out_file = NULL;             
   delete graph;    graph    = NULL;
@@ -134,17 +132,6 @@ void DC_calib::setup_Directory()
 
 }
 
-
-//____________________________________________________________
-void DC_calib::printInitVar()
-{
-  cout << "Initialization variables: \n"
-    "Input File: " << ifile_name << "\n"
-    "Run #: " << run_NUM << "\n"
-    "Events: " << num_evts << endl;
-
-  
-}
 
 
 
@@ -338,7 +325,6 @@ void DC_calib::AllocateDynamicArrays()
  
 
   dir_log = new char();
-  dir_log_name = new char();
   
   //Allocate 1D dynamic arrays
   plane_dt      = new TH1F[NPLANES];       //create plane drift time histo 1Darray ( get_pdc_time_histo.C )

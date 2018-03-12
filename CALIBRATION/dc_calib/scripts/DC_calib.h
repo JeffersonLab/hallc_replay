@@ -18,7 +18,6 @@ class DC_calib
 
   //Define Functions
   void setup_Directory();
-  void printInitVar();
   void SetPlaneNames();
   void GetDCLeafs();
   void AllocateDynamicArrays();
