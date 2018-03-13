@@ -248,14 +248,12 @@ void DC_calib::GetDCLeafs()
       
       base_name = SPECTROMETER+"."+DETECTOR+"."+plane_names[ip];
       ndatatime = "Ndata."+base_name+".time";
-      ndatawirenum = "Ndata."+base_name+".wirenum";
       drifttime = base_name+".time";
       wirenum = base_name+".wirenum";
       
       //Set Branch Address 
       tree->SetBranchAddress(wirenum, wire_num[ip]);   
       tree->SetBranchAddress(drifttime, drift_time[ip]);   
-      tree->SetBranchAddress(ndatawirenum, &ndata_wirenum[ip]);
       tree->SetBranchAddress(ndatatime, &ndata_time[ip]);   
 						     
     }
@@ -265,16 +263,13 @@ void DC_calib::GetDCLeafs()
     {
       cal_etot_leaf = "P.cal.etot";
       cer_npe_leaf = "P.ngcer.npeSum";  
-      EL_CLEAN_leaf = "T.shms.pEL_CLEAN_tdcTime";
-      //EL_CLEAN_leaf = "T.coin.pEL_CLEAN_ROC2_tdcTime";
-      
+    
       //Check Branch Status
       status_cal = tree->GetBranchStatus(cal_etot_leaf);
       status_cer = tree->GetBranchStatus(cer_npe_leaf); 
-      status_EL_clean = tree->GetBranchStatus(EL_CLEAN_leaf);
-
       
-      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_hadron"))
+      
+      if ((!status_cal || !status_cer )&& (pid=="pid_elec"))
 	{
 	  cout << "*************ATTENTION!**************" << endl;
 	  cout << "" << endl;
@@ -282,7 +277,6 @@ void DC_calib::GetDCLeafs()
 	  cout << " is *NOT* present in current ROOTfile. " << endl;
 	  cout << "1) " << cal_etot_leaf<< endl;
 	  cout << "2) " << cer_npe_leaf << endl;
-	  cout << "3) " << EL_CLEAN_leaf << endl;
 	  cout << "" << endl;
 	  cout << "Please add them if you want to make " << endl;
 	  cout << "any cuts during calibration." << endl;
@@ -299,7 +293,6 @@ void DC_calib::GetDCLeafs()
 	{
 	  tree->SetBranchAddress(cal_etot_leaf, &cal_etot);
 	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
-	  tree->SetBranchAddress(EL_CLEAN_leaf, &EL_CLEAN);
 	}
 	
     }
@@ -308,15 +301,13 @@ void DC_calib::GetDCLeafs()
     {
       cal_etot_leaf = "H.cal.etot";
       cer_npe_leaf = "H.cer.npeSum";  
-      EL_CLEAN_leaf = "T.hms.hEL_CLEAN_tdcTime";
-      //EL_CLEAN_leaf = "T.coin.hEL_CLEAN_ROC2_tdcTime";
+     
 
       //Check Branch Status with Boolean
       status_cal = tree->GetBranchStatus(cal_etot_leaf);
       status_cer = tree->GetBranchStatus(cer_npe_leaf); 
-      status_EL_clean = tree->GetBranchStatus(EL_CLEAN_leaf);
 
-      if ((!status_cal || !status_cer || !status_EL_clean) && (pid=="pid_elec" || pid=="pid_hadron"))
+      if ((!status_cal || !status_cer ) && (pid=="pid_elec"))
 	{
 	  cout << "*************ATTENTION!**************" << endl;
 	  cout << "" << endl;
@@ -324,7 +315,6 @@ void DC_calib::GetDCLeafs()
 	  cout << " is *NOT* present in current ROOTfile. " << endl;
 	  cout << "1) " << cal_etot_leaf<< endl;
 	  cout << "2) " << cer_npe_leaf << endl;
-	  cout << "3) " << EL_CLEAN_leaf << endl;
 	  cout << "" << endl;
 	  cout << "Please add them if you want to make " << endl;
 	  cout << "any cuts during calibration." << endl;
@@ -340,7 +330,6 @@ void DC_calib::GetDCLeafs()
 	{
 	  tree->SetBranchAddress(cal_etot_leaf, &cal_etot);
 	  tree->SetBranchAddress(cer_npe_leaf, &cer_npe);   
-	  tree->SetBranchAddress(EL_CLEAN_leaf, &EL_CLEAN);
 	}
  
       
@@ -497,8 +486,7 @@ void DC_calib::EventLoop(string option="")
       if(pid=="pid_kFALSE")
 	{
 	  //cal_elec = 1;
-	  cer_elec = 1;    
-	  elec_clean = 1;     
+	  cer_elec = 1;         
 	}
 
       //PID Cut, Set Bool_t to actual leaf value, and see if it passes cut
@@ -506,23 +494,12 @@ void DC_calib::EventLoop(string option="")
 	{
 	  //cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
 	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
-	  elec_clean = EL_CLEAN>0;    //tdcTime>0 (reduce bkg events)
-	}
-
-      //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="pid_hadron")
-	{
-	  //cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
-	  cer_elec = cer_npe<1.0;      //number of photoelec. < 1 (hadrons)
-	  elec_clean = 1;    //set always to true (NOT use e-_clean trigger cut)
 	}
 
       else 
 	{
 	  cout << "Enter which particle to calibrate in main_calib.C: " << endl;
 	  cout << "For electrons: 'pid_elec' " << endl;
-	  cout << "For hadrons: 'pid_hadron' " << endl;	  
-	  cout << "For background cut (ndata==1): 'dc_1hit' " << endl;
 	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
 	  cout << "Exiting NOW!" << endl;
 	  exit (EXIT_SUCCESS);
@@ -530,7 +507,7 @@ void DC_calib::EventLoop(string option="")
 
       //----------------------------------------------------------------------------
       
-      if (cer_elec&&elec_clean) 
+      if (cer_elec) 
 	{
 	  // cout << "passed cut: " << i << endl;
 	  for(Int_t ip=0; ip<NPLANES; ip++)
@@ -539,7 +516,7 @@ void DC_calib::EventLoop(string option="")
 
 	      //Require single hit in chamber / event / plane
 	      
-	      single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
+	      single_hit = (ndata_time[ip]==1);
 		
 	      
 	      //-----------------------------------------------------------------------------------------	  
@@ -550,15 +527,15 @@ void DC_calib::EventLoop(string option="")
 
 		  
 		  //Loop over number of hits for each trigger in each DC plane 
-		  for(Int_t j = 0, k = 0; j < ndata_time[ip], k < ndata_wirenum[ip]; j++, k++)    
+		  for(Int_t j = 0; j < ndata_time[ip]; j++)    
 		    {
 		      
 		      //get wire hit for ith event in 'ip' plane
-		      wire = int(wire_num[ip][k]);		      
+		      wire = int(wire_num[ip][j]);		      
 		      
 		      //Fill uncorrected plane drift times  (from: get_pdc_time_histo.C )
 		      plane_dt[ip].Fill(drift_time[ip][j] - offset[ip][wire-1]); 
-		      dt_vs_wire[ip].Fill(wire_num[ip][k], drift_time[ip][j] - offset[ip][wire-1]);
+		      dt_vs_wire[ip].Fill(wire_num[ip][j], drift_time[ip][j] - offset[ip][wire-1]);
 		      cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
 		      fitted_cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
 		      
@@ -567,7 +544,7 @@ void DC_calib::EventLoop(string option="")
 			  //Fill corrected plane drift times 
 			  plane_dt_corr[ip].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]); 
 			  cell_dt_corr[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
-			  dt_vs_wire_corr[ip].Fill(wire_num[ip][k], drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
+			  dt_vs_wire_corr[ip].Fill(wire_num[ip][j], drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
 			  t_zero_final[ip][wire-1] = offset[ip][wire-1] + t_zero[ip][wire-1];
 			}
 		     

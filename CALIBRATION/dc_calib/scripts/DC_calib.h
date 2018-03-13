@@ -52,31 +52,25 @@ class DC_calib
   
   TString base_name;
   TString ndatatime;
-  TString ndatawirenum;
   
   TString drifttime;
   TString wirenum;
 
   TString cal_etot_leaf;   
   TString cer_npe_leaf;
-  TString EL_CLEAN_leaf;
  
   Double_t cal_etot;   //calorimeter normalized energy
   Double_t cer_npe;       //cerenkon photoelectron Sum
-  Double_t EL_CLEAN;     //electron clean trigger
-
-  Double_t hcer_npe;
 
   //Boolean for checking if TBranch exists
   Bool_t status_cal;
   Bool_t status_cer;
-  Bool_t status_EL_clean;
+  
 
   //Boolean for PID cuts
   Bool_t cal_elec;     //calorimeter normalized energy cut
   Bool_t cer_elec;     //cerenkov cut
-  Bool_t elec_clean;    //e- clean trigger tdctime cut
-  Bool_t single_hit;    //single hit / event / plane to clean background
+  Bool_t single_hit;    //single hit / event / plane o clean background
  
 
   //Variables for setting up a run_directory to keep track of calibration files
@@ -88,7 +82,6 @@ class DC_calib
   Int_t ndata_time[NPLANES];
   Double_t drift_time[NPLANES][1000];
 
-  Int_t ndata_wirenum[NPLANES];
   Double_t wire_num[NPLANES][1000];
 
   Int_t nwires[NPLANES];
