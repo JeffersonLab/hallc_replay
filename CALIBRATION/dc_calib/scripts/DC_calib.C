@@ -479,7 +479,7 @@ void DC_calib::CreateHistoNames()
   
 
 //________________________________________________________________
-void DC_calib::EventLoop()
+void DC_calib::EventLoop(string option="")
 {
 
 
@@ -562,6 +562,14 @@ void DC_calib::EventLoop()
 		      cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
 		      fitted_cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
 		      
+		      if (option=="ApplyT0Correction")
+			{
+			  //Fill corrected plane drift times 
+			  plane_dt_corr[ip].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]); 
+			  cell_dt_corr[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
+			  dt_vs_wire_corr[ip].Fill(wire_num[ip][k], drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
+			  t_zero_final[ip][wire-1] = offset[ip][wire-1] + t_zero[ip][wire-1];
+			}
 		     
 		    } //end loop over hits
 
@@ -569,7 +577,7 @@ void DC_calib::EventLoop()
 //-----------------------------------------------------------------------------------------
 	      
 	    } //END loop over planes   
-	
+       
 	} //end loop over pid cuts
     
     } //end loop over events
@@ -786,8 +794,9 @@ void DC_calib::FitWireDriftTime()
 	  if (t_zero[ip][wire] == 0.0)
 	    {
 	      t_zero[ip][wire] = weighted_avg[ip];
-	      //cout << "bad wire: " << wire + 1 << " :: " << "tzero: " << weighted_avg[ip] << endl;
-	    }
+	      t_zero_final[ip][wire] = offset[ip][wire] + weighted_avg[ip];
+	   }
+	      
 	}
       
       
@@ -1002,7 +1011,8 @@ void DC_calib::WriteTZeroParam()
        else if (wire==nwires[ip]-1) 
 	 {
 	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << fixed << endl;
-	 }
+     
+	   }
        
      } //END LOOP OVER WIRES
 
@@ -1011,109 +1021,6 @@ void DC_calib::WriteTZeroParam()
   out_txtFILE.close();
   
 }
-
-
-
-//_______________________________________________________________________
-void DC_calib::ApplyTZeroCorrection()
-{
-  
- 
-  cout << "ApplyT0Corr  "<< endl;
-
-  
-  //Loop over all entries
-  for(Long64_t i=0; i<num_evts; i++)
-    {
-      tree->GetEntry(i);
-
-      //----------READ USER 'pid' input to determine particle type to calibrate----------
-
-      //PID Cut, Set Bool_t to always kTRUE
-      if(pid=="pid_kFALSE")
-	{
-	  //cal_elec = 1;
-	  cer_elec = 1;    
-	  elec_clean = 1;    
-	  
-	}
-
-      //PID Cut, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="pid_elec")
-	{
-	  //cal_elec = cal_etot>0.1;   //normalize energy > 0.1 (reduce bkg events)
-	  cer_elec = cer_npe>1.0;          //number of photoelec. > 1 (electrons)
-	  elec_clean = EL_CLEAN>0.;    //tdcTime>0 (reduce bkg events)
-
-	}
-
-      //PID Cut, hadron, Set Bool_t to actual value, and see if it passes cut
-      else if (pid=="pid_hadron")
-	{
-	  //cal_elec = cal_etot>0.1;   //normalize energy > 0.1 (reduce bkg events)
-	  cer_elec = cer_npe<1.0;       //number of photoelec. < 1 (hadrons)
-	  elec_clean = 1;    //Set always to true (do NOT make el-clean trigger cuts)
-	  
-	}
-
-      
-
-      else 
-	{
-	  cout << "Enter which particle to calibrate in main_calib.C: " << endl;
-	  cout << "For electrons: 'pid_elec' " << endl;
-	  cout << "For hadrons: 'pid_hadron' " << endl;	  
-	  cout << "For background cut (Only ndata==1): 'dc_1hit' " << endl;
-	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
-	  cout << "Exiting NOW!" << endl;
-	  exit (EXIT_SUCCESS);
-		  
-	}
-
-      //--------------------------------------------------------------------------------------
-	  
-      if (cer_elec&&elec_clean) 
-	{
-	  
-	  
-	  for(Int_t ip=0; ip<NPLANES; ip++)
-	    {
-	      //cout << "ApplyTZeroCorr: " << weighted_avg[ip] << endl;
-	      //Loop over number of hits for each trigger in each DC plane 
-
-	      //Require single hit in chamber / event / plane
-	
-		  single_hit = (ndata_time[ip]==1 && ndata_wirenum[ip]==1);
-		
-	      
-	      //-----------------------------------------------------------------------------------------	  
-	      
-	      //Require number of chamber hits per event per plane to be UNITY.
-	      if (single_hit)
-		{
-		  for(Int_t j = 0, k = 0; j < ndata_time[ip], k < ndata_wirenum[ip]; j++, k++)    
-		    {
-		      //get wire hit for ith event in 'ip' plane
-		      wire = int(wire_num[ip][j]);
-		      
-			 //Fill corrected plane drift times 
-			      plane_dt_corr[ip].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]); 
-			      cell_dt_corr[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
-			      dt_vs_wire_corr[ip].Fill(wire_num[ip][k], drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
-			      t_zero_final[ip][wire-1] = offset[ip][wire-1] + t_zero[ip][wire-1];
-	      
-		    }  // end LOOP over number of hits
-		  
-		} //end if statement(require #of hits to be UNITY)
-	  
-	    
-	    } //end loop over planes
-	  
-	} //end loop over PID cuts
-    
-    } //end loop over events
-  
-} // end loop over method
 
 //_________________________________________________________________________________
 void DC_calib::WriteLookUpTable()

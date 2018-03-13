@@ -31,7 +31,7 @@ int main_calib()
   obj.CreateHistoNames();
   obj.EventLoop();
   obj.Calculate_tZero();
-  obj.ApplyTZeroCorrection();
+  obj.EventLoop("ApplyT0Correction");
   obj.WriteTZeroParam();
   obj.WriteLookUpTable();
   obj.WriteToFile(1);  //set argument to (1) for debugging

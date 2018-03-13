@@ -23,14 +23,13 @@ class DC_calib
   void GetDCLeafs();
   void AllocateDynamicArrays();
   void CreateHistoNames();
-  void EventLoop();
+  void EventLoop(string option);
   void WriteToFile(Int_t debug);
   void CalcT0Historical();
   void Calculate_tZero();
   void GetTwentyPercent_Peak();
   void FitWireDriftTime();
   void WriteTZeroParam();
-  void ApplyTZeroCorrection();
   void WriteLookUpTable();
 
 
