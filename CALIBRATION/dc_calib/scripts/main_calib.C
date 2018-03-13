@@ -29,7 +29,7 @@ int main_calib()
   obj.AllocateDynamicArrays();
   obj.SetTdcOffset();
   obj.CreateHistoNames();
-  obj.EventLoop();
+  obj.EventLoop("FillUncorrectedTimes");
   obj.Calculate_tZero();
   obj.EventLoop("ApplyT0Correction");
   obj.WriteTZeroParam();

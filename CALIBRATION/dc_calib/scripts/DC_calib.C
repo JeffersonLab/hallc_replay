@@ -558,14 +558,15 @@ void DC_calib::EventLoop(string option="")
 		      
 		      //get wire hit for ith event in 'ip' plane
 		      wire = int(wire_num[ip][j]);		      
-		      
-		      //Fill uncorrected plane drift times  (from: get_pdc_time_histo.C )
-		      plane_dt[ip].Fill(drift_time[ip][j] - offset[ip][wire-1]); 
-		      dt_vs_wire[ip].Fill(wire_num[ip][j], drift_time[ip][j] - offset[ip][wire-1]);
-		      cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
-		      fitted_cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
-		      
-		      if (option=="ApplyT0Correction")
+		      if (option=="FillUncorrectedTimes")
+			{
+			  //Fill uncorrected plane drift times  (from: get_pdc_time_histo.C )
+			  plane_dt[ip].Fill(drift_time[ip][j] - offset[ip][wire-1]); 
+			  dt_vs_wire[ip].Fill(wire_num[ip][j], drift_time[ip][j] - offset[ip][wire-1]);
+			  cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
+			  fitted_cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
+			}
+		      else if (option=="ApplyT0Correction")
 			{
 			  //Fill corrected plane drift times 
 			  plane_dt_corr[ip].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]); 
