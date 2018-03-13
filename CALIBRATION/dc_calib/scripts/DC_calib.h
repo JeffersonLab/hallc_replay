@@ -70,8 +70,11 @@ class DC_calib
   //Boolean for PID cuts
   Bool_t cal_elec;     //calorimeter normalized energy cut
   Bool_t cer_elec;     //cerenkov cut
-  Bool_t single_hit;    //single hit / event / plane o clean background
+  Bool_t good_event;    //single hit / event / plane o clean background
  
+  Int_t cnts_ch1;
+  Int_t cnts_ch2;
+  Int_t ngood_evts;
 
   //Variables for setting up a run_directory to keep track of calibration files
   const char* dir_log;

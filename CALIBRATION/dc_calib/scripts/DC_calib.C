@@ -471,14 +471,44 @@ void DC_calib::CreateHistoNames()
 void DC_calib::EventLoop(string option="")
 {
 
+  //Initialize counter to count how many good events (5/6 hits / chamber)
+  ngood_evts = 0;
 
   //Loop over all entries
   for(Long64_t i=0; i<num_evts; i++)
     {
-      //cout << "entry: " << i << endl;
+      //cout << "=======Entry:======== " << i << endl;
       tree->GetEntry(i);  
 
-      
+      //Initialize chamber hit counter
+      cnts_ch1=0;
+      cnts_ch2=0;
+       
+
+      //Count how many planes were hit per chamber (5/6 minimum / chamber for good events)
+      for(int ip=0; ip<NPLANES; ip++)
+	{
+	  //cout << "Plane: " << ip << " Ndata: " << ndata_time[ip] << endl;
+
+	  if(ip<=5 && ndata_time[ip]==1) 
+	    { 
+	      cnts_ch1++; 
+	    }
+
+	  if(ip>5 && ndata_time[ip]==1) 
+	    {
+	      cnts_ch2++; 
+	    }
+	  
+	}
+
+      //Count the number of events that had at least 5/6 hits / chamber
+      if (cnts_ch1>4 && cnts_ch2>4)
+	{
+	  ngood_evts++;
+	}
+
+      good_event=kFALSE;
 
       //------READ USER 'pid' input to determine particle type to calibrate----------
       
@@ -506,25 +536,21 @@ void DC_calib::EventLoop(string option="")
 	}
 
       //----------------------------------------------------------------------------
-      
-      if (cer_elec) 
-	{
+
+      good_event = cer_elec && cnts_ch1>4 && cnts_ch2>4;
+
+   
 	  // cout << "passed cut: " << i << endl;
 	  for(Int_t ip=0; ip<NPLANES; ip++)
 	    {
 	      // cout << "PLANE: " << ip << endl;
 
-	      //Require single hit in chamber / event / plane
-	      
-	      single_hit = (ndata_time[ip]==1);
+   	  if (ndata_time[ip]==1)
+        	{
 		
 	      
 	      //-----------------------------------------------------------------------------------------	  
 	      
-	      //Require number of chamber hits per event per plane to be UNITY.
-	      if (single_hit)
-		{
-
 		  
 		  //Loop over number of hits for each trigger in each DC plane 
 		  for(Int_t j = 0; j < ndata_time[ip]; j++)    
@@ -550,7 +576,7 @@ void DC_calib::EventLoop(string option="")
 		     
 		    } //end loop over hits
 
-		} // end if statement (require ONLY 1 hits per event)	 
+	     	 
 //-----------------------------------------------------------------------------------------
 	      
 	    } //END loop over planes   
