@@ -237,10 +237,15 @@ void DC_calib::GetDCLeafs()
     {
       cout << "Number of entries entered: " << num_evts << " exeeds MAX number of entries: " << nentries << endl;
       cout << "Setting the number of entries to:  " << nentries  <<  endl;
-     
-      num_evts = nentries;
       
+      num_evts = nentries;
     }
+  else if (num_evts==-1)
+    {
+      cout << "Analyzing " << nentries << " entries " << endl;
+      num_evts = nentries;
+    }
+
 
   //Loop over each plane
   for (int ip = 0; ip < NPLANES; ip++)
