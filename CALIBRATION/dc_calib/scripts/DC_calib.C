@@ -484,17 +484,44 @@ void DC_calib::EventLoop(string option="")
     {
       //cout << "=======Entry:======== " << i << endl;
       tree->GetEntry(i);  
-
-      //Initialize chamber hit counter
+      
+      //------READ USER 'pid' input to determine particle type to calibrate----------
+      
+      //NO PID Cut,
+      if(pid=="pid_kFALSE")
+	{
+	  cal_elec = 1;
+	  cer_elec = 1;         
+	}
+      
+      //PID Cut, Set Bool_t to actual leaf value, and see if it passes cut
+      else if (pid=="pid_elec")
+	{
+	  cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
+	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
+	  
+	}
+      
+      else 
+	{
+	  cout << "Enter which particle to calibrate in main_calib.C: " << endl;
+	  cout << "For electrons: 'pid_elec' " << endl;
+	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
+	  cout << "Exiting NOW!" << endl;
+	  exit (EXIT_SUCCESS);
+	}
+      
+      //----------------------------------------------------------------------------
+      
+     //Initialize chamber hit counter
       cnts_ch1=0;
       cnts_ch2=0;
        
 
-      //Count how many planes were hit per chamber (5/6 minimum / chamber for good events)
       for(int ip=0; ip<NPLANES; ip++)
 	{
-	  //cout << "Plane: " << ip << " Ndata: " << ndata_time[ip] << endl;
-
+	  
+	  //Count how many planes were hit by the event
 	  if(ip<=5 && ndata_time[ip]==1) 
 	    { 
 	      cnts_ch1++; 
@@ -512,45 +539,20 @@ void DC_calib::EventLoop(string option="")
 	{
 	  ngood_evts++;
 	}
-
-      good_event=kFALSE;
-
-      //------READ USER 'pid' input to determine particle type to calibrate----------
       
-      //NO PID Cut,
-      if(pid=="pid_kFALSE")
-	{
-	  //cal_elec = 1;
-	  cer_elec = 1;         
-	}
+      good_event=kFALSE;
+      
 
-      //PID Cut, Set Bool_t to actual leaf value, and see if it passes cut
-      else if (pid=="pid_elec")
-	{
-	  //cal_elec = cal_etot>0.1;  //normalize energy > 0.1 (bkg cleanup)
-	  cer_elec = cer_npe>1.0;     //number of photoelec. > 1 (electrons)
-	}
-
-      else 
-	{
-	  cout << "Enter which particle to calibrate in main_calib.C: " << endl;
-	  cout << "For electrons: 'pid_elec' " << endl;
-	  cout << "NO PID Cuts: 'pid_KFALSE' " << endl;
-	  cout << "Exiting NOW!" << endl;
-	  exit (EXIT_SUCCESS);
-	}
-
-      //----------------------------------------------------------------------------
-
-      good_event = cer_elec && cnts_ch1>4 && cnts_ch2>4;
-
+      //***good event definition***: cal_energy > 100 MeV, cer_npeSum > 1.0, 5/6 plane hits
+      good_event = cal_elec && cer_elec && cnts_ch1>4 && cnts_ch2>4;
+      
    
 	  // cout << "passed cut: " << i << endl;
 	  for(Int_t ip=0; ip<NPLANES; ip++)
 	    {
 	      // cout << "PLANE: " << ip << endl;
 
-   	  if (ndata_time[ip]==1)
+   	  if (good_event)
         	{
 		
 	      
