@@ -140,6 +140,7 @@ class DC_calib
   Double_t **time_max;
   Double_t **twenty_perc_maxContent;
   Double_t **ref_time;
+  Double_t percent;
 
   //variables to be used in loop over bins for wire drift time
   Int_t content_bin;      //stores content for each bin

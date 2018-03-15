@@ -146,6 +146,7 @@ void DC_calib::SetPlaneNames()
   //initialize DC plane names
   if(spec=="SHMS")
     {
+      percent = 0.40;
       tdc_offset = 0.0;
       max_wire_entry = 1000;
       SPECTROMETER = "P";
@@ -169,9 +170,10 @@ void DC_calib::SetPlaneNames()
   
   else if(spec=="HMS")
     {
+
+      percent = 0.20;  ///set 20% of max drit time content to fit around
       max_wire_entry = 1000;
-      tdc_offset = 115.;   //wires 81-96
-      // tdc_offset_1v2 = 109.9;   //49-65
+      tdc_offset = 115.;  
       SPECTROMETER = "H";
       spectre="h";
       
@@ -242,7 +244,7 @@ void DC_calib::GetDCLeafs()
     }
   else if (num_evts==-1)
     {
-      cout << "Analyzing " << nentries << " entries " << endl;
+      cout << "Analyzing ALL entries: " << nentries << " entries " << endl;
       num_evts = nentries;
     }
 
@@ -269,9 +271,9 @@ void DC_calib::GetDCLeafs()
       cal_etot_leaf = "P.cal.etot";
       cer_npe_leaf = "P.ngcer.npeSum";  
     
-      //Check Branch Status
-      status_cal = tree->GetBranchStatus(cal_etot_leaf);
-      status_cer = tree->GetBranchStatus(cer_npe_leaf); 
+      //Check Branch Status 
+      status_cal = tree->GetBranchStatus(cal_etot_leaf);  //returns a boolean
+      status_cer = tree->GetBranchStatus(cer_npe_leaf);  //return a boolean
       
       
       if ((!status_cal || !status_cer )&& (pid=="pid_elec"))
@@ -552,7 +554,7 @@ void DC_calib::EventLoop(string option="")
 	    {
 	      // cout << "PLANE: " << ip << endl;
 
-   	  if (good_event)
+   	  if (good_event&&(ndata_time[ip]==1))
         	{
 		
 	      
@@ -678,7 +680,7 @@ void DC_calib::GetTwentyPercent_Peak()
 	  bin_max[ip][wire]                = cell_dt[ip][wire].GetMaximumBin();                      //Get bin with Maximum Content
 	  bin_maxContent[ip][wire]         = cell_dt[ip][wire].GetBinContent(bin_max[ip][wire]);	      //Get content of bin_max
 	  time_max[ip][wire]               = cell_dt[ip][wire].GetXaxis()->GetBinCenter(bin_max[ip][wire]);  //Get time (ns) [x-axis] corresponding to bin_max 
-	  twenty_perc_maxContent[ip][wire] = bin_maxContent[ip][wire] * 0.20;	                      
+	  twenty_perc_maxContent[ip][wire] = bin_maxContent[ip][wire] * percent;	                      
 	  //Calculate 20% of max bin content
 	  //ref_time[ip][wire] = cell_dt[ip][wire].GetBinCenter(cell_dt[ip][wire].FindBin(twenty_perc_maxContent[ip][wire]));
 	  //Loop over DC drift time bins
