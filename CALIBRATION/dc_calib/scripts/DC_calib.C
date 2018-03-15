@@ -38,10 +38,13 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e)
   twenty_perc_maxContent = NULL;
   ref_time               = NULL;
   tZero_fit              = NULL;
-
   graph                  = NULL;
   gr1_canv               = NULL;
   
+  //--Card Variables
+  card_hist              = NULL;
+  corr_card_hist         = NULL;
+  fitted_card_hist       = NULL;
 
 
   
@@ -80,6 +83,13 @@ DC_calib::~DC_calib()
 	delete [] twenty_perc_maxContent[ip]; 
 	delete [] ref_time[ip];
 	delete [] offset[ip];
+     
+	//Card Variables
+	delete [] card_hist[ip]; 
+	delete [] corr_card_hist[ip];
+	delete [] fitted_card_hist[ip];
+
+
       }  
     
     delete [] entries;                     entries                = NULL;
@@ -95,6 +105,13 @@ DC_calib::~DC_calib()
     delete [] twenty_perc_maxContent;      twenty_perc_maxContent = NULL;
     delete [] ref_time;                    ref_time               = NULL;
     delete [] offset;                      offset                 = NULL;
+
+    //Card Variables 
+    //delete [] card_hist[ip];               card_hist              = NULL;
+    //delete [] corr_card_hist[ip];          corr_card_hist         = NULL;
+    //delete [] fitted_card_hist[ip];        fitted_card_hist       = NULL;
+
+
 }
 
 //____________________________________________________________
@@ -410,7 +427,11 @@ void DC_calib::AllocateDynamicArrays()
   ref_time                = new Double_t*[NPLANES]; /*Array to store ref_time(time corresp. to 20% of peak) times for each sense wire*/             
   offset                  = new Double_t*[NPLANES];
   
- 
+  //Card Variables
+  card_hist               = new TH1F*[NPLANES];  //Array to store uncorrected histogram per card
+  fitted_card_hist        = new TH1F*[NPLANES];  //Array to store fitted card histogram
+  corr_card_hist          = new TH1F*[NPLANES];  //Array to store corrected histogram per card
+
   for(int ip=0; ip<NPLANES; ip++)
     {
       entries[ip]                 = new Int_t[nwires[ip]]; 
@@ -426,6 +447,13 @@ void DC_calib::AllocateDynamicArrays()
       twenty_perc_maxContent[ip]  = new Double_t[nwires[ip]];   						     
       ref_time[ip]                = new Double_t[nwires[ip]];                    
       offset[ip]                  = new Double_t[nwires[ip]];
+    
+      //Card Variables
+      card_hist[ip]               = new TH1F[plane_cards[ip]];
+      fitted_card_hist[ip]        = new TH1F[plane_cards[ip]];
+      corr_card_hist[ip]          = new TH1F[plane_cards[ip]];
+    
+
     }
   
   
@@ -503,9 +531,47 @@ void DC_calib::CreateHistoNames()
 	  cell_dt_corr[ip][wire].SetXTitle("Drift Time (ns)");
 	  cell_dt_corr[ip][wire].SetYTitle("Number of Entries / 1 ns");
 
-	}
+	} //End Loop over wires
+
+      	     //Loop over plane cards :: CARD_MODE
+	     for (card = 0; card < plane_cards[ip]; card++ )
+	       {
+		 
+		 card_hist_name = Form("UnCorr_Card_%d", card+1); 
+		 card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Uncorrected Card_%d", card+1);
+		 
+		 
+		 card_hist[ip][card].SetName(card_hist_name);
+		 card_hist[ip][card].SetTitle(card_hist_title);
+		 card_hist[ip][card].SetBins(NBINS, MINBIN, MAXBIN);
+		 card_hist[ip][card].SetXTitle("Drift Time (ns)");
+		 card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
+		 
+		 fitted_card_hist_name = Form("Fitted_Card_%d", card+1); 
+		 fitted_card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Fitted Card_%d", card+1);
+
+		 fitted_card_hist[ip][card].SetName(fitted_card_hist_name);
+		 fitted_card_hist[ip][card].SetTitle(fitted_card_hist_title);
+		 fitted_card_hist[ip][card].SetBins(200, MINBIN, MAXBIN);
+		 fitted_card_hist[ip][card].SetXTitle("Drift Time (ns)");
+		 fitted_card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
+	       
+		 		 
+		 corr_card_hist_name = Form("Corr_Card_%d", card+1); 
+		 corr_card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Corrected Card_%d", card+1);
+
+
+		 corr_card_hist[ip][card].SetName(corr_card_hist_name);
+		 corr_card_hist[ip][card].SetTitle(corr_card_hist_title);
+		 corr_card_hist[ip][card].SetBins(NBINS, MINBIN, MAXBIN);
+		 corr_card_hist[ip][card].SetXTitle("Drift Time (ns)");
+		 corr_card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
+		
+
+	       } //end loop over cards
+
       
-    }
+    } //End Loop over Planes
 
 }
   
@@ -815,7 +881,7 @@ void DC_calib::FitWireDriftTime()
 	      t_zero[ip][wire] = - y_int/m ;
 	      t_zero_err[ip][wire] = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
 	      
-	      if (t_zero_err[ip][wire] < t0_err_thrs.)
+	      if (t_zero_err[ip][wire] < t0_err_thrs)
 		{
 		  //calculate the weighted average     
 		  sum_NUM = sum_NUM + t_zero[ip][wire]/pow(t_zero_err[ip][wire],2);

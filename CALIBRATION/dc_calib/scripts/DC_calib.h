@@ -207,10 +207,28 @@ class DC_calib
   Double_t tdc_offset;
   Double_t max_wire_entry;
 
-  //---Per Plane Variables
+  //---Per Card "SPECIFIC" Variables---
   Int_t plane_cards[NPLANES];    //number of disc. cards / plane
+  Int_t card;
 
 
+  //TStrings for Histo Names
+  TString card_hist_name;
+  TString card_hist_title;
+
+  TString fitted_card_hist_name;
+  TString fitted_card_hist_title;
+  
+  TString corr_card_hist_name;
+  TString corr_card_hist_title;
+
+
+  //Card Histograms
+  TH1F **card_hist; 
+  TH1F **corr_card_hist;
+  TH1F **fitted_card_hist;
+
+  
 
 };
 
