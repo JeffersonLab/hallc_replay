@@ -146,10 +146,12 @@ void DC_calib::SetPlaneNames()
   //initialize DC plane names
   if(spec=="SHMS")
     {
+      //--per wire ONLY
       percent = 0.40;
       t0_err_thrs = 15;  
-      tdc_offset = 0.0;
       max_wire_entry = 1000;
+
+      tdc_offset = 0.0;
       SPECTROMETER = "P";
       spectre = "p";
    
@@ -165,16 +167,33 @@ void DC_calib::SetPlaneNames()
       planes[9] = plane_names[9]="2x1",  nwires[9] = 79;
       planes[10] = plane_names[10]="2u2", nwires[10] = 107;
       planes[11] = plane_names[11]="2u1", nwires[11] = 107;
-   
+
+      //---Per Card ONLY----
+      plane_cards[0] = 7;
+      plane_cards[1] = 7;
+      plane_cards[2] = 5;
+      plane_cards[3] = 5;
+      plane_cards[4] = 7;
+      plane_cards[5] = 7;
+      plane_cards[6] = 7;
+      plane_cards[7] = 7;
+      plane_cards[8] = 5;
+      plane_cards[9] = 5;
+      plane_cards[10] = 7;
+      plane_cards[11] = 7;
+
+
     }
       
   
   else if(spec=="HMS")
     {
-
+      
+      //per wire ONLY
       percent = 0.20;  ///set 20% of max drit time content to fit around
       t0_err_thrs = 0;
       max_wire_entry = 1000;
+
       tdc_offset = 115.;  
       SPECTROMETER = "H";
       spectre="h";
@@ -191,6 +210,21 @@ void DC_calib::SetPlaneNames()
       planes[9] = plane_names[9]="2x1",  nwires[9] = 102;
       planes[10] = plane_names[10]="2u2", nwires[10] = 96;
       planes[11] = plane_names[11]="2u1", nwires[11] = 96;
+    
+      //---Per-Card ONLY---
+      plane_cards[0] = 6;
+      plane_cards[1] = 6;
+      plane_cards[2] = 7;
+      plane_cards[3] = 7;
+      plane_cards[4] = 6;
+      plane_cards[5] = 6;
+      plane_cards[6] = 6;
+      plane_cards[7] = 6;
+      plane_cards[8] = 7;
+      plane_cards[9] = 7;
+      plane_cards[10] = 6;
+      plane_cards[11] = 6;
+
     }
   
 }

@@ -17,6 +17,16 @@ class DC_calib
 
 
   //Define Functions
+
+
+  //----Per-Card Methods
+  void GetCard();       
+  void EventLoopCard(); 
+  void GetTwentyPercent_Card();  
+  void FitCardDriftTime();
+  void ApplyTZeroCorrectionPerCard(); 
+
+  //---Per Global/Per Wire methods 
   void setup_Directory();
   void SetPlaneNames();
   void SetTdcOffset();
@@ -25,7 +35,7 @@ class DC_calib
   void CreateHistoNames();
   void EventLoop(string option);
   void WriteToFile(Int_t debug);
-  void CalcT0Historical();
+  // void CalcT0Historical();
   void Calculate_tZero();
   void GetTwentyPercent_Peak();
   void FitWireDriftTime();
@@ -196,6 +206,11 @@ class DC_calib
   Double_t **offset;
   Double_t tdc_offset;
   Double_t max_wire_entry;
+
+  //---Per Plane Variables
+  Int_t plane_cards[NPLANES];    //number of disc. cards / plane
+
+
 
 };
 
