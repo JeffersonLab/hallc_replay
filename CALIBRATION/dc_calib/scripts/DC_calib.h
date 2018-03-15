@@ -140,8 +140,7 @@ class DC_calib
   Double_t **time_max;
   Double_t **twenty_perc_maxContent;
   Double_t **ref_time;
-  Double_t percent;
-
+ 
   //variables to be used in loop over bins for wire drift time
   Int_t content_bin;      //stores content for each bin
   Int_t counts;           //a counter used to count the number of bins that have >20% max bin content for a plane 
@@ -169,6 +168,10 @@ class DC_calib
   //tzero with tdc offsets taken into account, 
   //to be written into tzero param file
   Double_t **t_zero_final; 
+
+  //set limits on tzero fit procedure
+  Double_t percent;        //set % of drift_time max bin content to do fit
+  Double_t t0_err_thrs;    //set max error on t0 fit, as criteria for 'good' t0
 
   //declare variables to make plot of tzero v. wire number
   

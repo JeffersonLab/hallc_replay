@@ -147,6 +147,7 @@ void DC_calib::SetPlaneNames()
   if(spec=="SHMS")
     {
       percent = 0.40;
+      t0_err_thrs = 15;  
       tdc_offset = 0.0;
       max_wire_entry = 1000;
       SPECTROMETER = "P";
@@ -172,6 +173,7 @@ void DC_calib::SetPlaneNames()
     {
 
       percent = 0.20;  ///set 20% of max drit time content to fit around
+      t0_err_thrs = 0;
       max_wire_entry = 1000;
       tdc_offset = 115.;  
       SPECTROMETER = "H";
@@ -774,23 +776,34 @@ void DC_calib::FitWireDriftTime()
 	  std_dev = fitted_cell_dt[ip][wire].GetStdDev();
 
 	  //Require sufficient events and NOT CRAZY! tzero values, otherwis, set t0 to ZERO
-	  if (abs(-y_int/m) < std_dev*5.0 && m > 0.2 && entries[ip][wire]>max_wire_entry)
+	  if ( abs(-y_int/m) < std_dev*5.0 && m > 0.2 && entries[ip][wire]>max_wire_entry  )
 	    {
 	      t_zero[ip][wire] = - y_int/m ;
 	      t_zero_err[ip][wire] = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
-	      //calculate the weighted average     
-	      sum_NUM = sum_NUM + t_zero[ip][wire]/pow(t_zero_err[ip][wire],2);
-	      sum_DEN = sum_DEN + 1.0/ (pow(t_zero_err[ip][wire],2));
-	      //cout << "wire: " << wire + 1 << " :: " << "tzero: " << t_zero[ip][wire] << endl;
+	      
+	      if (t_zero_err[ip][wire] < t0_err_thrs.)
+		{
+		  //calculate the weighted average     
+		  sum_NUM = sum_NUM + t_zero[ip][wire]/pow(t_zero_err[ip][wire],2);
+		  sum_DEN = sum_DEN + 1.0/ (pow(t_zero_err[ip][wire],2));
+		  //cout << "wire: " << wire + 1 << " :: " << "tzero: " << t_zero[ip][wire] << endl;
+		}
+	      else if (t_zero_err[ip][wire] >= t0_err_thrs) { 
+
+		t_zero[ip][wire] = 0.0;
+
+	      }
+	      
 	    }
 
 	 
 	 
-	    else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.2  || entries[ip][wire] <= max_wire_entry)
+	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.2  || entries[ip][wire] <= max_wire_entry || t_zero_err[ip][wire] >= t0_err_thrs )
 		{
-		  
-		  t_zero[ip][wire] = 0.0;
-		//if (ip==3) {
+
+		      t_zero[ip][wire] = 0.0;
+		
+		  //if (ip==3) {
 		//cout << "wire: " << wire <<  " t_zero_bad: " << t_zero[ip][wire] << endl;    
 		 //cout << "m = " << m << " :: " << entries[ip][wire] << endl;
 		//} 
