@@ -163,6 +163,7 @@ class DC_calib
 
   //Declare 'FIT' related variables
   Int_t **entries;               //wire drift time histo entries
+  Int_t **entries_card;
   Int_t binx;
   Double_t time_init;           //start fit value 
   Double_t time_final;          //end fit value
@@ -176,7 +177,9 @@ class DC_calib
   Double_t std_dev;
   Double_t **t_zero;         
   Double_t **t_zero_err;
-
+  Double_t **t_zero_card;         
+  Double_t **t_zero_card_err;
+  
   //tzero with tdc offsets taken into account, 
   //to be written into tzero param file
   Double_t **t_zero_final; 
@@ -214,7 +217,7 @@ class DC_calib
   Int_t plane_cards[NPLANES];    //number of disc. cards / plane
   Int_t card;
   
-  //GetTwentyPercent_Card() method variables
+  //GetTwentyPercent_Card()/Fit Card methods variables
   Int_t binValLow; 
   Int_t binValHigh; 
   Int_t binSearchLow; 

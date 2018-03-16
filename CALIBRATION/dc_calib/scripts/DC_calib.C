@@ -47,18 +47,21 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e, TStr
       cout << "Initializing Card Variables . . ." << endl;
 
   //--Card Variables
-  card_hist              = NULL;
-  corr_card_hist         = NULL;
-  fitted_card_hist       = NULL;
-  wire_min               = NULL;
-  wire_max               = NULL;
-  wireBinContentMax      = NULL;
-  wireBinContentLow      = NULL;
-  wireBinContentHigh     = NULL;
-  wireBinHigh            = NULL;
-  wireBinLow             = NULL;
-  wireFitRangeLow        = NULL;
-  wireFitRangeHigh       = NULL;
+      entries_card           = NULL;
+      t_zero_card            = NULL;
+      t_zero_card_err        = NULL;
+      card_hist              = NULL;
+      corr_card_hist         = NULL;
+      fitted_card_hist       = NULL;
+      wire_min               = NULL;
+      wire_max               = NULL;
+      wireBinContentMax      = NULL;
+      wireBinContentLow      = NULL;
+      wireBinContentHigh     = NULL;
+      wireBinHigh            = NULL;
+      wireBinLow             = NULL;
+      wireFitRangeLow        = NULL;
+      wireFitRangeHigh       = NULL;
 
     }
   
@@ -103,6 +106,9 @@ DC_calib::~DC_calib()
 	  {
 
 	    //Card Variables
+	    delete [] entries_card[ip];        
+	    delete [] t_zero_card[ip];
+	    delete [] t_zero_card_err[ip];
 	    delete [] card_hist[ip]; 
 	    delete [] corr_card_hist[ip];
 	    delete [] fitted_card_hist[ip];
@@ -132,21 +138,28 @@ DC_calib::~DC_calib()
     delete [] twenty_perc_maxContent;      twenty_perc_maxContent = NULL;
     delete [] ref_time;                    ref_time               = NULL;
     delete [] offset;                      offset                 = NULL;
-
-    //Card Variables 
-    //delete [] card_hist[ip];             card_hist              = NULL;
-    //delete [] corr_card_hist[ip];        corr_card_hist         = NULL;
-    //delete [] fitted_card_hist[ip];      fitted_card_hist       = NULL;
-    delete [] wire_min;                    wire_min               = NULL;
-    delete [] wire_max;                    wire_max               = NULL;
-    delete [] wireBinContentMax;           wireBinContentMax      = NULL;
-    delete [] wireBinContentLow;           wireBinContentLow      = NULL;
-    delete [] wireBinContentHigh;          wireBinContentHigh     = NULL;
-    delete [] wireBinHigh;                 wireBinHigh            = NULL;
-    delete [] wireBinLow;                  wireBinLow             = NULL;
-    delete [] wireFitRangeLow;             wireFitRangeLow        = NULL;
-    delete [] wireFitRangeHigh;            wireFitRangeHigh       = NULL;
+    
+    if(mode=="card")
+      {
+	//Card Variables 
+	delete [] entries_card;                entries_card           = NULL;
+	delete [] t_zero_card;                 t_zero_card            = NULL;
+	delete [] t_zero_card_err;             t_zero_card_err        = NULL;
+	delete [] card_hist;                   card_hist              = NULL;
+	delete [] corr_card_hist;              corr_card_hist         = NULL;
+	delete [] fitted_card_hist;            fitted_card_hist       = NULL;
+	delete [] wire_min;                    wire_min               = NULL;
+	delete [] wire_max;                    wire_max               = NULL;
+	delete [] wireBinContentMax;           wireBinContentMax      = NULL;
+	delete [] wireBinContentLow;           wireBinContentLow      = NULL;
+	delete [] wireBinContentHigh;          wireBinContentHigh     = NULL;
+	delete [] wireBinHigh;                 wireBinHigh            = NULL;
+	delete [] wireBinLow;                  wireBinLow             = NULL;
+	delete [] wireFitRangeLow;             wireFitRangeLow        = NULL;
+	delete [] wireFitRangeHigh;            wireFitRangeHigh       = NULL;
+      }
 }
+
 
 //____________________________________________________________
 void DC_calib::setup_Directory()
@@ -996,7 +1009,7 @@ void DC_calib::EventLoop(string option="")
 
 			}
 
-		      if (mode=="card")
+		      else if (mode=="card")
 			{
 
 		 
@@ -1024,14 +1037,32 @@ void DC_calib::EventLoop(string option="")
 				  
 				} //End loop over cards
 			      
-			    } //end optional argument
+			    } //end option argument
 
 
 			  else if (option=="ApplyT0Correction")
 			    {
+			      for (card = 0; card < plane_cards[ip]; card++ )
+				{
+				  
+				  //Fill Corrected plane drift times (using the CARD method)
+				  
+				  if (wire >= wire_min[ip][card] && wire <= wire_max[ip][card])
+				    {
 			  
-			    
-			    }
+				      //Fill Corrected Plane Drift Times
+				      plane_dt_corr[ip].Fill(drift_time[ip][j] - t_zero_card[ip][card]);
+				      
+				      
+				      //Fill Corrected Card Drift Times
+				      dt_vs_wire_corr[ip].Fill(wire_num[ip][j], drift_time[ip][j] - t_zero_card[ip][card]);  
+				      corr_card_hist[ip][card].Fill(drift_time[ip][j]-t_zero_card[ip][card]);
+				      
+				    } 
+				  
+				} //loop over cards
+			      
+			    } //end option argument
 			  
 			  //------------END CARD MODE ONLY------------------------
 			      
@@ -1336,14 +1367,91 @@ void DC_calib::GetTwentyPercent_Card()
   
 } //end  GetTwentyPercent_Card() method
 
+//___________________________________________________________________
+void DC_calib::FitCardDriftTime()
+{
+ 
+  for (Int_t ip = 0; ip < NPLANES; ip++)
+    {
+     
+     //Loop over DC cards
+      for (card = 0; card < plane_cards[ip]; card++)
+	{
+	
+	  tZero_fit = new TF1("tZero_fit", "[0]*x + [1]", wireFitRangeLow[ip][card], wireFitRangeHigh[ip][card]);
+	  
+	  //Set Parameter Names and Values
+	  tZero_fit->SetParName(0, "slope");
+	  tZero_fit->SetParName(1, "y-int");
+	  tZero_fit->SetParameter(0, 1.0);
+	  tZero_fit->SetParameter(1, 1.0);
+	  
+	  entries_card[ip][card] = fitted_card_hist[ip][card].GetEntries();
+
+	  //Fit Function in specified range
+	  fitted_card_hist[ip][card].Fit("tZero_fit", "QR");
+	  
+	  gStyle->SetOptFit(1);
+	  
+	  //Get Parameters and their errors
+	  m = tZero_fit->GetParameter(0);
+	  y_int = tZero_fit->GetParameter(1);
+	  m_err = tZero_fit->GetParError(0);
+	  y_int_err = tZero_fit->GetParError(1);
+	  std_dev = fitted_card_hist[ip][card].GetStdDev();
+	  
+	  //Require sufficient events and NOT CRAZY! tzero values, otherwis, set t0 to ZERO
+	  if (abs(-y_int/m) < std_dev*5.0 && m > 0.0 && entries_card[ip][card]>max_wire_entry)
+	    {
+	      
+	      t_zero_card[ip][card] = - y_int/m ;
+	      t_zero_card_err[ip][card] = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
+	      	      
+	      for(wire=1; wire<=nwires[ip]; wire++)
+		{
+		  
+		  if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card])
+		    {
+		   
+		      t_zero[ip][wire-1] = t_zero_card[ip][card];
+		      t_zero_err[ip][wire-1] = t_zero_card_err[ip][card];
+		      
+		    }
+		  
+		} //end wire loop
+	    
+	    } //end 'if' statement
+	  
+	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0  || entries_card[ip][card] <= max_wire_entry)
+	    {
+	      t_zero[ip][card] = 0.0;
+	    }
+
+	}  //end loop over cards
+    
+    } // end loop over planes
+
+} //end FitCardDriftTime() method
+
+
 //________________________________________________________________
 void DC_calib::Calculate_tZero()
 {
   
   //CalcT0Historical();
 
-  GetTwentyPercent_Peak();
-  FitWireDriftTime();
+  if (mode=="wire")
+    {
+      GetTwentyPercent_Peak();
+      FitWireDriftTime();
+    }
+
+  else if (mode=="card")
+    {
+      GetTwentyPercent_Card();
+      FitCardDriftTime();
+    }
+
 }
 
 
