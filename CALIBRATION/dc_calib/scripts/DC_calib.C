@@ -45,7 +45,8 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e)
   card_hist              = NULL;
   corr_card_hist         = NULL;
   fitted_card_hist       = NULL;
-
+  wire_min               = NULL;
+  wire_max               = NULL;
 
   
 }
@@ -88,7 +89,8 @@ DC_calib::~DC_calib()
 	delete [] card_hist[ip]; 
 	delete [] corr_card_hist[ip];
 	delete [] fitted_card_hist[ip];
-
+	delete [] wire_min[ip];
+	delete [] wire_max[ip];
 
       }  
     
@@ -110,7 +112,8 @@ DC_calib::~DC_calib()
     //delete [] card_hist[ip];               card_hist              = NULL;
     //delete [] corr_card_hist[ip];          corr_card_hist         = NULL;
     //delete [] fitted_card_hist[ip];        fitted_card_hist       = NULL;
-
+    //delete [] wire_min;                    wire_min               = NULL;
+    //delete [] wire_max;                    wire_max               = NULL;
 
 }
 
@@ -431,7 +434,9 @@ void DC_calib::AllocateDynamicArrays()
   card_hist               = new TH1F*[NPLANES];  //Array to store uncorrected histogram per card
   fitted_card_hist        = new TH1F*[NPLANES];  //Array to store fitted card histogram
   corr_card_hist          = new TH1F*[NPLANES];  //Array to store corrected histogram per card
-
+  wire_min                = new Int_t*[NPLANES];
+  wire_max                = new Int_t*[NPLANES];
+  
   for(int ip=0; ip<NPLANES; ip++)
     {
       entries[ip]                 = new Int_t[nwires[ip]]; 
@@ -452,7 +457,8 @@ void DC_calib::AllocateDynamicArrays()
       card_hist[ip]               = new TH1F[plane_cards[ip]];
       fitted_card_hist[ip]        = new TH1F[plane_cards[ip]];
       corr_card_hist[ip]          = new TH1F[plane_cards[ip]];
-    
+      wire_min[ip]                = new Int_t[plane_cards[ip]];
+      wire_max[ip]                = new Int_t[plane_cards[ip]];
 
     }
   
@@ -573,8 +579,230 @@ void DC_calib::CreateHistoNames()
       
     } //End Loop over Planes
 
-}
+} //End CreateHistoNames() method
+
+//________________________________________________________________________
+void DC_calib::GetCard()
+{
+
+  //ONLY required in :: CARD MODE
   
+  if (spec=="HMS")
+    {
+      //---1U1 MIN----          ----1U1 MAX-----
+      wire_min[0][0]=1;         wire_max[0][0]=16;
+      wire_min[0][1]=17;        wire_max[0][1]=32;
+      wire_min[0][2]=33;        wire_max[0][2]=48;
+      wire_min[0][3]=49;        wire_max[0][3]=64;
+      wire_min[0][4]=65;        wire_max[0][4]=80;
+      wire_min[0][5]=81;        wire_max[0][5]=96;
+
+      //--1U2 MIN----           ---1U2 MAX------
+      wire_min[1][0]=1;         wire_max[1][0]=16;
+      wire_min[1][1]=17;        wire_max[1][1]=32;
+      wire_min[1][2]=33;        wire_max[1][2]=48;
+      wire_min[1][3]=49;        wire_max[1][3]=64;
+      wire_min[1][4]=65;        wire_max[1][4]=80;
+      wire_min[1][5]=81;        wire_max[1][5]=96;
+
+      //--1X1 MIN----           ----1X1 MAX-----
+      wire_min[2][0]=1;         wire_max[2][0]=11;
+      wire_min[2][1]=12;        wire_max[2][1]=27;
+      wire_min[2][2]=28;        wire_max[2][2]=43;
+      wire_min[2][3]=44;        wire_max[2][3]=59;
+      wire_min[2][4]=60;        wire_max[2][4]=75;
+      wire_min[2][5]=76;        wire_max[2][5]=91;
+      wire_min[2][6]=92;        wire_max[2][6]=102;
+      
+      //--1X2 MIN-----         ----1X2 MAX------
+      wire_min[3][0]=1;         wire_max[3][0]=11;
+      wire_min[3][1]=12;        wire_max[3][1]=27;
+      wire_min[3][2]=28;        wire_max[3][2]=43;
+      wire_min[3][3]=44;        wire_max[3][3]=59;
+      wire_min[3][4]=60;        wire_max[3][4]=75;
+      wire_min[3][5]=76;        wire_max[3][5]=91;
+      wire_min[3][6]=92;        wire_max[3][6]=102;
+
+      //--1V2 MIN-----         ---1V2 MAX-------
+      wire_min[4][0]=1;        wire_max[4][0]=16;
+      wire_min[4][1]=17;       wire_max[4][1]=32;
+      wire_min[4][2]=33;       wire_max[4][2]=48;
+      wire_min[4][3]=49;       wire_max[4][3]=64;
+      wire_min[4][4]=65;       wire_max[4][4]=80;
+      wire_min[4][5]=81;       wire_max[4][5]=96;
+
+      
+      //--1V1 MIN-----         ---1V1 MAX-------
+      wire_min[5][0]=1;        wire_max[5][0]=16;
+      wire_min[5][1]=17;       wire_max[5][1]=32;
+      wire_min[5][2]=33;       wire_max[5][2]=48;
+      wire_min[5][3]=49;       wire_max[5][3]=64;
+      wire_min[5][4]=65;       wire_max[5][4]=80;
+      wire_min[5][5]=81;       wire_max[5][5]=96;
+
+      //--2V1 MIN-----         ---2V1 MAX-------
+      wire_min[6][0]=1;        wire_max[6][0]=16;
+      wire_min[6][1]=17;       wire_max[6][1]=32;
+      wire_min[6][2]=33;       wire_max[6][2]=48;
+      wire_min[6][3]=49;       wire_max[6][3]=64;
+      wire_min[6][4]=65;       wire_max[6][4]=80;
+      wire_min[6][5]=81;       wire_max[6][5]=96;
+
+      //--2V2 MIN-----         ---2V2 MAX-------
+      wire_min[7][0]=1;        wire_max[7][0]=16;
+      wire_min[7][1]=17;       wire_max[7][1]=32;
+      wire_min[7][2]=33;       wire_max[7][2]=48;
+      wire_min[7][3]=49;       wire_max[7][3]=64;
+      wire_min[7][4]=65;       wire_max[7][4]=80;
+      wire_min[7][5]=81;       wire_max[7][5]=96;
+
+      //--2X2 MIN-----         ----2X2 MAX------
+      wire_min[8][0]=1;         wire_max[8][0]=11;
+      wire_min[8][1]=12;        wire_max[8][1]=27;
+      wire_min[8][2]=28;        wire_max[8][2]=43;
+      wire_min[8][3]=44;        wire_max[8][3]=59;
+      wire_min[8][4]=60;        wire_max[8][4]=75;
+      wire_min[8][5]=76;        wire_max[8][5]=91;
+      wire_min[8][6]=92;        wire_max[8][6]=102;
+
+      //--2X1 MIN-----         ----2X1 MAX------
+      wire_min[9][0]=1;         wire_max[9][0]=11;
+      wire_min[9][1]=12;        wire_max[9][1]=27;
+      wire_min[9][2]=28;        wire_max[9][2]=43;
+      wire_min[9][3]=44;        wire_max[9][3]=59;
+      wire_min[9][4]=60;        wire_max[9][4]=75;
+      wire_min[9][5]=76;        wire_max[9][5]=91;
+      wire_min[9][6]=92;        wire_max[9][6]=102;
+      
+
+      //--2U2 MIN-----         ---2U2 MAX-------
+      wire_min[10][0]=1;        wire_max[10][0]=16;
+      wire_min[10][1]=17;       wire_max[10][1]=32;
+      wire_min[10][2]=33;       wire_max[10][2]=48;
+      wire_min[10][3]=49;       wire_max[10][3]=64;
+      wire_min[10][4]=65;       wire_max[10][4]=80;
+      wire_min[10][5]=81;       wire_max[10][5]=96;
+
+       //--2U1 MIN-----         ---2U1 MAX-------
+      wire_min[11][0]=1;        wire_max[11][0]=16;
+      wire_min[11][1]=17;       wire_max[11][1]=32;
+      wire_min[11][2]=33;       wire_max[11][2]=48;
+      wire_min[11][3]=49;       wire_max[11][3]=64;
+      wire_min[11][4]=65;       wire_max[11][4]=80;
+      wire_min[11][5]=81;       wire_max[11][5]=96;
+
+
+    } //end hms card defnitions
+
+  else if (spec=="SHMS")
+
+    {
+
+      //---1U1 MIN---        ----1U1 MAX-------
+      wire_min[0][0]=1,      wire_max[0][0]=15;
+      wire_min[0][1]=16,     wire_max[0][1]=31;
+      wire_min[0][2]=32,     wire_max[0][2]=47;
+      wire_min[0][3]=48,     wire_max[0][3]=63;
+      wire_min[0][4]=64,     wire_max[0][4]=79;
+      wire_min[0][5]=80,     wire_max[0][5]=95;
+      wire_min[0][6]=96,     wire_max[0][6]=107;
+
+      //--1U2 MIN----        ---1U2 MAX--------
+      wire_min[1][0]=1,      wire_max[1][0]=12;
+      wire_min[1][1]=13,     wire_max[1][1]=28;
+      wire_min[1][2]=29,     wire_max[1][2]=44;
+      wire_min[1][3]=45,     wire_max[1][3]=60;
+      wire_min[1][4]=61,     wire_max[1][4]=76;
+      wire_min[1][5]=77,     wire_max[1][5]=92;
+      wire_min[1][6]=93,     wire_max[1][6]=107;
+
+      //--1X1 MIN----        ---1X1 MAX--------
+      wire_min[2][0]=1,      wire_max[2][0]=16;
+      wire_min[2][1]=17,     wire_max[2][1]=32;
+      wire_min[2][2]=33,     wire_max[2][2]=48;
+      wire_min[2][3]=49,     wire_max[2][3]=64;
+      wire_min[2][4]=65,     wire_max[2][4]=79;
+
+      //--1X2 MIN----        ---1X2 MAX--------
+      wire_min[3][0]=1,      wire_max[3][0]=15;
+      wire_min[3][1]=16,     wire_max[3][1]=31;
+      wire_min[3][2]=32,     wire_max[3][2]=47;
+      wire_min[3][3]=48,     wire_max[3][3]=63;
+      wire_min[3][4]=64,     wire_max[3][4]=79;
+
+      //--1V1 MIN----        --1V1 MAX---------
+      wire_min[4][0]=1,      wire_max[4][0]=15;
+      wire_min[4][1]=16,     wire_max[4][1]=31;
+      wire_min[4][2]=32,     wire_max[4][2]=47;
+      wire_min[4][3]=48,     wire_max[4][3]=63;
+      wire_min[4][4]=64,     wire_max[4][4]=79;
+      wire_min[4][5]=80,     wire_max[4][5]=95;
+      wire_min[4][6]=96,     wire_max[4][6]=107;
+      
+      //--1V2 MIN----        --1V2 MAX---------
+      wire_min[5][0]=1,      wire_max[5][0]=12;
+      wire_min[5][1]=13,     wire_max[5][1]=28;
+      wire_min[5][2]=29,     wire_max[5][2]=44;
+      wire_min[5][3]=45,     wire_max[5][3]=60;
+      wire_min[5][4]=61,     wire_max[5][4]=76;
+      wire_min[5][5]=77,     wire_max[5][5]=92;
+      wire_min[5][6]=93,     wire_max[5][6]=107;
+
+      //--2V2 MIN----        --2V2 MAX---------
+      wire_min[6][0]=1,      wire_max[6][0]=12;
+      wire_min[6][1]=13,     wire_max[6][1]=28;
+      wire_min[6][2]=29,     wire_max[6][2]=44;
+      wire_min[6][3]=45,     wire_max[6][3]=60;
+      wire_min[6][4]=61,     wire_max[6][4]=76;
+      wire_min[6][5]=77,     wire_max[6][5]=92;
+      wire_min[6][6]=93,     wire_max[6][6]=107;
+
+      //--2V1 MIN----        --2V1 MAX---------
+      wire_min[7][0]=1,      wire_max[7][0]=15;
+      wire_min[7][1]=16,     wire_max[7][1]=31;
+      wire_min[7][2]=32,     wire_max[7][2]=47;
+      wire_min[7][3]=48,     wire_max[7][3]=63;
+      wire_min[7][4]=64,     wire_max[7][4]=79;
+      wire_min[7][5]=80,     wire_max[7][5]=95;
+      wire_min[7][6]=96,     wire_max[7][6]=107;
+
+      //--2X2 MIN----        --2X2 MAX---------
+      wire_min[8][0]=1,      wire_max[8][0]=15;
+      wire_min[8][1]=16,     wire_max[8][1]=31;
+      wire_min[8][2]=32,     wire_max[8][2]=47;
+      wire_min[8][3]=48,     wire_max[8][3]=63;
+      wire_min[8][4]=64,     wire_max[8][4]=79;
+
+      //--2X1 MIN----        --2X1 MAX---------
+      wire_min[9][0]=1,      wire_max[9][0]=16;
+      wire_min[9][1]=17,     wire_max[9][1]=32;
+      wire_min[9][2]=33,     wire_max[9][2]=48;
+      wire_min[9][3]=49,     wire_max[9][3]=64;
+      wire_min[9][4]=65,     wire_max[9][4]=79;
+
+      //--2U2 MIN----        --2U2 MAX---------
+      wire_min[10][0]=1,      wire_max[10][0]=12;
+      wire_min[10][1]=13,     wire_max[10][1]=28;
+      wire_min[10][2]=29,     wire_max[10][2]=44;
+      wire_min[10][3]=45,     wire_max[10][3]=60;
+      wire_min[10][4]=61,     wire_max[10][4]=76;
+      wire_min[10][5]=77,     wire_max[10][5]=92;
+      wire_min[10][6]=93,     wire_max[10][6]=107;
+
+      //--2U1 MIN----        --2U1 MAX---------
+      wire_min[11][0]=1,      wire_max[11][0]=15;
+      wire_min[11][1]=16,     wire_max[11][1]=31;
+      wire_min[11][2]=32,     wire_max[11][2]=47;
+      wire_min[11][3]=48,     wire_max[11][3]=63;
+      wire_min[11][4]=64,     wire_max[11][4]=79;
+      wire_min[11][5]=80,     wire_max[11][5]=95;
+      wire_min[11][6]=96,     wire_max[11][6]=107;
+
+      
+    }  //end shms card definitions
+  
+  
+} //End method getCard
 
 //________________________________________________________________
 void DC_calib::EventLoop(string option="")

@@ -228,7 +228,8 @@ class DC_calib
   TH1F **corr_card_hist;
   TH1F **fitted_card_hist;
 
-  
+  Int_t **wire_min;
+  Int_t **wire_max;
 
 };
 
