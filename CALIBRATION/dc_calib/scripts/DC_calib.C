@@ -1057,7 +1057,8 @@ void DC_calib::EventLoop(string option="")
 				      //Fill Corrected Card Drift Times
 				      dt_vs_wire_corr[ip].Fill(wire_num[ip][j], drift_time[ip][j] - t_zero_card[ip][card]);  
 				      corr_card_hist[ip][card].Fill(drift_time[ip][j]-t_zero_card[ip][card]);
-				      
+				      t_zero_final[ip][wire-1] = t_zero[ip][wire-1];
+
 				    } 
 				  
 				} //loop over cards
@@ -1424,7 +1425,7 @@ void DC_calib::FitCardDriftTime()
 	  
 	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0  || entries_card[ip][card] <= max_wire_entry)
 	    {
-	      t_zero[ip][card] = 0.0;
+	        t_zero[ip][card] = 0.0;
 	    }
 
 	}  //end loop over cards
@@ -1453,6 +1454,122 @@ void DC_calib::Calculate_tZero()
     }
 
 }
+
+
+//__________________________________________________________________________
+void DC_calib::WriteTZeroParam()
+{
+  otxtfile_name =  "./"+spec+"_DC_Log_"+ std::to_string(run_NUM) +"/"+spectre+"dc_tzero_per_wire_"+std::to_string(run_NUM)+".param";
+  out_txtFILE.open(otxtfile_name);
+  
+  for (int ip=0; ip<NPLANES; ip++) { 
+	  
+    //write plane headers
+    out_txtFILE << spectre+"tzero"+plane_names[ip] << "=" << endl;
+
+    //cout << "Plane: "  << ip << endl;
+   for (wire=0; wire<nwires[ip]; wire++) 
+     {
+       //cout << "Plane: " << ip << " ::  wire: " << wire+1 << " :: " << "tzero_final: "<< t_zero_final[ip][wire] << endl;
+       if (wire <= 10) 
+	 { 
+	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << fixed << ",";
+	 }
+       else if (wire>10 && wire <(nwires[ip]-1))
+	 {
+	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << ((wire+1) % 16 ? ", " : "\n") << fixed;
+	 }
+       else if (wire==nwires[ip]-1) 
+	 {
+	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << fixed << endl;
+     
+	   }
+       
+     } //END LOOP OVER WIRES
+
+  } //END LOOP OVER PLANES
+  
+  out_txtFILE.close();
+  
+} //end WriteTZeroParam() Method
+
+//_________________________________________________________________________________
+void DC_calib::WriteLookUpTable()
+{
+  otxtfile_name = "./"+spec+"_DC_Log_"+std::to_string(run_NUM)+"/"+spectre+"dc_calib_"+std::to_string(run_NUM)+".param";
+  out_txtFILE.open(otxtfile_name);
+  Double_t t_offset_firstbin = 0.0;
+  //Set headers for subsequent columns of data
+  out_txtFILE << Form("; Lookup Table: RUN %d", run_NUM) << "\n";
+  out_txtFILE << "; number of bins in time to distance lookup table" << "\n";
+  out_txtFILE << Form(spectre+"driftbins = %d", TOTAL_BINS+1) << "\n";
+  out_txtFILE << "; number of 1st bin in table in ns" << "\n";
+  out_txtFILE << spectre+Form("drift1stbin=%f", t_offset_firstbin + 1.) << "\n";
+  out_txtFILE << "; bin size in ns" << "\n";
+  out_txtFILE << spectre+"driftbinsz=1" << "\n";
+  
+//Loop over each plane of hms/shms Drift Chambers (DC1 & DC2)
+
+  for (int ip=0; ip<NPLANES; ip++){
+   
+    
+    //Get bin corresponding to t0 = 0 ns
+    bin_t0[ip] = plane_dt_corr[ip].GetXaxis()->FindBin(t_offset_firstbin);
+   
+    //Get final bin 
+    bin_final[ip] = bin_t0[ip] + TOTAL_BINS;
+   
+    //Find total BIN Content over entire integration range
+    binContent_TOTAL[ip] = 0.; //set counter to zero
+
+
+    for (int bin = bin_t0[ip]; bin <= bin_final[ip]; bin ++ ) {
+     
+      bin_Content[ip] = plane_dt_corr[ip].GetBinContent(bin);
+     
+      binContent_TOTAL[ip] = bin_Content[ip] + binContent_TOTAL[ip];
+     
+      //   cout << "Bin: " << bin << endl;
+      //   cout << "Content " << bin_Content[ip] << endl;
+      //   cout << "Content SUM : " << binContent_TOTAL[ip] << endl;
+    }
+   
+    TString headers = spectre+"wc" + plane_names[ip] + "fract=";      
+    out_txtFILE << headers;	  
+   
+    //Calculate LookUp Value
+   
+    binSUM[ip] = 0.0;
+    bin_count = 0;
+   
+    for (int bin = bin_t0[ip]; bin <= bin_final[ip]; bin++) {
+     
+      bin_Content[ip] = plane_dt_corr[ip].GetBinContent(bin);
+      binSUM[ip] = binSUM[ip] + bin_Content[ip];
+     
+     
+      lookup_value[ip] = binSUM[ip] / binContent_TOTAL[ip];
+      bin_count = bin_count + 1;
+     
+      if (bin_count <= 16 ) {
+	out_txtFILE << setprecision(5) << lookup_value[ip] << fixed << ",";
+      }
+     
+      else if (bin_count >16 && bin_count <= TOTAL_BINS) {
+	out_txtFILE << setprecision(5) << lookup_value[ip] << ((bin_count+1) % 20 ? "," : "\n") << fixed; 
+      }
+      else {
+	out_txtFILE  << setprecision(5) << lookup_value[ip] <<  fixed << endl;	  
+      }
+     
+    } //END LOOP OVER plane drift time BINS
+
+  } //END LOOP OVER PLANES                     
+
+  out_txtFILE.close();
+
+} //end WriteLookUpTable() method
+
 
 
 //________________________________________________________________
@@ -1622,117 +1739,3 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 
 }
   
-
-//__________________________________________________________________________
-void DC_calib::WriteTZeroParam()
-{
-  otxtfile_name =  "./"+spec+"_DC_Log_"+ std::to_string(run_NUM) +"/"+spectre+"dc_tzero_per_wire_"+std::to_string(run_NUM)+".param";
-  out_txtFILE.open(otxtfile_name);
-  
-  for (int ip=0; ip<NPLANES; ip++) { 
-	  
-    //write plane headers
-    out_txtFILE << spectre+"tzero"+plane_names[ip] << "=" << endl;
-
-    //cout << "Plane: "  << ip << endl;
-   for (wire=0; wire<nwires[ip]; wire++) 
-     {
-       //cout << "Plane: " << ip << " ::  wire: " << wire+1 << " :: " << "tzero_final: "<< t_zero_final[ip][wire] << endl;
-       if (wire <= 10) 
-	 { 
-	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << fixed << ",";
-	 }
-       else if (wire>10 && wire <(nwires[ip]-1))
-	 {
-	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << ((wire+1) % 16 ? ", " : "\n") << fixed;
-	 }
-       else if (wire==nwires[ip]-1) 
-	 {
-	   out_txtFILE << setprecision(6) << t_zero_final[ip][wire] << fixed << endl;
-     
-	   }
-       
-     } //END LOOP OVER WIRES
-
-  } //END LOOP OVER PLANES
-  
-  out_txtFILE.close();
-  
-}
-
-//_________________________________________________________________________________
-void DC_calib::WriteLookUpTable()
-{
-  otxtfile_name = "./"+spec+"_DC_Log_"+std::to_string(run_NUM)+"/"+spectre+"dc_calib_"+std::to_string(run_NUM)+".param";
-  out_txtFILE.open(otxtfile_name);
-  Double_t t_offset_firstbin = 0.0;
-  //Set headers for subsequent columns of data
-  out_txtFILE << Form("; Lookup Table: RUN %d", run_NUM) << "\n";
-  out_txtFILE << "; number of bins in time to distance lookup table" << "\n";
-  out_txtFILE << Form(spectre+"driftbins = %d", TOTAL_BINS+1) << "\n";
-  out_txtFILE << "; number of 1st bin in table in ns" << "\n";
-  out_txtFILE << spectre+Form("drift1stbin=%f", t_offset_firstbin + 1.) << "\n";
-  out_txtFILE << "; bin size in ns" << "\n";
-  out_txtFILE << spectre+"driftbinsz=1" << "\n";
-  
-//Loop over each plane of hms/shms Drift Chambers (DC1 & DC2)
-
-  for (int ip=0; ip<NPLANES; ip++){
-   
-    
-    //Get bin corresponding to t0 = 0 ns
-    bin_t0[ip] = plane_dt_corr[ip].GetXaxis()->FindBin(t_offset_firstbin);
-   
-    //Get final bin 
-    bin_final[ip] = bin_t0[ip] + TOTAL_BINS;
-   
-    //Find total BIN Content over entire integration range
-    binContent_TOTAL[ip] = 0.; //set counter to zero
-
-
-    for (int bin = bin_t0[ip]; bin <= bin_final[ip]; bin ++ ) {
-     
-      bin_Content[ip] = plane_dt_corr[ip].GetBinContent(bin);
-     
-      binContent_TOTAL[ip] = bin_Content[ip] + binContent_TOTAL[ip];
-     
-      //   cout << "Bin: " << bin << endl;
-      //   cout << "Content " << bin_Content[ip] << endl;
-      //   cout << "Content SUM : " << binContent_TOTAL[ip] << endl;
-    }
-   
-    TString headers = spectre+"wc" + plane_names[ip] + "fract=";      
-    out_txtFILE << headers;	  
-   
-    //Calculate LookUp Value
-   
-    binSUM[ip] = 0.0;
-    bin_count = 0;
-   
-    for (int bin = bin_t0[ip]; bin <= bin_final[ip]; bin++) {
-     
-      bin_Content[ip] = plane_dt_corr[ip].GetBinContent(bin);
-      binSUM[ip] = binSUM[ip] + bin_Content[ip];
-     
-     
-      lookup_value[ip] = binSUM[ip] / binContent_TOTAL[ip];
-      bin_count = bin_count + 1;
-     
-      if (bin_count <= 16 ) {
-	out_txtFILE << setprecision(5) << lookup_value[ip] << fixed << ",";
-      }
-     
-      else if (bin_count >16 && bin_count <= TOTAL_BINS) {
-	out_txtFILE << setprecision(5) << lookup_value[ip] << ((bin_count+1) % 20 ? "," : "\n") << fixed; 
-      }
-      else {
-	out_txtFILE  << setprecision(5) << lookup_value[ip] <<  fixed << endl;	  
-      }
-     
-    } //END LOOP OVER plane drift time BINS
-
-  } //END LOOP OVER PLANES                     
-
-  out_txtFILE.close();
-
-}
