@@ -5,13 +5,14 @@
 using namespace std;
 
 //_____________________________________________________________
-DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e)
+DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e, TString f)
 
   :spec(a),          //set spectrometer to 'HMS', or 'SHMS'  ex. DC_Calib(HMS, pdc_replay.C, 488, 50000)
    ifile_name(b),    //initialization list
    run_NUM(c),
    num_evts(d),
-   pid(e)
+   pid(e),
+   mode(f)
 {
   //Initialize pointers
   dir_log    = NULL;
@@ -40,14 +41,16 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e)
   tZero_fit              = NULL;
   graph                  = NULL;
   gr1_canv               = NULL;
-  
+
+  if(mode=="card")
+    {
   //--Card Variables
   card_hist              = NULL;
   corr_card_hist         = NULL;
   fitted_card_hist       = NULL;
   wire_min               = NULL;
   wire_max               = NULL;
-
+    }
   
 }
 
@@ -61,6 +64,7 @@ DC_calib::~DC_calib()
   delete out_file; out_file = NULL;             
   delete graph;    graph    = NULL;
   delete gr1_canv; gr1_canv = NULL;
+  
   //Delete 1D Arrays pointers to free up 'heap' space
     
     delete [] dt_vs_wire; dt_vs_wire = NULL;
@@ -85,13 +89,15 @@ DC_calib::~DC_calib()
 	delete [] ref_time[ip];
 	delete [] offset[ip];
      
+	if (mode=="card")
+	  {
 	//Card Variables
 	delete [] card_hist[ip]; 
 	delete [] corr_card_hist[ip];
 	delete [] fitted_card_hist[ip];
 	delete [] wire_min[ip];
 	delete [] wire_max[ip];
-
+	  }
       }  
     
     delete [] entries;                     entries                = NULL;
@@ -188,6 +194,8 @@ void DC_calib::SetPlaneNames()
       planes[10] = plane_names[10]="2u2", nwires[10] = 107;
       planes[11] = plane_names[11]="2u1", nwires[11] = 107;
 
+      if (mode=="card")
+	{
       //---Per Card ONLY----
       plane_cards[0] = 7;
       plane_cards[1] = 7;
@@ -201,7 +209,7 @@ void DC_calib::SetPlaneNames()
       plane_cards[9] = 5;
       plane_cards[10] = 7;
       plane_cards[11] = 7;
-
+	}
 
     }
       
@@ -230,7 +238,9 @@ void DC_calib::SetPlaneNames()
       planes[9] = plane_names[9]="2x1",  nwires[9] = 102;
       planes[10] = plane_names[10]="2u2", nwires[10] = 96;
       planes[11] = plane_names[11]="2u1", nwires[11] = 96;
-    
+
+      if (mode=="card")
+	{
       //---Per-Card ONLY---
       plane_cards[0] = 6;
       plane_cards[1] = 6;
@@ -244,7 +254,7 @@ void DC_calib::SetPlaneNames()
       plane_cards[9] = 7;
       plane_cards[10] = 6;
       plane_cards[11] = 6;
-
+	}
     }
   
 }
@@ -429,13 +439,18 @@ void DC_calib::AllocateDynamicArrays()
   twenty_perc_maxContent  = new Double_t*[NPLANES]; /*Array to store 20% of maximum bin content (peak)*/						     
   ref_time                = new Double_t*[NPLANES]; /*Array to store ref_time(time corresp. to 20% of peak) times for each sense wire*/             
   offset                  = new Double_t*[NPLANES];
-  
-  //Card Variables
-  card_hist               = new TH1F*[NPLANES];  //Array to store uncorrected histogram per card
-  fitted_card_hist        = new TH1F*[NPLANES];  //Array to store fitted card histogram
-  corr_card_hist          = new TH1F*[NPLANES];  //Array to store corrected histogram per card
-  wire_min                = new Int_t*[NPLANES];
-  wire_max                = new Int_t*[NPLANES];
+
+
+  if (mode=="card")
+    {
+      //Card Variables
+      card_hist               = new TH1F*[NPLANES];  //Array to store uncorrected histogram per card
+      fitted_card_hist        = new TH1F*[NPLANES];  //Array to store fitted card histogram
+      corr_card_hist          = new TH1F*[NPLANES];  //Array to store corrected histogram per card
+      wire_min                = new Int_t*[NPLANES];
+      wire_max                = new Int_t*[NPLANES];
+
+    }
   
   for(int ip=0; ip<NPLANES; ip++)
     {
@@ -452,7 +467,10 @@ void DC_calib::AllocateDynamicArrays()
       twenty_perc_maxContent[ip]  = new Double_t[nwires[ip]];   						     
       ref_time[ip]                = new Double_t[nwires[ip]];                    
       offset[ip]                  = new Double_t[nwires[ip]];
-    
+
+      if (mode=="card")
+	{
+      
       //Card Variables
       card_hist[ip]               = new TH1F[plane_cards[ip]];
       fitted_card_hist[ip]        = new TH1F[plane_cards[ip]];
@@ -460,6 +478,8 @@ void DC_calib::AllocateDynamicArrays()
       wire_min[ip]                = new Int_t[plane_cards[ip]];
       wire_max[ip]                = new Int_t[plane_cards[ip]];
 
+
+	}
     }
   
   
@@ -539,46 +559,50 @@ void DC_calib::CreateHistoNames()
 
 	} //End Loop over wires
 
-      	     //Loop over plane cards :: CARD_MODE
-	     for (card = 0; card < plane_cards[ip]; card++ )
-	       {
-		 
-		 card_hist_name = Form("UnCorr_Card_%d", card+1); 
-		 card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Uncorrected Card_%d", card+1);
-		 
-		 
-		 card_hist[ip][card].SetName(card_hist_name);
-		 card_hist[ip][card].SetTitle(card_hist_title);
-		 card_hist[ip][card].SetBins(NBINS, MINBIN, MAXBIN);
-		 card_hist[ip][card].SetXTitle("Drift Time (ns)");
-		 card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
-		 
-		 fitted_card_hist_name = Form("Fitted_Card_%d", card+1); 
-		 fitted_card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Fitted Card_%d", card+1);
+      if (mode=="card")
+	{
+	  //Loop over plane cards :: CARD_MODE
+	  for (card = 0; card < plane_cards[ip]; card++ )
+	    {
+	      
+	      card_hist_name = Form("UnCorr_Card_%d", card+1); 
+	      card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Uncorrected Card_%d", card+1);
+	      
+	      
+	      card_hist[ip][card].SetName(card_hist_name);
+	      card_hist[ip][card].SetTitle(card_hist_title);
+	      card_hist[ip][card].SetBins(NBINS, MINBIN, MAXBIN);
+	      card_hist[ip][card].SetXTitle("Drift Time (ns)");
+	      card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
+	      
+	      fitted_card_hist_name = Form("Fitted_Card_%d", card+1); 
+	      fitted_card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Fitted Card_%d", card+1);
+	      
+	      fitted_card_hist[ip][card].SetName(fitted_card_hist_name);
+	      fitted_card_hist[ip][card].SetTitle(fitted_card_hist_title);
+	      fitted_card_hist[ip][card].SetBins(200, MINBIN, MAXBIN);
+	      fitted_card_hist[ip][card].SetXTitle("Drift Time (ns)");
+	      fitted_card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
+	      
+	      
+	      corr_card_hist_name = Form("Corr_Card_%d", card+1); 
+	      corr_card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Corrected Card_%d", card+1);
+	      
+	      
+	      corr_card_hist[ip][card].SetName(corr_card_hist_name);
+	      corr_card_hist[ip][card].SetTitle(corr_card_hist_title);
+	      corr_card_hist[ip][card].SetBins(NBINS, MINBIN, MAXBIN);
+	      corr_card_hist[ip][card].SetXTitle("Drift Time (ns)");
+	      corr_card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
+	      
+	      
+	    } //end loop over cards
 
-		 fitted_card_hist[ip][card].SetName(fitted_card_hist_name);
-		 fitted_card_hist[ip][card].SetTitle(fitted_card_hist_title);
-		 fitted_card_hist[ip][card].SetBins(200, MINBIN, MAXBIN);
-		 fitted_card_hist[ip][card].SetXTitle("Drift Time (ns)");
-		 fitted_card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
-	       
-		 		 
-		 corr_card_hist_name = Form("Corr_Card_%d", card+1); 
-		 corr_card_hist_title = spec + " DC Plane " +plane_names[ip] + Form(": Corrected Card_%d", card+1);
+	  
+	} //end card mode
 
-
-		 corr_card_hist[ip][card].SetName(corr_card_hist_name);
-		 corr_card_hist[ip][card].SetTitle(corr_card_hist_title);
-		 corr_card_hist[ip][card].SetBins(NBINS, MINBIN, MAXBIN);
-		 corr_card_hist[ip][card].SetXTitle("Drift Time (ns)");
-		 corr_card_hist[ip][card].SetYTitle("Number of Entries / 1 ns");
-		
-
-	       } //end loop over cards
-
-      
     } //End Loop over Planes
-
+  
 } //End CreateHistoNames() method
 
 //________________________________________________________________________
@@ -586,7 +610,9 @@ void DC_calib::GetCard()
 {
 
   //ONLY required in :: CARD MODE
-  
+  if (mode=="card")
+    {
+      
   if (spec=="HMS")
     {
       //---1U1 MIN----          ----1U1 MAX-----
@@ -800,7 +826,8 @@ void DC_calib::GetCard()
 
       
     }  //end shms card definitions
-  
+
+    } //end mode :: card
   
 } //End method getCard
 
@@ -896,7 +923,11 @@ void DC_calib::EventLoop(string option="")
 		    {
 		      
 		      //get wire hit for ith event in 'ip' plane
-		      wire = int(wire_num[ip][j]);		      
+		      wire = int(wire_num[ip][j]);
+
+
+		      //-----------WIRE MODE ONLY----------------------------
+		      
 		      if (option=="FillUncorrectedTimes")
 			{
 			  //Fill uncorrected plane drift times  (from: get_pdc_time_histo.C )
@@ -905,6 +936,8 @@ void DC_calib::EventLoop(string option="")
 			  cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
 			  fitted_cell_dt[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1]);
 			}
+
+		      
 		      else if (option=="ApplyT0Correction")
 			{
 			  //Fill corrected plane drift times 
@@ -912,6 +945,31 @@ void DC_calib::EventLoop(string option="")
 			  cell_dt_corr[ip][wire-1].Fill(drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
 			  dt_vs_wire_corr[ip].Fill(wire_num[ip][j], drift_time[ip][j] - offset[ip][wire-1] - t_zero[ip][wire-1]);
 			  t_zero_final[ip][wire-1] = offset[ip][wire-1] + t_zero[ip][wire-1];
+			}
+
+		      //-------------END WIRE MODE ONLY------------------------
+
+		      if (mode=="card")
+			{
+		      
+			  //------------CARD MODE ONLY-----------------------------
+			  
+			  //Loop over plane cards
+			  for (card = 0; card < plane_cards[ip]; card++ )
+			    {
+			      
+			      //Conditions
+			      if (wire >= wire_min[ip][card] && wire <= wire_max[ip][card])
+				{
+				  //Fill Uncorrected Cards dRIFT tIME
+				  card_hist[ip][card].Fill(drift_time[ip][j]);
+				  fitted_card_hist[ip][card].Fill(drift_time[ip][j]);
+				  
+				}
+			      			      
+			    }
+			  //------------END CARD MODE ONLY------------------------
+
 			}
 		     
 		    } //end loop over hits
