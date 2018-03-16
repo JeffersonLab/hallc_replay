@@ -44,6 +44,8 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e, TStr
 
   if(mode=="card")
     {
+      cout << "Initializing Card Variables . . ." << endl;
+
   //--Card Variables
   card_hist              = NULL;
   corr_card_hist         = NULL;
@@ -91,12 +93,13 @@ DC_calib::~DC_calib()
      
 	if (mode=="card")
 	  {
-	//Card Variables
-	delete [] card_hist[ip]; 
-	delete [] corr_card_hist[ip];
-	delete [] fitted_card_hist[ip];
-	delete [] wire_min[ip];
-	delete [] wire_max[ip];
+
+	    //Card Variables
+	    delete [] card_hist[ip]; 
+	    delete [] corr_card_hist[ip];
+	    delete [] fitted_card_hist[ip];
+	    delete [] wire_min[ip];
+	    delete [] wire_max[ip];
 	  }
       }  
     
@@ -118,8 +121,8 @@ DC_calib::~DC_calib()
     //delete [] card_hist[ip];               card_hist              = NULL;
     //delete [] corr_card_hist[ip];          corr_card_hist         = NULL;
     //delete [] fitted_card_hist[ip];        fitted_card_hist       = NULL;
-    //delete [] wire_min;                    wire_min               = NULL;
-    //delete [] wire_max;                    wire_max               = NULL;
+    delete [] wire_min;                    wire_min               = NULL;
+    delete [] wire_max;                    wire_max               = NULL;
 
 }
 
@@ -196,6 +199,7 @@ void DC_calib::SetPlaneNames()
 
       if (mode=="card")
 	{
+	  cout << "Setting Plane Cards . . ." << endl;
       //---Per Card ONLY----
       plane_cards[0] = 7;
       plane_cards[1] = 7;
@@ -443,6 +447,7 @@ void DC_calib::AllocateDynamicArrays()
 
   if (mode=="card")
     {
+      cout << "Allocating Card Variables . . ." << endl;
       //Card Variables
       card_hist               = new TH1F*[NPLANES];  //Array to store uncorrected histogram per card
       fitted_card_hist        = new TH1F*[NPLANES];  //Array to store fitted card histogram
@@ -561,6 +566,7 @@ void DC_calib::CreateHistoNames()
 
       if (mode=="card")
 	{
+	  cout << "Setting Card Histogram Names . . ." << endl;
 	  //Loop over plane cards :: CARD_MODE
 	  for (card = 0; card < plane_cards[ip]; card++ )
 	    {
@@ -610,8 +616,6 @@ void DC_calib::GetCard()
 {
 
   //ONLY required in :: CARD MODE
-  if (mode=="card")
-    {
       
   if (spec=="HMS")
     {
@@ -827,7 +831,6 @@ void DC_calib::GetCard()
       
     }  //end shms card definitions
 
-    } //end mode :: card
   
 } //End method getCard
 
@@ -835,6 +838,12 @@ void DC_calib::GetCard()
 void DC_calib::EventLoop(string option="")
 {
 
+  if (mode=="card")
+    {
+      cout << "Executing GetCard() Method . . ." << endl;
+      GetCard();
+    }
+  
   //Initialize counter to count how many good events (5/6 hits / chamber)
   ngood_evts = 0;
 
@@ -925,6 +934,8 @@ void DC_calib::EventLoop(string option="")
 		      //get wire hit for ith event in 'ip' plane
 		      wire = int(wire_num[ip][j]);
 
+		      if (mode=="wire")
+			{
 
 		      //-----------WIRE MODE ONLY----------------------------
 		      
@@ -949,28 +960,49 @@ void DC_calib::EventLoop(string option="")
 
 		      //-------------END WIRE MODE ONLY------------------------
 
+			}
+
 		      if (mode=="card")
 			{
-		      
-			  //------------CARD MODE ONLY-----------------------------
-			  
-			  //Loop over plane cards
-			  for (card = 0; card < plane_cards[ip]; card++ )
+
+		 
+			      //------------CARD MODE ONLY-----------------------------
+			      
+			  if (option=="FillUncorrectedTimes")
 			    {
 			      
-			      //Conditions
-			      if (wire >= wire_min[ip][card] && wire <= wire_max[ip][card])
+			      //Fill uncorrected plane drift times 
+			      plane_dt[ip].Fill(drift_time[ip][j] - offset[ip][wire-1]); 
+			      dt_vs_wire[ip].Fill(wire_num[ip][j], drift_time[ip][j] - offset[ip][wire-1]);
+			      
+			      //Loop over plane cards
+			      for (card = 0; card < plane_cards[ip]; card++ )
 				{
-				  //Fill Uncorrected Cards dRIFT tIME
-				  card_hist[ip][card].Fill(drift_time[ip][j]);
-				  fitted_card_hist[ip][card].Fill(drift_time[ip][j]);
 				  
-				}
-			      			      
-			    }
-			  //------------END CARD MODE ONLY------------------------
+				  //Conditions
+				  if (wire >= wire_min[ip][card] && wire <= wire_max[ip][card])
+				    {
+				      //Fill Uncorrected Cards dRIFT tIME
+				      card_hist[ip][card].Fill(drift_time[ip][j]);
+				      fitted_card_hist[ip][card].Fill(drift_time[ip][j]);
+				  
+				    } //End loop over wires
+				  
+				} //End loop over cards
+			      
+			    } //end optional argument
 
-			}
+
+			  else if (option=="ApplyT0Correction")
+			    {
+			  
+			    
+			    }
+			  
+			  //------------END CARD MODE ONLY------------------------
+			      
+			  
+			} //End CARD MODE
 		     
 		    } //end loop over hits
 
