@@ -1604,15 +1604,13 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 	{
 	  //write histos to root file
 	  plane_dt_corr[ip].Write();
-		}
-
-      
-      
+	}      
 
       
   //----------------------------------------------------------------------
 
-  
+      if (mode=="wire")
+	{
   //--------write uncorrected cell drift times histos to FILE-------- 
    
   main_dir = out_file->mkdir("uncorr_wire_times");
@@ -1654,8 +1652,6 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 	  }
       
       } //END LOOP OVER PLANES
-
-    
 
 
  //------------------------------------------------------------------------
@@ -1733,9 +1729,98 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 	gr1_canv->Write(graph_title);   //write to a root file
   
 	  }
+
  
+	} //end "wire mode" 
+
+      if (mode=="card")
+	{
+	  //--------write uncorrected CARD drift times histos to FILE--------
+	  
+	  main_dir = out_file->mkdir("uncorr_card_times");
+	  
+	  for (int ip=0; ip<NPLANES; ip++)
+	    {
+	      
+	// create planes sub-directories to store card drift times
+	(main_dir->mkdir("plane "+plane_names[ip], ""))->cd();
+	
+	dt_vs_wire[ip].Write(); //write 2d drifttimet_vs_wire to FILE
+	
+	for (card = 0; card < plane_cards[ip]; card++)
+	  {
+	    
+	    card_hist[ip][card].Write();   //Write wire driftimes to FILE
+	    
+	  } //end card loop
+
+	    }//end plane loop
+
+    //--------write corrected CARD drift times histos to FILE--------
+   
+	  main_dir = out_file->mkdir("corr_card_times");
+	  
+	  for (int ip=0; ip<NPLANES; ip++)
+	    {
+	      
+	      // create planes sub-directories to store card drift times
+	      (main_dir->mkdir("plane "+plane_names[ip], ""))->cd();
+	      
+	      dt_vs_wire_corr[ip].Write(); //write 2d drifttimet_vs_wire to FILE
+	      
+	      for (card = 0; card < plane_cards[ip]; card++)
+		{
+		  
+		  corr_card_hist[ip][card].Write();   //Write wire driftimes to FILE
+		  
+		} //end card loop
+	      
+	    } //end plane loop
+	  
+	  //-------Write Fitted Card Drift Time histos to FILE----------------------------
+  
+
+	  main_dir = out_file->mkdir("fitted_card_drift_times");
+	  
+	  for (int ip=0; ip<NPLANES; ip++)
+	    {
+	      
+	      // create planes sub-directories to store fitted wire drift times
+	      (main_dir->mkdir("plane "+plane_names[ip], ""))->cd();
+	      
+	      for (card = 0; card < plane_cards[ip]; card++)
+		{
+		  fitted_card_hist[ip][card].Write();   //Write card driftimes to FILE
+		  
+		}
+	      
+	    } //end plane loop
+	  
+	  //-----Write 'tzero-per-card' values to a TEXT FILE--------------------
+	  
+	  //open a text FILE to write
+	  
+	  for (int ip = 0; ip < NPLANES; ip++) 
+	    {
+	      otxtfile_name = "t_zeroCARD_values_"+plane_names[ip]+".dat";
+	      out_txtFILE.open(otxtfile_name);
+	      out_txtFILE << "#Plane_" + plane_names[ip] << endl;
+	      out_txtFILE << "#Card " << setw(12) << "tzero " << setw(12) << "t_zero_err " << setw(12) << "entries" << endl;
+	      
+	      for (card = 0; card < plane_cards[ip]; card++) 
+		{
+		  out_txtFILE << card << "    " << t_zero_card[ip][card] << "     " << t_zero_card_err[ip][card] << "             " << entries_card[ip][card] << endl;
+		} //end card loop
+	      
+	      out_txtFILE.close();
+	      
+	    } //end plane loop
+
+
+	} //end "card mode"
+      
     } //END DEBUG   
+  
 
-
-}
+} //end WriteToFile() method
   
