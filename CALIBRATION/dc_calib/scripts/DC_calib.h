@@ -21,7 +21,6 @@ class DC_calib
 
   //----Per-Card Methods
   void GetCard();       
-  void EventLoopCard(); 
   void GetTwentyPercent_Card();  
   void FitCardDriftTime();
   void ApplyTZeroCorrectionPerCard(); 
@@ -211,9 +210,25 @@ class DC_calib
   Double_t max_wire_entry;
 
   //---Per Card "SPECIFIC" Variables---
+
   Int_t plane_cards[NPLANES];    //number of disc. cards / plane
   Int_t card;
+  
+  //GetTwentyPercent_Card() method variables
+  Int_t binValLow; 
+  Int_t binValHigh; 
+  Int_t binSearchLow; 
+  Int_t binSearchHigh;
+  Double_t binDiffThreshHigh; 
+  Double_t binDiffThreshLow;
 
+  Double_t **wireBinContentMax;
+  Double_t **wireBinContentLow;
+  Double_t **wireBinContentHigh;
+  Double_t **wireBinHigh;
+  Double_t **wireBinLow;
+  Double_t **wireFitRangeLow;
+  Double_t **wireFitRangeHigh;
 
   //TStrings for Histo Names
   TString card_hist_name;

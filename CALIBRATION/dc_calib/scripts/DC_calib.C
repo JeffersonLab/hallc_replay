@@ -52,6 +52,14 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e, TStr
   fitted_card_hist       = NULL;
   wire_min               = NULL;
   wire_max               = NULL;
+  wireBinContentMax      = NULL;
+  wireBinContentLow      = NULL;
+  wireBinContentHigh     = NULL;
+  wireBinHigh            = NULL;
+  wireBinLow             = NULL;
+  wireFitRangeLow        = NULL;
+  wireFitRangeHigh       = NULL;
+
     }
   
 }
@@ -100,6 +108,14 @@ DC_calib::~DC_calib()
 	    delete [] fitted_card_hist[ip];
 	    delete [] wire_min[ip];
 	    delete [] wire_max[ip];
+	    delete [] wireBinContentMax[ip];
+	    delete [] wireBinContentLow[ip];
+	    delete [] wireBinContentHigh[ip];
+	    delete [] wireBinHigh[ip];
+	    delete [] wireBinLow[ip];
+	    delete [] wireFitRangeHigh[ip];
+	    delete [] wireFitRangeLow[ip];
+
 	  }
       }  
     
@@ -118,12 +134,18 @@ DC_calib::~DC_calib()
     delete [] offset;                      offset                 = NULL;
 
     //Card Variables 
-    //delete [] card_hist[ip];               card_hist              = NULL;
-    //delete [] corr_card_hist[ip];          corr_card_hist         = NULL;
-    //delete [] fitted_card_hist[ip];        fitted_card_hist       = NULL;
+    //delete [] card_hist[ip];             card_hist              = NULL;
+    //delete [] corr_card_hist[ip];        corr_card_hist         = NULL;
+    //delete [] fitted_card_hist[ip];      fitted_card_hist       = NULL;
     delete [] wire_min;                    wire_min               = NULL;
     delete [] wire_max;                    wire_max               = NULL;
-
+    delete [] wireBinContentMax;           wireBinContentMax      = NULL;
+    delete [] wireBinContentLow;           wireBinContentLow      = NULL;
+    delete [] wireBinContentHigh;          wireBinContentHigh     = NULL;
+    delete [] wireBinHigh;                 wireBinHigh            = NULL;
+    delete [] wireBinLow;                  wireBinLow             = NULL;
+    delete [] wireFitRangeLow;             wireFitRangeLow        = NULL;
+    delete [] wireFitRangeHigh;            wireFitRangeHigh       = NULL;
 }
 
 //____________________________________________________________
@@ -454,7 +476,13 @@ void DC_calib::AllocateDynamicArrays()
       corr_card_hist          = new TH1F*[NPLANES];  //Array to store corrected histogram per card
       wire_min                = new Int_t*[NPLANES];
       wire_max                = new Int_t*[NPLANES];
-
+      wireBinContentMax       = new Double_t*[NPLANES];
+      wireBinContentLow       = new Double_t*[NPLANES];
+      wireBinContentHigh      = new Double_t*[NPLANES];
+      wireBinHigh             = new Double_t*[NPLANES];
+      wireBinLow              = new Double_t*[NPLANES];
+      wireFitRangeLow         = new Double_t*[NPLANES];
+      wireFitRangeHigh        = new Double_t*[NPLANES];
     }
   
   for(int ip=0; ip<NPLANES; ip++)
@@ -482,7 +510,13 @@ void DC_calib::AllocateDynamicArrays()
       corr_card_hist[ip]          = new TH1F[plane_cards[ip]];
       wire_min[ip]                = new Int_t[plane_cards[ip]];
       wire_max[ip]                = new Int_t[plane_cards[ip]];
-
+      wireBinContentMax[ip]       = new Double_t [plane_cards[ip]];
+      wireBinContentLow[ip]       = new Double_t [plane_cards[ip]];
+      wireBinContentHigh[ip]      = new Double_t [plane_cards[ip]];
+      wireBinLow[ip]              = new Double_t [plane_cards[ip]];
+      wireBinHigh[ip]             = new Double_t [plane_cards[ip]];
+      wireFitRangeLow[ip]         = new Double_t [plane_cards[ip]];
+      wireFitRangeHigh[ip]        = new Double_t [plane_cards[ip]];
 
 	}
     }
@@ -1092,7 +1126,9 @@ void DC_calib::GetTwentyPercent_Peak()
   //Loop over DC PLANES
   for (int ip = 0; ip<NPLANES; ip++)
     {
+
       
+     
       //Loop over DC wires
       for (wire = 0; wire < nwires[ip]; wire++)
 	{
@@ -1137,11 +1173,11 @@ void DC_calib::GetTwentyPercent_Peak()
 	  ref_time[ip][wire] = cell_dt[ip][wire].GetXaxis()->GetBinCenter(bin_num[0]); //Get time corresponding ~20% Max BIN CONTENT  
 	  
 	  
-	}
+	} // end wire loop
       
-    }
+    } //end planes loop
  
-}
+} //End GetTwentyPercent_Peak() method
 
 
 //____________________________________________________________________________________
@@ -1247,8 +1283,58 @@ void DC_calib::FitWireDriftTime()
     }//END LOOP OVER PLANES  
 
   
-}
+} //End FitWireDriftTime() method
 
+//_______________________________________________________________________
+void DC_calib::GetTwentyPercent_Card()
+{
+
+  binValLow = binValHigh = binSearchLow = 0, binSearchHigh = 0;
+  binDiffThreshHigh = 100; binDiffThreshLow = 100;
+
+  for (int ip = 0; ip<NPLANES; ip++)
+    {
+	
+      for (card = 0; card < plane_cards[ip]; card++)
+	{
+	
+	   binSearchHigh =  fitted_card_hist[ip][card].GetMaximumBin();           //returns bin value of maximum content
+	   wireBinContentMax[ip][card] = fitted_card_hist[ip][card].GetMaximum(); // return maximum histo bin content
+	   wireBinContentLow[ip][card]  = wireBinContentMax[ip][card]*0.20;        // Get content with 20% of max bin content
+	   wireBinContentHigh[ip][card] = wireBinContentMax[ip][card]*0.60;       // Get content with 60% of max bin content
+
+	   
+	   // | content_of_desired_bin - (binSearch_HighContent-binSearchLowContent) | <= binDiffTherhold 
+	   fitted_card_hist[ip][card].GetBinWithContent(wireBinContentLow[ip][card],  binValLow,  binSearchLow, binSearchHigh, binDiffThreshLow); 
+	   fitted_card_hist[ip][card].GetBinWithContent(wireBinContentHigh[ip][card], binValHigh, binSearchLow, binSearchHigh, binDiffThreshHigh); 
+	  	   
+	   while(binValLow == 0)
+	     {
+
+	       binDiffThreshLow = binDiffThreshLow  + 100;
+	       	       
+	       fitted_card_hist[ip][card].GetBinWithContent(wireBinContentLow[ip][card],  binValLow,  binSearchLow, binSearchHigh, binDiffThreshLow); 	  	     
+		     
+	     }
+	    	 
+	   while(binValHigh == 0)
+	     {
+
+	       binDiffThreshHigh = binDiffThreshHigh + 100;
+
+	       fitted_card_hist[ip][card].GetBinWithContent(wireBinContentHigh[ip][card],  binValHigh,  binSearchLow, binSearchHigh, binDiffThreshHigh);
+	     }	     
+	  
+	  wireBinLow[ip][card]  = binValLow;
+	  wireBinHigh[ip][card] = binValHigh;
+	  wireFitRangeLow[ip][card]  = fitted_card_hist[ip][card].GetBinCenter(wireBinLow[ip][card]);
+	  wireFitRangeHigh[ip][card] = fitted_card_hist[ip][card].GetBinCenter(wireBinHigh[ip][card]);
+
+	} //end plane cards loop
+
+    } //end planes loop
+  
+} //end  GetTwentyPercent_Card() method
 
 //________________________________________________________________
 void DC_calib::Calculate_tZero()
