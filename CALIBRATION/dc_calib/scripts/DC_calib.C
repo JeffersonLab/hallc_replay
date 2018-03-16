@@ -169,7 +169,7 @@ void DC_calib::setup_Directory()
   if (spec == "HMS")
     {
      
-      dir_log = Form("mkdir -p ./%s_DC_Log_%d/", spec.c_str(), run_NUM);
+      dir_log = Form("mkdir -p ./%s_DC_%sLog_%d/", spec.c_str(), mode, run_NUM);
 
       //Check if directory exists
       if (system(dir_log) != 0) 
@@ -184,7 +184,7 @@ void DC_calib::setup_Directory()
   else if (spec == "SHMS")
     {
       
-      dir_log = Form("mkdir -p ./%s_DC_Log_%d/", spec.c_str(), run_NUM);
+      dir_log = Form("mkdir -p ./%s_DC_%sLog_%d/", spec.c_str(), mode, run_NUM);
 
       //Check if directory exists
       if (system(dir_log) != 0) 
