@@ -970,8 +970,8 @@ void DC_calib::EventLoop(string option="")
       good_event=kFALSE;
       
 
-      //***good event definition***: cal_energy > 100 MeV, cer_npeSum > 1.0, 5/6 plane hits
-      good_event = cal_elec && cer_elec && cnts_ch1>4 && cnts_ch2>4;
+      //***good event definition***: cal_energy > 100 MeV, cer_npeSum > 1.0
+      good_event = cal_elec && cer_elec; //&& cnts_ch1>4 && cnts_ch2>4;
       
    
 	  // cout << "passed cut: " << i << endl;
@@ -1078,7 +1078,7 @@ void DC_calib::EventLoop(string option="")
 				      //Fill Corrected Card Drift Times
 				      dt_vs_wire_corr[ip].Fill(wire_num[ip][j], drift_time[ip][j] - t_zero_card[ip][card]);  
 				      corr_card_hist[ip][card].Fill(drift_time[ip][j]-t_zero_card[ip][card]);
-				      t_zero_final[ip][wire-1] = t_zero[ip][wire-1];
+				      t_zero_final[ip][wire-1] = t_zero_card[ip][card];
 
 				    } 
 				  
