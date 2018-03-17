@@ -44,7 +44,7 @@ DC_calib::DC_calib(string a, TString b, const int c, Long64_t d, TString e, stri
 
   if(mode=="card")
     {
-      cout << "Initializing Card Variables . . ." << endl;
+  
 
   //--Card Variables
       entries_card           = NULL;
@@ -75,19 +75,18 @@ DC_calib::~DC_calib()
   delete dir_log;  dir_log = NULL;
   delete in_file;  in_file  = NULL;
   delete out_file; out_file = NULL;             
-  //  delete graph;    graph    = NULL;
-  //delete gr1_canv; gr1_canv = NULL;
+  delete graph;    graph    = NULL;
+  delete gr1_canv; gr1_canv = NULL;
 
-  cout << "Deleted pointers . . ." << endl;
+  
   
   //Delete 1D Arrays pointers to free up 'heap' space
     
     delete [] dt_vs_wire; dt_vs_wire = NULL;
-    //delete [] dt_vs_wire_corr; dt_vs_wire_corr = NULL;
+    delete [] dt_vs_wire_corr; dt_vs_wire_corr = NULL;
     delete [] plane_dt; plane_dt     = NULL;
-    //delete [] plane_dt_corr; plane_dt_corr = NULL;
+    delete [] plane_dt_corr; plane_dt_corr = NULL;
 
-    cout << "Deleted 1D Arrays . . . " << endl;
 
     //free 2d dynamic array cell_dt[][]
     for(int ip = 0; ip<NPLANES; ip++) 
@@ -115,7 +114,7 @@ DC_calib::~DC_calib()
 	    delete [] t_zero_card[ip];
 	    delete [] t_zero_card_err[ip];
 	    delete [] card_hist[ip]; 
-	    //delete [] corr_card_hist[ip];
+	    delete [] corr_card_hist[ip];
 	    delete [] fitted_card_hist[ip];
 	    delete [] wire_min[ip];
 	    delete [] wire_max[ip];
@@ -336,7 +335,7 @@ void DC_calib::SetTdcOffset()
 
 void DC_calib::GetDCLeafs()
 {
-  //cout << "DC_calib::GetDCLeafs " << endl;
+  
  
   //open input root file
   in_file = new TFile(ifile_name, "READ" );
@@ -524,7 +523,8 @@ void DC_calib::AllocateDynamicArrays()
       offset[ip]                  = new Double_t[nwires[ip]];
 
     
-	
+      if (mode=="card")
+	{
       
       //Card Variables
       entries_card[ip]            = new Int_t[plane_cards[ip]];
@@ -543,7 +543,7 @@ void DC_calib::AllocateDynamicArrays()
       wireFitRangeLow[ip]         = new Double_t [plane_cards[ip]];
       wireFitRangeHigh[ip]        = new Double_t [plane_cards[ip]];
 
-	
+	}
     }
   
   
@@ -909,7 +909,7 @@ void DC_calib::EventLoop(string option="")
   //Loop over all entries
   for(Long64_t i=0; i<num_evts; i++)
     {
-      //cout << "=======Entry:======== " << i << endl;
+
       tree->GetEntry(i);  
       
       //------READ USER 'pid' input to determine particle type to calibrate----------
@@ -979,7 +979,7 @@ void DC_calib::EventLoop(string option="")
 	    {
 	      // cout << "PLANE: " << ip << endl;
 
-   	  if (good_event&&(ndata_time[ip]==1))
+   	  if (good_event&&ndata_time[ip]==1)
         	{
 		
 	      
@@ -1037,7 +1037,6 @@ void DC_calib::EventLoop(string option="")
 			  if (option=="FillUncorrectedTimes")
 			    {
 			     
-			      //cout << "Filling Uncorrected Times " << endl;
 			      
 			      //Fill uncorrected plane drift times 
 			      plane_dt[ip].Fill(drift_time[ip][j] - offset[ip][wire-1]); 
@@ -1046,7 +1045,7 @@ void DC_calib::EventLoop(string option="")
 			      //Loop over plane cards
 			      for (card = 0; card < plane_cards[ip]; card++ )
 				{
-				  // cout << "Loop over cards " << endl;
+			    
 				  //Conditions
 				  if (wire >= wire_min[ip][card] && wire <= wire_max[ip][card])
 				    {
@@ -1059,11 +1058,11 @@ void DC_calib::EventLoop(string option="")
 				} //End loop over cards
 			      
 			    } //end option argument
-			  //	  cout << "Ended Fill UncorrectedTimes successfully  " << endl;
+		    
 
 			  else if (option=="ApplyT0Correction")
 			    {
-			      //cout << "Applying T0 Correction . . ." << endl;
+			 
 			      for (card = 0; card < plane_cards[ip]; card++ )
 				{
 				  
@@ -1091,7 +1090,7 @@ void DC_calib::EventLoop(string option="")
 			      
 			  
 			  } //End CARD MODE
-			  //cout << "Ended Card Mode " << endl;  
+	       
 		    } //end loop over hits
 
 	     	 
@@ -1309,13 +1308,7 @@ void DC_calib::FitWireDriftTime()
 	 
 	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.2  || entries[ip][wire] <= max_wire_entry || t_zero_err[ip][wire] >= t0_err_thrs )
 		{
-
 		      t_zero[ip][wire] = 0.0;
-		
-		  //if (ip==3) {
-		//cout << "wire: " << wire <<  " t_zero_bad: " << t_zero[ip][wire] << endl;    
-		 //cout << "m = " << m << " :: " << entries[ip][wire] << endl;
-		//} 
 		}	  
 
 	} //END LOOP OVER WIRES
@@ -1394,27 +1387,27 @@ void DC_calib::GetTwentyPercent_Card()
 //___________________________________________________________________
 void DC_calib::FitCardDriftTime()
 {
- cout << "Entering FitCardDriftTime() method " << endl;
+
   for (Int_t ip = 0; ip < NPLANES; ip++)
     {
-      cout << "----Plane----: " << ip << endl;
+    
      //Loop over DC cards
       for (card = 0; card < plane_cards[ip]; card++)
 	{
-	  cout << "Card:  " << card <<  endl;
+     
 	  tZero_fit = new TF1("tZero_fit", "[0]*x + [1]", wireFitRangeLow[ip][card], wireFitRangeHigh[ip][card]);
-	  cout << "Defined Fit Function " << card << endl;
+       
 	  //Set Parameter Names and Values
 	  tZero_fit->SetParName(0, "slope");
 	  tZero_fit->SetParName(1, "y-int");
 	  tZero_fit->SetParameter(0, 1.0);
 	  tZero_fit->SetParameter(1, 1.0);
-	  cout << "Set Parameters . . ." << endl;
+      
 	  entries_card[ip][card] = fitted_card_hist[ip][card].GetEntries();
-	  cout << "Obtained entries_card . . ." << endl;
+       
 	  //Fit Function in specified range
 	  fitted_card_hist[ip][card].Fit("tZero_fit", "QR");
-	  cout << "CARD " << card << " Fitted . . ." << endl;
+       
 	  gStyle->SetOptFit(1);
 	  
 	  //Get Parameters and their errors
@@ -1423,29 +1416,29 @@ void DC_calib::FitCardDriftTime()
 	  m_err = tZero_fit->GetParError(0);
 	  y_int_err = tZero_fit->GetParError(1);
 	  std_dev = fitted_card_hist[ip][card].GetStdDev();
-	  cout << "Get pARAMETERS . . ." << endl;
+      
 	  //Require sufficient events and NOT CRAZY! tzero values, otherwis, set t0 to ZERO
 	  if (abs(-y_int/m) < std_dev*5.0 && m > 0.0 && entries_card[ip][card]>max_wire_entry)
 	    {
-	      cout << "Setting plane: " << ip << " :: card: " << card << "  tzero =  slope " << endl;
+	 
 	      t_zero_card[ip][card] = - y_int/m ;
 	      t_zero_card_err[ip][card] = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
-	      cout << "t_zero_card has been set to -y-int/m " << endl;
+    
 	      for(wire=1; wire<=nwires[ip]; wire++)
 		{
-		  // cout << "wire: " << wire << endl;
+   
 		  if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card])
 		    {
-		      //  cout << "wire: " << wire << " is within (" << wire_min[ip][card] << ", " << wire_max[ip][card] << " )" << endl;
+		   
 		      t_zero[ip][wire-1] = t_zero_card[ip][card];
 		      t_zero_err[ip][wire-1] = t_zero_card_err[ip][card];
-		      //cout << "wire set to card . . ." << endl;
+		 
 		    }
 		  
 		} //end wire loop
-	      //cout << "ended wire loop for plane " << ip <<  endl;
+	    
 	    } //end 'if' statement
-	  //cout << " set tzero wire = tzero card . . ." << endl;
+	  
 	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0  || entries_card[ip][card] <= max_wire_entry)
 	    {
 	        t_zero[ip][card] = 0.0;
@@ -1456,7 +1449,6 @@ void DC_calib::FitCardDriftTime()
     } // end loop over planes
 
 } //end FitCardDriftTime() method
-
 
 //________________________________________________________________
 void DC_calib::Calculate_tZero()
@@ -1472,11 +1464,10 @@ void DC_calib::Calculate_tZero()
 
   else if (mode=="card")
     {
-      cout << "Entering Calculate_tZero() CARD . . ." << endl;
+   
       GetTwentyPercent_Card();
-      cout << "GetTwentyPercent_Card() OK " << endl;
       FitCardDriftTime();
-      cout << "FitCardDriftTime() OK " << endl;
+     
     }
 
 }
@@ -1485,7 +1476,7 @@ void DC_calib::Calculate_tZero()
 //__________________________________________________________________________
 void DC_calib::WriteTZeroParam()
 {
-  otxtfile_name =  "./"+spec+"_DC_Log_"+ std::to_string(run_NUM) +"/"+spectre+"dc_tzero_per_wire_"+std::to_string(run_NUM)+".param";
+  otxtfile_name =  "./"+spec+"_DC_"+mode.c_str()+"Log_"+ std::to_string(run_NUM) +"/"+spectre+"dc_tzero_per_wire_"+std::to_string(run_NUM)+".param";
   out_txtFILE.open(otxtfile_name);
   
   for (int ip=0; ip<NPLANES; ip++) { 
@@ -1522,7 +1513,7 @@ void DC_calib::WriteTZeroParam()
 //_________________________________________________________________________________
 void DC_calib::WriteLookUpTable()
 {
-  otxtfile_name = "./"+spec+"_DC_Log_"+std::to_string(run_NUM)+"/"+spectre+"dc_calib_"+std::to_string(run_NUM)+".param";
+  otxtfile_name = "./"+spec+"_DC_"+mode.c_str()+"Log_"+std::to_string(run_NUM)+"/"+spectre+"dc_calib_"+std::to_string(run_NUM)+".param";
   out_txtFILE.open(otxtfile_name);
   Double_t t_offset_firstbin = 0.0;
   //Set headers for subsequent columns of data
@@ -1604,7 +1595,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 
   
   //create output ROOT file to write UnCALIB./CALIB. histos
-  ofile_name = "./"+spec+"_DC_Log_"+std::to_string(run_NUM) +"/"+spec+"_DC_driftimes.root";
+  ofile_name = "./"+spec+"_DC_"+mode.c_str()+"Log_"+std::to_string(run_NUM) +"/"+spec+"_DC_driftimes.root";
   out_file   = new TFile(ofile_name, "RECREATE"); 
 
   
@@ -1709,7 +1700,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
     for (int ip = 0; ip < NPLANES; ip++) 
       {
 
-	otxtfile_name = Form("./%s_DC_Log_%d/t_zero_values_%s.dat", spec.c_str(), run_NUM, planes[ip].c_str());
+	otxtfile_name = Form("./%s_DC_%sLog_%d/t_zero_values_%s.dat", spec.c_str(), mode.c_str(), run_NUM, planes[ip].c_str());
 	out_txtFILE.open(otxtfile_name);
 	out_txtFILE << "#Plane_" + plane_names[ip] << endl;
 	out_txtFILE << "#Wire " << setw(12) << "tzero " << setw(12) << "t_zero_err " << setw(12) << "entries" << endl;
@@ -1735,7 +1726,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 	gr1_canv = new TCanvas("gr1", "", 2000, 500);
 	gr1_canv->SetGrid();
 	//write TGraph: tzero v. wire number to root file
-	itxtfile_name =  "./"+spec+"_DC_Log_"+ std::to_string(run_NUM) +"/"+"t_zero_values_"+plane_names[ip]+".dat";
+	itxtfile_name =  "./"+spec+"_DC_"+mode.c_str()+"Log_"+ std::to_string(run_NUM) +"/"+"t_zero_values_"+plane_names[ip]+".dat";
 	graph = new TGraphErrors(itxtfile_name, "%lg %lg %lg");
 	graph->SetName("graph");
 	
@@ -1833,7 +1824,7 @@ void DC_calib::WriteToFile(Int_t debug = 0)
 	  
 	  for (int ip = 0; ip < NPLANES; ip++) 
 	    {
-	      otxtfile_name = "t_zeroCARD_values_"+plane_names[ip]+".dat";
+	      otxtfile_name = "./"+spec+"_DC_"+mode.c_str()+"Log_"+ std::to_string(run_NUM) +"/"+"t_zeroCARD_values_"+plane_names[ip]+".dat";
 	      out_txtFILE.open(otxtfile_name);
 	      out_txtFILE << "#Plane_" + plane_names[ip] << endl;
 	      out_txtFILE << "#Card " << setw(12) << "tzero " << setw(12) << "t_zero_err " << setw(12) << "entries" << endl;
