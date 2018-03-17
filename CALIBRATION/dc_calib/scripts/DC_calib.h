@@ -12,7 +12,7 @@ class DC_calib
  public:
   
   //consructor and destructor
-  DC_calib(string a, TString b, const Int_t c, Long64_t d, TString e, TString f);
+  DC_calib(string a, TString b, const Int_t c, Long64_t d, TString e, string f);
   ~DC_calib();
 
 
@@ -45,7 +45,7 @@ class DC_calib
  private:
 
   //Calibration mode
-  TString mode;
+  string mode;
  
   Int_t run_NUM;
   Long64_t num_evts;
