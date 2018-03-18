@@ -1078,8 +1078,9 @@ void DC_calib::EventLoop(string option="")
 				      //Fill Corrected Card Drift Times
 				      dt_vs_wire_corr[ip].Fill(wire_num[ip][j], drift_time[ip][j] - t_zero_card[ip][card]);  
 				      corr_card_hist[ip][card].Fill(drift_time[ip][j]-t_zero_card[ip][card]);
-				      t_zero_final[ip][wire-1] = t_zero_card[ip][card];
-
+   				      //t_zero_final[ip][wire-1] = t_zero_card[ip][card];
+				  
+				      
 				    } 
 				  
 				} //loop over cards
@@ -1247,7 +1248,7 @@ void DC_calib::FitWireDriftTime()
   //Loop over planes
   for (Int_t ip = 0; ip < NPLANES; ip++)
     {
-      cout << "pLANE: " << ip << endl;
+    
       //Loop over DC sense wires
       for (wire = 0; wire < nwires[ip]; wire++)
 	{
@@ -1387,6 +1388,7 @@ void DC_calib::GetTwentyPercent_Card()
 //___________________________________________________________________
 void DC_calib::FitCardDriftTime()
 {
+  cout << "Entering FitCardDriftTime Method . . ." << endl;
 
   for (Int_t ip = 0; ip < NPLANES; ip++)
     {
@@ -1424,25 +1426,37 @@ void DC_calib::FitCardDriftTime()
 	      t_zero_card[ip][card] = - y_int/m ;
 	      t_zero_card_err[ip][card] = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
     
+	    }
+
+	  //ensure to assign card tzero values to zero, if card entries are not sufficient                                                                                                                            
+	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0  || entries_card[ip][card] <= max_wire_entry)                                                                                                              
+	    {                                                                                                                                                                                                         	     	
+	      t_zero_card[ip][card] = 0.0;                                                                                                                                                                                                                                                                                                                                            		                              	                                                                                                                                       
+	    }                                                                                                                                                                                                         
+	  
+
 	      for(wire=1; wire<=nwires[ip]; wire++)
 		{
    
-		  if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card])
+		  if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card] && entries_card[ip][card]>max_wire_entry)
 		    {
 		   
 		      t_zero[ip][wire-1] = t_zero_card[ip][card];
 		      t_zero_err[ip][wire-1] = t_zero_card_err[ip][card];
-		 
+		      t_zero_final[ip][wire-1] = t_zero_card[ip][card];                                                                                                                                                                      
+                                                                                                                                                                                                        
+		    } //end 'if' statement for wire group selection
+		
+		
+		  //ensure to assign wire tzero values to zero, if card entries are not sufficient
+		  else if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card] && entries_card[ip][card] <= max_wire_entry)
+		    {
+		      t_zero[ip][wire-1] = 0;
+		      t_zero_final[ip][wire-1] = 0;                                                                                   
+														                                                                                      
 		    }
-		  
+		    
 		} //end wire loop
-	    
-	    } //end 'if' statement
-	  
-	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0  || entries_card[ip][card] <= max_wire_entry)
-	    {
-	        t_zero[ip][card] = 0.0;
-	    }
 
 	}  //end loop over cards
     
