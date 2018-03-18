@@ -1420,16 +1420,22 @@ void DC_calib::FitCardDriftTime()
 	  std_dev = fitted_card_hist[ip][card].GetStdDev();
       
 	  //Require sufficient events and NOT CRAZY! tzero values, otherwis, set t0 to ZERO
-	  if (abs(-y_int/m) < std_dev*5.0 && m > 0.0 && entries_card[ip][card]>max_wire_entry)
+	  if (abs(-y_int/m) < std_dev*5.0 && m > 0.0 )// && entries_card[ip][card]>max_wire_entry)
 	    {
 	 
 	      t_zero_card[ip][card] = - y_int/m ;
 	      t_zero_card_err[ip][card] = sqrt(y_int_err*y_int_err/(m*m) + y_int*y_int*m_err*m_err/(m*m*m*m) );
     
+	      //if error of t0 is bad  (15), then set t0 = 0, since it is liekly that #evts is very low and insignificant to be corrected
+	      if(t_zero_card_err[ip][card] > t0_err_thrs)
+		{
+		  t_zero_card[ip][card] = 0.;
+		}
+
 	    }
 
 	  //ensure to assign card tzero values to zero, if card entries are not sufficient                                                                                                                            
-	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0  || entries_card[ip][card] <= max_wire_entry)                                                                                                              
+	  else if (abs(-y_int/m)>=5.0*std_dev ||  m <= 0.0)//  || entries_card[ip][card] <= max_wire_entry)                                                                                                              
 	    {                                                                                                                                                                                                         	     	
 	      t_zero_card[ip][card] = 0.0;                                                                                                                                                                                                                                                                                                                                            		                              	                                                                                                                                       
 	    }                                                                                                                                                                                                         
@@ -1438,7 +1444,7 @@ void DC_calib::FitCardDriftTime()
 	      for(wire=1; wire<=nwires[ip]; wire++)
 		{
    
-		  if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card] && entries_card[ip][card]>max_wire_entry)
+		  if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card] && t_zero_card_err[ip][card] < t0_err_thrs) //entries_card[ip][card]>max_wire_entry)
 		    {
 		   
 		      t_zero[ip][wire-1] = t_zero_card[ip][card];
@@ -1449,7 +1455,7 @@ void DC_calib::FitCardDriftTime()
 		
 		
 		  //ensure to assign wire tzero values to zero, if card entries are not sufficient
-		  else if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card] && entries_card[ip][card] <= max_wire_entry)
+		  else if (wire >= wire_min[ip][card] && wire <=wire_max[ip][card] && t_zero_card_err[ip][card] > t0_err_thrs)//entries_card[ip][card] <= max_wire_entry)
 		    {
 		      t_zero[ip][wire-1] = 0;
 		      t_zero_final[ip][wire-1] = 0;                                                                                   
