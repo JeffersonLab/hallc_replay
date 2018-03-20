@@ -18,24 +18,23 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Create file name patterns.
   const char* RunFileNamePattern = "shms_all_%05d.dat";
   vector<TString> pathList;
-    pathList.push_back(".");
-    pathList.push_back("./raw");
-    pathList.push_back("./cache");
+  pathList.push_back(".");
+  pathList.push_back("./raw");
+  pathList.push_back("./raw/../raw.copiedtotape");
+  pathList.push_back("./cache");
 
   const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_production_%d_%d.root";
   
   // Load global parameters
-  // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
-  gHcParms->AddString("g_ctp_database_filename", "DBASE/SHMS/STD/standard.database");
-  // Load varibles from files to global list.
+  gHcParms->AddString("g_ctp_database_filename", "DBASE/SHMS/standard.database");
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
-  // g_ctp_parm_filename and g_decode_map_filename should now be defined.
-  gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
-  gHcParms->Load(gHcParms->GetString("g_ctp_calib_filename"));
-  // Load params for SHMS trigger configuration
+  gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
+  // Load parameters for SHMS trigger configuration
   gHcParms->Load("PARAM/TRIG/tshms.param");
+  // Load fadc debug parameters
+  gHcParms->Load("PARAM/SHMS/GEN/p_fadc_debug.param");
 
   // Load the Hall C detector map
   gHcDetectorMap = new THcDetectorMap();
@@ -44,14 +43,12 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add trigger apparatus
   THaApparatus* TRG = new THcTrigApp("T", "TRG");
   gHaApps->Add(TRG);
-
-  
   // Add trigger detector to trigger apparatus
   THcTrigDet* shms = new THcTrigDet("shms", "SHMS Trigger Information");
   TRG->AddDetector(shms);
 
   // Set up the equipment to be analyzed.
-  THaApparatus* SHMS = new THcHallCSpectrometer("P", "SHMS");
+  THcHallCSpectrometer* SHMS = new THcHallCSpectrometer("P", "SHMS");
   gHaApps->Add(SHMS);
   // Add Noble Gas Cherenkov to SHMS apparatus
   THcCherenkov* ngcer = new THcCherenkov("ngcer", "Noble Gas Cherenkov");
@@ -65,7 +62,6 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add Heavy Gas Cherenkov to SHMS apparatus
   THcCherenkov* hgcer = new THcCherenkov("hgcer", "Heavy Gas Cherenkov");
   SHMS->AddDetector(hgcer);
-
   // Add Aerogel Cherenkov to SHMS apparatus
   THcAerogel* aero = new THcAerogel("aero", "Aerogel");
   SHMS->AddDetector(aero);
@@ -73,17 +69,25 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THcShower* cal = new THcShower("cal", "Calorimeter");
   SHMS->AddDetector(cal);
 
-  // Include golden track information
-  THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
-  gHaPhysics->Add(gtr);
-  // Add Rastered Beam Apparatus
+  // Add rastered beam apparatus
   THaApparatus* beam = new THcRasteredBeam("P.rb", "Rastered Beamline");
   gHaApps->Add(beam);
-  // Add Physics Module to calculate primary (scattered beam - usually electrons) kinematics
+  // Add physics modules
+  // Calculate reaction point
+  THaReactionPoint* prp = new THaReactionPoint("P.react", "SHMS reaction point", "P", "P.rb");
+  gHaPhysics->Add(prp);
+  // Calculate extended target corrections
+  THcExtTarCor* pext = new THcExtTarCor("P.extcor", "HMS extended target corrections", "P", "P.react");
+  gHaPhysics->Add(pext);
+  // Calculate golden track quantites
+  THaGoldenTrack* gtr = new THaGoldenTrack("P.gtr", "SHMS Golden Track", "P");
+  gHaPhysics->Add(gtr);
+  // Calculate primary (scattered beam - usually electrons) kinematics
   THcPrimaryKine* kin = new THcPrimaryKine("P.kin", "SHMS Single Arm Kinematics", "P", "P.rb");
   gHaPhysics->Add(kin);
-
-   
+  // Calculate the hodoscope efficiencies
+  THcHodoEff* peff = new THcHodoEff("phodeff", "SHMS hodo efficiency", "P.hod");
+  gHaPhysics->Add(peff);   
 
   // Add event handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
@@ -94,8 +98,13 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Add event handler for scaler events
   THcScalerEvtHandler* pscaler = new THcScalerEvtHandler("P", "Hall C scaler event type 1");
   pscaler->AddEvtType(1);
+  pscaler->AddEvtType(129);
+  pscaler->SetDelayedType(129);
   pscaler->SetUseFirstEvent(kTRUE);
   gHaEvtHandlers->Add(pscaler);
+  // Add event handler for DAQ configuration event
+  THcConfigEvtHandler *pconfig = new THcConfigEvtHandler("pconfig", "Hall C configuration event handler");
+  gHaEvtHandlers->Add(pconfig);
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -111,24 +120,22 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Define the run(s) that we want to analyze.
   // We just set up one, but this could be many.
-  THaRun* run = new THaRun( pathList, Form(RunFileNamePattern, RunNumber) );
+  THcRun* run = new THcRun( pathList, Form(RunFileNamePattern, RunNumber) );
 
   // Set to read in Hall C run database parameters
   run->SetRunParamClass("THcRunParameters");
   
-  // Eventually need to learn to skip over, or properly analyze
-  // the pedestal events
-  run->SetEventRange(1, MaxEvent);    // Physics Event number, does not
-                                      // include scaler or control events.
+  // Eventually need to learn to skip over, or properly analyze the pedestal events
+  run->SetEventRange(1, MaxEvent); // Physics Event number, does not include scaler or control events.
   run->SetNscan(1);
   run->SetDataRequired(0x7);
   run->Print();
 
   // Define the analysis parameters
   TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber, MaxEvent);
-  analyzer->SetCountMode(2);    // 0 = counter is # of physics triggers
-                                // 1 = counter is # of all decode reads
-                                // 2 = counter is event number
+  analyzer->SetCountMode(2);  // 0 = counter is # of physics triggers
+                              // 1 = counter is # of all decode reads
+                              // 2 = counter is event number
   analyzer->SetEvent(event);
   // Set EPICS event type
   analyzer->SetEpicsEvtType(180);
@@ -139,7 +146,7 @@ void replay_production_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Define DEF-file
   analyzer->SetOdefFile("DEF-files/SHMS/PRODUCTION/pstackana_production.def");
   // Define cuts file
-  analyzer->SetCutFile("DEF-files/SHMS/PRODUCTION/pstackana_production_cuts.def");  // optional
+  analyzer->SetCutFile("DEF-files/SHMS/PRODUCTION/CUTS/pstackana_production_cuts.def");  // optional
   // File to record accounting information for cuts
   analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/PRODUCTION/summary_production_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.

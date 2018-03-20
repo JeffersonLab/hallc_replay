@@ -446,6 +446,18 @@ vector <TString> OnlineConfig::GetCutIdent() {
     return out;
 }
 
+Bool_t OnlineConfig::IsLogxy(UInt_t page) {
+    // Check if last word on line is "logxy"
+
+    UInt_t page_index = pageInfo[page].first;
+    Int_t word_index = sConfFile[page_index].size()-1;
+    if (word_index <= 0) return kFALSE;
+    TString option = sConfFile[page_index][word_index];
+    if(option == "logxy") return kTRUE;
+    return kFALSE;
+
+}
+
 Bool_t OnlineConfig::IsLogx(UInt_t page) {
     // Check if last word on line is "logx"
 
@@ -496,9 +508,10 @@ pair <UInt_t, UInt_t> OnlineConfig::GetPageDim(UInt_t page)
 
     UInt_t size1 = 2;
 
-    if (IsLogx(page)) size1 = 3;  // last word is "logy"
+    if (IsLogx(page)) size1 = 3;  // last word is "logx"
     if (IsLogy(page)) size1 = 3;  // last word is "logy"
-    if (IsLogz(page)) size1 = 3;  // last word is "logy"
+    if (IsLogz(page)) size1 = 3;  // last word is "logz"
+    if (IsLogxy(page)) size1 = 3;  // last word is "logxy"
 
     // If the dimensions are defined, return them.
     if(sConfFile[page_index].size()>size1-1) {
@@ -980,39 +993,49 @@ void OnlineGUI::CreateGUI(const TGWindow *p, UInt_t w, UInt_t h)
 
 void OnlineGUI::DoDraw()
 {
-    // The main Drawing Routine.
-
+ 
+  // The main Drawing Routine.
+ 
 #ifdef INTERNALSTYLE
     gStyle->SetOptStat(1110);
     gStyle->SetStatFontSize(0.1);
 #endif
-    if (fConfig->IsLogx(current_page)) {
+    if (fConfig->IsLogxy(current_page)) {
         gStyle->SetOptLogx(1);
-    } else {
-        gStyle->SetOptLogx(0);
-    }
-    if (fConfig->IsLogy(current_page)) {
         gStyle->SetOptLogy(1);
     } else {
-        gStyle->SetOptLogy(0);
+        if (fConfig->IsLogx(current_page)) {
+            gStyle->SetOptLogx(1);
+        } else {
+            gStyle->SetOptLogx(0);
+        }
+
+        if (fConfig->IsLogy(current_page)) {
+            gStyle->SetOptLogy(1);
+        } else {
+            gStyle->SetOptLogy(0);
+        }
     }
+
     if (fConfig->IsLogz(current_page)) {
         gStyle->SetOptLogz(1);
     } else {
         gStyle->SetOptLogz(0);
     }
 #ifdef INTERNALSTYLE
-    gStyle->SetTitleH(0.10);
-    gStyle->SetTitleW(0.40);
-    //   gStyle->SetLabelSize(0.10,"X");
-    //   gStyle->SetLabelSize(0.10,"Y");
-    gStyle->SetLabelSize(0.05,"X");
-    gStyle->SetLabelSize(0.05,"Y");
-    gStyle->SetPadLeftMargin(0.14);
-    gStyle->SetNdivisions(505,"X");
-    gStyle->SetNdivisions(404,"Y");
-    gStyle->SetPalette(1);
-    gROOT->ForceStyle();
+  gStyle->SetTitleH(0.10);
+  gStyle->SetTitleW(0.40);
+  //gStyle->SetLabelSize(0.10,"X");
+  //gStyle->SetLabelSize(0.10,"Y");
+  gStyle->SetLabelSize(0.05,"X");
+  gStyle->SetLabelSize(0.05,"Y");
+  gStyle->SetTitleSize(0.045,"X");
+  gStyle->SetTitleSize(0.045,"Y");
+  gStyle->SetPadLeftMargin(0.14);
+  gStyle->SetNdivisions(505,"X");
+  gStyle->SetNdivisions(404,"Y");
+  gStyle->SetPalette(1);
+  gROOT->ForceStyle();
 #endif
 
     // Determine the dimensions of the canvas..
@@ -1531,9 +1554,9 @@ void OnlineGUI::HistDraw(drawcommand command) {
                 if(!htitle.IsNull()) fRootFile.mytemp1d->SetTitle(htitle);
                 fRootFile.mytemp1d->Draw(type);
 
-                // Force TH1s' y-axis to start at 0 if not a logy plot
+                // Force TH1s' y-axis to start at 1 if not a logy plot
                 if(gStyle->GetOptLogy() == 0)
-                    fRootFile.mytemp1d->SetMinimum(0);
+                    fRootFile.mytemp1d->SetMinimum(1);
             }
         }
         return;
