@@ -7,17 +7,22 @@ DETECTOR=20
 ROC=2
 
 SLOT=14
-   0,   1,   1,   0  ! pAERSUM
-   1,   1,   2,   0  ! pHGCERSUM
-   2,   1,   3,   0  ! pNGCERSUM
-  11,   1,   4,   0  ! pFADC_TREF_ROC2
+REFINDEX=3
+  11,1000,   0,   3  ! pFADC_TREF_ROC2
+   0,   1,   1,   0  ! pAER
+   1,   1,   2,   0  ! pHGCER
+   2,   1,   3,   0  ! pNGCER
+   3,   1,   4,   0  ! pPSHWR
+  11,   1,   5,   0  ! pFADC_TREF_ROC2
 
 SLOT=20
+REFINDEX=1
+  15,1000,   0,   1  ! pTRef1
   15,   2,   1,   1  ! pT1
 
 SLOT=19
 REFINDEX=0
-  31,1000,   0,   0  ! pTRef
+  31,1000,   0,   0  ! pTRef2
   31,   2,   2,   1  ! pT2
   32,   2,   3,   1  ! p1X
   33,   2,   4,   1  ! p1Y
@@ -26,22 +31,44 @@ REFINDEX=0
   36,   2,   7,   1  ! p1T
   37,   2,   8,   1  ! p2T
   38,   2,   9,   1  ! pT3
-  39,   2,  10,   1  ! pAERSUM
-  40,   2,  11,   1  ! pHGCERSUM
-  41,   2,  12,   1  ! pNGCERSUM
-  42,   2,  23,   1  ! pHODO_EDTM
-  48,   2,  24,   1  ! pTRIG1
-  49,   2,  25,   1  ! pTRIG2
-  50,   2,  26,   1  ! pTRIG3
-  51,   2,  27,   1  ! pTRIG4
-  52,   2,  28,   1  ! pTRIG5
-  53,   2,  29,   1  ! pTRIG6
-  58,   2,  30,   1  ! hTRIG1
-  59,   2,  31,   1  ! hTRIG2
-  60,   2,  32,   1  ! hTRIG3
-  61,   2,  33,   1  ! hTRIG4
-  62,   2,  34,   1  ! hTRIG5
-  63,   2,  35,   1  ! hTRIG6
+  39,   2,  10,   1  ! pAER
+  40,   2,  11,   1  ! pHGCER
+  41,   2,  12,   1  ! pNGCER
+  42,   2,  23,   1  ! pEDTM
+  43,   2,  24,   1  ! pPRLO
+  44,   2,  25,   1  ! pPRHI
+  48,   2,  26,   1  ! pTRIG1
+  49,   2,  27,   1  ! pTRIG2
+  50,   2,  28,   1  ! pTRIG3
+  51,   2,  29,   1  ! pTRIG4
+  52,   2,  30,   1  ! pTRIG5
+  53,   2,  31,   1  ! pTRIG6
+  58,   2,  32,   1  ! hTRIG1
+  59,   2,  33,   1  ! hTRIG2
+  60,   2,  34,   1  ! hTRIG3
+  61,   2,  35,   1  ! hTRIG4
+  62,   2,  36,   1  ! hTRIG5
+  63,   2,  37,   1  ! hTRIG6
+  64,   2,  38,   1  ! pSTOF
+  65,   2,  39,   1  ! pEL_LO_LO
+  66,   2,  40,   1  ! pEL_LO
+  67,   2,  41,   1  ! pEL_HI
+  68,   2,  42,   1  ! pEL_REAL
+  69,   2,  43,   1  ! pEL_CLEAN
+  72,   2,  44,   1  ! hSTOF
+  73,   2,  45,   1  ! hEL_LO_LO
+  74,   2,  46,   1  ! hEL_LO
+  75,   2,  47,   1  ! hEL_HI
+  76,   2,  48,   1  ! hEL_REAL
+  77,   2,  49,   1  ! hEL_CLEAN
+  80,   2,  50,   1  ! pPRE40
+  81,   2,  51,   1  ! pPRE100
+  82,   2,  52,   1  ! pPRE150
+  83,   2,  53,   1  ! pPRE200
+  88,   2,  54,   1  ! hPRE40
+  89,   2,  55,   1  ! hPRE100
+  90,   2,  56,   1  ! hPRE150
+  91,   2,  57,   1  ! hPRE200
 
 ROC=6
 
@@ -80,7 +107,12 @@ DETECTOR=23
 
 ROC=2
 
+SLOT=14
+REFINDEX=3
+  11,1000,   0,   3  ! pFADC_TREF_ROC2
+
 SLOT=3
+REFINDEX=3
    0,   1,   1,   0  ! p1x01A+
    1,   1,   2,   0  ! p1x02A+
    2,   1,   3,   0  ! p1x03A+
@@ -99,6 +131,7 @@ SLOT=3
   15,   1,   3,   1  ! p1x03A-
 
 SLOT=4
+REFINDEX=3
    0,   1,   4,   1  ! p1x04A-
    1,   1,   5,   1  ! p1x05A-
    2,   1,   6,   1  ! p1x06A-
@@ -117,6 +150,7 @@ SLOT=4
   15,   2,   6,   1  ! p1y06A-
 
 SLOT=5
+REFINDEX=3
    0,   2,   7,   1  ! p1y07A-
    1,   2,   8,   1  ! p1y08A-
    2,   2,   9,   1  ! p1y09A-
@@ -135,6 +169,7 @@ SLOT=5
   15,   2,   9,   0  ! p1y09A+
 
 SLOT=6
+REFINDEX=3
    0,   2,  10,   0  ! p1y10A+
    1,   2,  11,   0  ! p1y11A+
    2,   2,  12,   0  ! p1y12A+
@@ -153,6 +188,7 @@ SLOT=6
   15,   3,  12,   0  ! p2x12A+
 
 SLOT=7
+REFINDEX=3
    0,   3,  13,   0  ! p2x13A+
    1,   3,  14,   0  ! p2x14A+
    2,   3,   1,   1  ! p2x01A-
@@ -171,6 +207,7 @@ SLOT=7
   15,   3,  14,   1  ! p2x14A-
 
 SLOT=8
+REFINDEX=3
    0,   4,   1,   1  ! p2y01A-
    1,   4,   2,   1  ! p2y02A-
    2,   4,   3,   1  ! p2y03A-
@@ -189,6 +226,7 @@ SLOT=8
   15,   4,  16,   1  ! p2y16A-
 
 SLOT=9
+REFINDEX=3
    0,   4,  17,   1  ! p2y17A-
    1,   4,  18,   1  ! p2y18A-
    2,   4,  19,   1  ! p2y19A-
@@ -207,6 +245,7 @@ SLOT=9
   15,   4,  11,   0  ! p2y11A+
 
 SLOT=10
+REFINDEX=3
    0,   4,  12,   0  ! p2y12A+
    1,   4,  13,   0  ! p2y13A+
    2,   4,  14,   0  ! p2y14A+
@@ -220,7 +259,7 @@ SLOT=10
 
 SLOT=20
 REFINDEX=0
-  15,1000,   0,   0
+  15,1000,   0,   0  ! pT1
    0,   1,   1,   2  ! p1x01T+
    1,   1,   3,   2  ! p1x03T+
    2,   1,   5,   2  ! p1x05T+
@@ -324,8 +363,8 @@ REFINDEX=0
  117,   4,  20,   3  ! p2y20T-
 
 SLOT=19
-REFINDEX=0
-  31,1000,   0,   1
+REFINDEX=1
+  31,1000,   0,   1  ! pT2
    0,   4,   1,   2  ! p2y01T+
    1,   4,   3,   2  ! p2y03T+
    2,   4,   5,   2  ! p2y05T+

@@ -1,0 +1,53 @@
+############################
+#   BETA VS COINTIME
+############################
+TH2F hgtr_beta_vs_ptrig_cointime 'HMS Beta vs pTRIG1_ROC2-pTRIG4_ROC2; cointime / 1 ns; HMS Beta / 0.01;'    T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 H.gtr.beta 1600 -800 800 400 -2 2 ccleantrack
+TH2F hgtr_beta_vs_htrig_cointime 'HMS Beta vs pTRIG1_ROC1-pTRIG4_ROC1; cointime / 1 ns; HMS Beta / 0.01;'    T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC1_tdcTimeRaw*0.1 H.gtr.beta 1600 -800 800 400 -2 2 ccleantrack
+TH2F pgtr_beta_vs_ptrig_cointime 'SHMS Beta vs pTRIG1_ROC2-pTRIG4_ROC2; cointime / 1 ns; SHMS Beta / 0.01;'  T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 P.gtr.beta 1600 -800 800 400 -2 2 ccleantrack
+TH2F pgtr_beta_vs_htrig_cointime 'SHMS Beta vs pTRIG1_ROC1-pTRIG4_ROC1; cointime / 1 ns; SHMS Beta / 0.01;'  T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC1_tdcTimeRaw*0.1 P.gtr.beta 1600 -800 800 400 -2 2 ccleantrack
+
+
+############################
+#   COINTIME
+############################
+TH1F ptrig_cointime_ccleantrack 'SHMS cointime (ccleantrack); SHMS cointime (ns); Count / 1 ns;'  T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 1600 -800 800 ccleantrack
+TH1F ptrig_cointime_coincut     'SHMS cointime (coincut); SHMS cointime (ns); Count / 1 ns;'      T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 1600 -800 800 coincut
+TH1F ptrig_cointime_coincut_ep  'SHMS cointime (coincut_ep); SHMS cointime (ns); Count / 1 ns;'   T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 1600 -800 800 pcoincut_ep
+TH1F htrig_cointime_ccleantrack 'HMS cointime (ccleantrack); HMS cointime (ns); Count / 1 ns;'    T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC1_tdcTimeRaw*0.1 1600 -800 800 ccleantrack
+TH1F htrig_cointime_coincut     'HMS cointime (coincut); HMS cointime (ns); Count / 1 ns;'        T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC1_tdcTimeRaw*0.1 1600 -800 800 coincut
+TH1F htrig_cointime_coincut_ep  'HMS cointime (coincut_ep); HMS cointime (ns); Count / 1 ns;'     T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC1_tdcTimeRaw*0.1 1600 -800 800 hcoincut_ep
+
+
+############################
+#   PATH CORR
+############################
+TH1F h_pathcorr   'HMS pathcorr; HMS pathcorr (ns); Count / 1 ns;'            T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 1600 -800 800 hcleantrack
+TH1F p_pathcorr   'SHMS pathcorr; SHMS pathcorr (ns); Count / 1 ns;'          T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1 1600 -800 800 pcleantrack
+TH1F c_pathcorr   'Cointime pathcorr; Cointime pathcorr (ns); Count / 1 ns;'  T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw*0.1 1600 -800 800  coincut
+
+
+############################
+#   TRIGGER TIME
+############################
+TH1F h_htrig_tdc  'pTRIG4_ROC1'  T.coin.hTRIG1_ROC1_tdcTimeRaw*0.1 1600 -800 800
+TH1F h_ptrig_tdc  'pTRIG4_ROC1'  T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1 1600 -800 800
+TH1F p_ptrig_tdc  'pTRIG1_ROC2'  T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1 1600 -800 800
+TH1F p_htrig_tdc  'pTRIG1_ROC2'  T.coin.hTRIG1_ROC2_tdcTimeRaw*0.1 1600 -800 800
+TH1F h_ctrig_tdc  'pTRIG1_ROC1-pTRIG4_ROC1'  T.coin.pTRIG1_ROC1_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC1_tdcTimeRaw 1600 -800 800
+TH1F p_ctrig_tdc  'pTRIG1_ROC2-pTRIG4_ROC2'  T.coin.pTRIG1_ROC2_tdcTimeRaw*0.1-T.coin.pTRIG4_ROC2_tdcTimeRaw 1600 -800 800
+
+#####################################
+# TRIGGER RATE vs. 1 MHz Clock Time
+#####################################
+
+TH2D ptrig1rate_vs_time 'SHMS Trig1 Rate vs. Time; 1 MHz Clock Time (s); pTRIG1 Rate (Hz)' P.1Mhz.scalerTime P.pTRIG1.scalerRate 350 0 7000 500 0 200000 
+TH2D ptrig2rate_vs_time 'SHMS Trig2 Rate vs. Time; 1 MHz Clock Time (s); pTRIG2 Rate (Hz)' P.1Mhz.scalerTime P.pTRIG2.scalerRate 350 0 7000 500 0 200000 
+TH2D ptrig3rate_vs_time 'SHMS Trig3 Rate vs. Time; 1 MHz Clock Time (s); pTRIG3 Rate (Hz)' P.1Mhz.scalerTime P.pTRIG3.scalerRate 350 0 7000 500 0 200000 
+TH2D ptrig4rate_vs_time 'SHMS Trig4 Rate vs. Time; 1 MHz Clock Time (s); pTRIG4 Rate (Hz)' P.1Mhz.scalerTime P.pTRIG4.scalerRate 350 0 7000 500 0 200000 
+TH2D ptrig6rate_vs_time 'SHMS Trig6 Rate vs. Time; 1 MHz Clock Time (s); pTRIG6 Rate (Hz)' P.1Mhz.scalerTime P.pTRIG6.scalerRate 350 0 7000 500 0 200000 
+
+TH2D htrig1rate_vs_time 'HMS Trig1 Rate vs. Time; 1 MHz Clock Time (s); hTRIG1 Rate (Hz)' H.1Mhz.scalerTime H.hTRIG1.scalerRate 350 0 7000 500 0 200000 
+TH2D htrig2rate_vs_time 'HMS Trig2 Rate vs. Time; 1 MHz Clock Time (s); hTRIG2 Rate (Hz)' H.1Mhz.scalerTime H.hTRIG2.scalerRate 350 0 7000 500 0 200000 
+TH2D htrig3rate_vs_time 'HMS Trig3 Rate vs. Time; 1 MHz Clock Time (s); hTRIG3 Rate (Hz)' H.1Mhz.scalerTime H.hTRIG3.scalerRate 350 0 7000 500 0 200000 
+TH2D htrig4rate_vs_time 'HMS Trig4 Rate vs. Time; 1 MHz Clock Time (s); hTRIG4 Rate (Hz)' H.1Mhz.scalerTime H.hTRIG4.scalerRate 350 0 7000 500 0 200000 
+TH2D htrig6rate_vs_time 'HMS Trig6 Rate vs. Time; 1 MHz Clock Time (s); hTRIG6 Rate (Hz)' H.1Mhz.scalerTime H.hTRIG6.scalerRate 350 0 7000 500 0 200000 
