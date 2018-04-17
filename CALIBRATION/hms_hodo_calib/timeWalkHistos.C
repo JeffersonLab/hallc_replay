@@ -17,14 +17,14 @@ static const UInt_t nTdcSignals = 1;
 static const UInt_t nSignals    = nAdcSignals + nTdcSignals;
 static const UInt_t maxTdcHits  = 128;
 static const UInt_t maxAdcHits  = 4;
-static const UInt_t nMaxBars    = 21;
+static const UInt_t nMaxBars    = 16;
 
-static const TString spec  = "P";
+static const TString spec  = "H";
 static const TString detec = "hod";
 static const TString trig  = "T";
-static const TString shms  = "shms";
+static const TString hms   = "hms";
 
-static const UInt_t  nbars[nPlanes]        = {13, 13, 14, 21};
+static const UInt_t  nbars[nPlanes]        = {16, 10, 16, 10};
 static const TString planeNames[nPlanes]   = {"1x", "1y", "2x", "2y"};
 static const TString sideNames[nSides]     = {"pos", "neg"};
 static const TString signalNames[nSignals] = {"Adc", "Tdc"};
@@ -66,7 +66,7 @@ Double_t hodoAdcErrorFlag[nPlanes][nSides][nSignals][nMaxBars*maxAdcHits];
 Double_t hodoTdcTimeRaw[nPlanes][nSides][nSignals][nMaxBars*maxTdcHits];
 // Trigger apparatus data
 Double_t refAdcPulseTimeRaw, refAdcPulseAmp, refAdcMultiplicity;
-Double_t refT1TdcTimeRaw, refT2TdcTimeRaw, refT3TdcTimeRaw;
+Double_t refT1TdcTimeRaw, refT2TdcTimeRaw;
 // Declare variables to steer data to arrays
 TString *adcBaseName, *adcNdataName, *adcPaddleName;
 TString *adcErrorFlagName, *adcPulseTimeRawName, *adcPulseAmpName;
@@ -79,7 +79,7 @@ TDirectory *adcTimeWalkDir[nPlanes][nSides], *tdcTimeWalkDir[nPlanes][nSides], *
 // Declare histos
 // 1D histos
 TH1F *h1_refAdcPulseTimeRaw, *h1_refAdcPulseAmp, *h1_refAdcMultiplicity;
-TH1F *h1_refT1TdcTimeRaw, *h1_refT2TdcTimeRaw, *h1_refT3TdcTimeRaw;
+TH1F *h1_refT1TdcTimeRaw, *h1_refT2TdcTimeRaw;
 // 2D histos
 TH2F *h2_adcErrorFlag[nPlanes][nSides];
 TH2F *h2_adcPulseTimeRaw[nPlanes][nSides];
@@ -115,14 +115,13 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!trigRawDir) {trigRawDir = outFile->mkdir("trigAppRaw"); trigRawDir->cd();}
   else outFile->cd("trigAppRaw");
   // FADC reference
-  if (!h1_refAdcPulseTimeRaw) h1_refAdcPulseTimeRaw = new TH1F("h1_refAdcPulseTimeRaw", "ROC2 Raw FADC Reference Pulse Time; Raw FADC Pulse Time (ns); Number of Entries / 100 ps", 4000, 0, 400);
-  if (!h1_refAdcPulseAmp)     h1_refAdcPulseAmp     = new TH1F("h1_refAdcPulseAmp",     "ROC2 FADC Reference Pulse Amplitude; FADC Pulse Amplitude (mV); Number of Entries / 1 mV", 1000, 0, 1000);
-  if (!h1_refAdcMultiplicity) h1_refAdcMultiplicity = new TH1F("h1_refAdcMultiplicity", "ROC2 FADC Reference Multiplicity; Raw FADC Multiplicity; Number of Entries", 5, -0.5, 4.5);
+  if (!h1_refAdcPulseTimeRaw) h1_refAdcPulseTimeRaw = new TH1F("h1_refAdcPulseTimeRaw", "ROC1 Raw FADC Reference Pulse Time; Raw FADC Pulse Time (ns); Number of Entries / 100 ps", 4000, 0, 400);
+  if (!h1_refAdcPulseAmp)     h1_refAdcPulseAmp     = new TH1F("h1_refAdcPulseAmp",     "ROC1 FADC Reference Pulse Amplitude; FADC Pulse Amplitude (mV); Number of Entries / 1 mV", 1000, 0, 1000);
+  if (!h1_refAdcMultiplicity) h1_refAdcMultiplicity = new TH1F("h1_refAdcMultiplicity", "ROC1 FADC Reference Multiplicity; Raw FADC Multiplicity; Number of Entries", 5, -0.5, 4.5);
   // TDC reference
-  if (!h1_refT1TdcTimeRaw) h1_refT1TdcTimeRaw = new TH1F("h1_refT1TdcTimeRaw", "ROC2 T1 Raw TDC Reference TDC Time (Slot 20, Channel 15); Raw TDC Time (ns); Number of Entries / 100 ps", 6000, 0, 600);
-  if (!h1_refT2TdcTimeRaw) h1_refT2TdcTimeRaw = new TH1F("h1_refT2TdcTimeRaw", "ROC2 T2 Raw TDC Reference TDC Time (Slot 19, Channel 31); Raw TDC Time (ns); Number of Entries / 100 ps", 6000, 0, 600);
-  if (!h1_refT3TdcTimeRaw) h1_refT3TdcTimeRaw = new TH1F("h1_refT3TdcTimeRaw", "ROC2 T3 Raw TDC Reference TDC Time (Slot 19, Channel 38); Raw TDC Time (ns); Number of Entries / 100 ps", 6000, 0, 600);
-  
+  if (!h1_refT1TdcTimeRaw) h1_refT1TdcTimeRaw = new TH1F("h1_refT1TdcTimeRaw", "ROC1 T1 Raw TDC Reference TDC Time (Slot 20, Channel 15); Raw TDC Time (ns); Number of Entries / 100 ps", 6000, 0, 600);
+  if (!h1_refT2TdcTimeRaw) h1_refT2TdcTimeRaw = new TH1F("h1_refT2TdcTimeRaw", "ROC1 T2 Raw TDC Reference TDC Time (Slot 19, Channel 31); Raw TDC Time (ns); Number of Entries / 100 ps", 6000, 0, 600);
+    
   // Create plane directory for raw hodoscope quantities
   hodoRawDir = dynamic_cast <TDirectory*> (outFile->Get("hodoRaw"));
   if (!hodoRawDir) {hodoRawDir = outFile->mkdir("hodoRaw"); hodoRawDir->cd();}
@@ -173,7 +172,7 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!adcTdcTimeDiffWalkDir[iplane][iside]) {adcTdcTimeDiffWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("adcTdcTimeDiffWalk"); adcTdcTimeDiffWalkDir[iplane][iside]->cd();}
   else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/adcTdcTimeDiffWalk"));
   // Book histos
-  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC-ADC Time vs. Pulse Amp Plane "+planeNames[iplane]+" Side "+sideNames[iside]+Form(" Paddle %d", ipaddle+1)+"; Pulse Amplitude (mV) / 1 mV;  TDC-ADC Time (ns) / 100 ps", 1000, 0, 1000, 1200, -60, 60);
+  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC-ADC Time vs. Pulse Amp Plane "+planeNames[iplane]+" Side "+sideNames[iside]+Form(" Paddle %d", ipaddle+1)+"; Pulse Amplitude (mV) / 1 mV;  TDC-ADC Time (ns) / 100 ps", 1000, 0, 1000, 150, -20, -5);
   
 } // generatePlots()
 
@@ -191,22 +190,24 @@ void timeWalkHistos() {
   t = clock();
 
   // Obtain the replay data file and create new output ROOT file
-    
-  // replayFile = new TFile("ROOTfiles/shms_replay_production_all_1625_-1.root", "READ");
-  replayFile = new TFile("ROOTfiles/shms_coin_replay_production_2210_-1.root", "READ");
-  
+  // replayFile = new TFile("ROOTfiles/hms_replay_production_all_1267_-1.root", "READ");
+  // replayFile = new TFile("ROOTfiles/hms_replay_production_all_1268_-1.root", "READ");
+  // replayFile = new TFile("ROOTfiles/hms_replay_production_all_1267_1268_-1.root", "READ");
+
+  replayFile = new TFile("ROOTfiles/hms_replay_production_all_1577_-1.root", "READ");
+  // replayFile = new TFile("ROOTfiles/hms_coin_replay_production_1577_-1.root", "READ");
+
   outFile    = new TFile("timeWalkHistos_temp.root", "RECREATE");
   // Obtain the tree
   rawDataTree = dynamic_cast <TTree*> (replayFile->Get("T"));
   // Acquire the trigger apparatus data
-  rawDataTree->SetBranchAddress("T.shms.pFADC_TREF_ROC2_adcPulseTimeRaw", &refAdcPulseTimeRaw);
-  rawDataTree->SetBranchAddress("T.shms.pFADC_TREF_ROC2_adcPulseAmp",     &refAdcPulseAmp);
-  rawDataTree->SetBranchAddress("T.shms.pFADC_TREF_ROC2_adcMultiplicity", &refAdcMultiplicity);
-  rawDataTree->SetBranchAddress("T.shms.pT1_tdcTimeRaw", &refT1TdcTimeRaw);
-  rawDataTree->SetBranchAddress("T.shms.pT2_tdcTimeRaw", &refT2TdcTimeRaw);
-  rawDataTree->SetBranchAddress("T.shms.pT3_tdcTimeRaw", &refT3TdcTimeRaw);
-  rawDataTree->SetBranchAddress("P.cal.etot", &calEtot);
-  rawDataTree->SetBranchAddress("P.ngcer.npeSum", &cerNpeSum);
+  rawDataTree->SetBranchAddress("T.hms.hFADC_TREF_ROC1_adcPulseTimeRaw", &refAdcPulseTimeRaw);
+  rawDataTree->SetBranchAddress("T.hms.hFADC_TREF_ROC1_adcPulseAmp",     &refAdcPulseAmp);
+  rawDataTree->SetBranchAddress("T.hms.hFADC_TREF_ROC1_adcMultiplicity", &refAdcMultiplicity);
+  rawDataTree->SetBranchAddress("T.hms.hT1_tdcTimeRaw", &refT1TdcTimeRaw);
+  rawDataTree->SetBranchAddress("T.hms.hT2_tdcTimeRaw", &refT2TdcTimeRaw);
+  rawDataTree->SetBranchAddress("H.cal.etot", &calEtot);
+  rawDataTree->SetBranchAddress("H.cer.npeSum", &cerNpeSum);
   // Loop over the planes, sides, signals, leafs, and fill data arrays
   for(UInt_t iplane = 0; iplane < nPlanes; iplane++) {
     for(UInt_t iside = 0; iside < nSides; iside++) {
@@ -267,7 +268,7 @@ void timeWalkHistos() {
 
   // Loop over the events and fill histograms
   nentries = rawDataTree->GetEntries();
-  // nentries = 10000;
+  // nentries = 100000;
   cout << "\n******************************************"    << endl;
   cout << nentries << " Events Will Be Processed"           << endl;
   cout << "******************************************\n"    << endl;
@@ -284,7 +285,6 @@ void timeWalkHistos() {
     h1_refAdcMultiplicity->Fill(refAdcMultiplicity);
     h1_refT1TdcTimeRaw->Fill(refT1TdcTimeRaw*tdcChanToTime);
     h1_refT2TdcTimeRaw->Fill(refT2TdcTimeRaw*tdcChanToTime);
-    h1_refT3TdcTimeRaw->Fill(refT3TdcTimeRaw*tdcChanToTime);
     // Loop over the planes, sides, signals, data arrays, and fill hodoscope histograms
     for(UInt_t iplane = 0; iplane < nPlanes; iplane++) {
       for(UInt_t iside = 0; iside < nSides; iside++) {
@@ -321,15 +321,14 @@ void timeWalkHistos() {
 	    for(UInt_t itdcdata = 0; itdcdata < nTdcSignals; itdcdata++) {
 	      numTdcHits = tdcHits[iplane][iside][isignal];
 	      // Define cuts
-	      //edtmCut = (numTdcHits == nbars[0] || numTdcHits == nbars[2] || numTdcHits == nbars[3]);
+	      // edtmCut = (numTdcHits == nbars[0] || numTdcHits == nbars[2] || numTdcHits == nbars[3]);
 	      // Implement cuts
-	      //if (edtmCut) continue;
+	      // if (edtmCut) continue;
 	      for (Int_t itdchit = 0; itdchit < numTdcHits; itdchit++) {
 		// Obtain variables
 		tdcPaddleNum = tdcPaddle[iplane][iside][isignal][itdchit];
 		tdcTimeRaw   = hodoTdcTimeRaw[iplane][iside][isignal][itdchit]*tdcChanToTime;
-		if (iplane == 3 && iside == 0) tdcTime = tdcTimeRaw - refT2TdcTimeRaw*tdcChanToTime;
-		else tdcTime = tdcTimeRaw - refT1TdcTimeRaw*tdcChanToTime;
+		tdcTime      = tdcTimeRaw - refT2TdcTimeRaw*tdcChanToTime;
 		if (tdcData[itdcdata] == "TimeRaw") {
 		  h2_tdcTimeRaw[iplane][iside]->Fill(tdcPaddleNum, tdcTimeRaw);
 		  h2_tdcTime[iplane][iside]->Fill(tdcPaddleNum, tdcTime);
@@ -338,12 +337,12 @@ void timeWalkHistos() {
 	    } // TDC signal data loop
 	  } // TDC signal
 
-	    // Define cuts
+	  // Define cuts
 	  adcRefMultiplicityCut = (refAdcMultiplicity != 1.0);
 	  adcRefPulseAmpCut     = (refAdcPulseAmp < refAdcPulseAmpCutLow || refAdcPulseAmp > refAdcPulseAmpCutHigh);
 	  adcRefPulseTimeCut    = (refAdcPulseTimeRaw*adcChanToTime < refAdcPulseTimeCutLow || refAdcPulseTimeRaw*adcChanToTime > refAdcPulseTimeCutHigh);
 	  // Implement cuts
-	  //if (adcRefMultiplicityCut || adcRefPulseAmpCut || adcRefPulseTimeCut) continue;	  
+	  // if (adcRefMultiplicityCut || adcRefPulseAmpCut || adcRefPulseTimeCut) continue;	  
 	  // Acquire the hodoscope ADC data objects
 	  if(signalNames[isignal] == "Adc") { 
 	    // Loop over the signals again
@@ -380,8 +379,7 @@ void timeWalkHistos() {
 			// Obtain variables
 			tdcPaddleNum   = UInt_t (tdcPaddle[iplane][iside][jsignal][itdchit]);
 			tdcTimeRaw     = hodoTdcTimeRaw[iplane][iside][jsignal][itdchit]*tdcChanToTime;
-			if (iplane == 3 && iside == 0) tdcTime = tdcTimeRaw - refT2TdcTimeRaw*tdcChanToTime;
-			else tdcTime = tdcTimeRaw - refT1TdcTimeRaw*tdcChanToTime;
+			tdcTime        = tdcTimeRaw - refT2TdcTimeRaw*tdcChanToTime;
 			adcTdcTimeDiff = tdcTime - adcPulseTime;
 			// Define cuts
 			adcAndTdcHitCut   = (adcPaddleNum != tdcPaddleNum);
