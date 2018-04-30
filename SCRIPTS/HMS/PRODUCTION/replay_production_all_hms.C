@@ -36,6 +36,9 @@ void replay_production_all_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   gHcParms->Load("PARAM/TRIG/thms.param");
   // Load fadc debug parameters
   gHcParms->Load("PARAM/HMS/GEN/h_fadc_debug.param");
+  // Load params for BCM 
+  const char* CurrentFileNamePattern = "PARAM/HMS/BCM/CALIB/bcmcurrent_%d.param";
+  gHcParms->Load(Form(CurrentFileNamePattern, RunNumber));
 
   // Load the Hall C detector map
   gHcDetectorMap = new THcDetectorMap();
@@ -86,6 +89,9 @@ void replay_production_all_hms(Int_t RunNumber=0, Int_t MaxEvent=0) {
   // Calculate the hodoscope efficiencies
   THcHodoEff* heff = new THcHodoEff("hhodeff", "HMS hodo efficiency", "H.hod");
   gHaPhysics->Add(heff);
+  // Add BCM Current check
+  THcBCMCurrent* hbc = new THcBCMCurrent("H.bcm", "BCM current check");
+  gHaPhysics->Add(hbc);
 
   // Add handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
