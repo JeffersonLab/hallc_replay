@@ -176,7 +176,7 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   
 } // generatePlots()
 
-void timeWalkHistos() {
+void timeWalkHistos(Int_t runNum) {
 
   // Global ROOT settings
   gStyle->SetOptFit();
@@ -192,10 +192,10 @@ void timeWalkHistos() {
   // Obtain the replay data file and create new output ROOT file
   // replayFile = new TFile("ROOTfiles/hms_replay_production_all_1267_-1.root", "READ");
   // replayFile = new TFile("ROOTfiles/hms_replay_production_all_1268_-1.root", "READ");
-  // replayFile = new TFile("ROOTfiles/hms_replay_production_all_1267_1268_-1.root", "READ");
+  replayFile = new TFile("ROOTfiles/hms_replay_production_all_1267_1268_-1.root", "READ");
 
-  replayFile = new TFile("ROOTfiles/hms_replay_production_all_1577_-1.root", "READ");
-  // replayFile = new TFile("ROOTfiles/hms_coin_replay_production_1577_-1.root", "READ");
+  // replayFile = new TFile(Form("ROOTfiles/hms_replay_production_all_%d_-1.root", runNum), "READ");
+  // replayFile = new TFile(Form("ROOTfiles/hms_coin_replay_production_%d_-1.root", runNum), "READ");
 
   outFile    = new TFile("timeWalkHistos_temp.root", "RECREATE");
   // Obtain the tree

@@ -173,11 +173,11 @@ void generatePlots(UInt_t iplane, UInt_t iside, UInt_t ipaddle) {
   if (!adcTdcTimeDiffWalkDir[iplane][iside]) {adcTdcTimeDiffWalkDir[iplane][iside] = sideUncalibDir[iplane][iside]->mkdir("adcTdcTimeDiffWalk"); adcTdcTimeDiffWalkDir[iplane][iside]->cd();}
   else (outFile->cd("hodoUncalib/"+planeNames[iplane]+"/"+sideNames[iside]+"/adcTdcTimeDiffWalk"));
   // Book histos
-  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC-ADC Time vs. Pulse Amp Plane "+planeNames[iplane]+" Side "+sideNames[iside]+Form(" Paddle %d", ipaddle+1)+"; Pulse Amplitude (mV) / 1 mV;  TDC-ADC Time (ns) / 100 ps", 1000, 0, 1000, 1200, -60, 60);
+  if (!h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle]) h2_adcTdcTimeDiffWalk[iplane][iside][ipaddle] = new TH2F(Form("h2_adcTdcTimeDiffWalk_paddle_%d", ipaddle+1), "TDC-ADC Time vs. Pulse Amp Plane "+planeNames[iplane]+" Side "+sideNames[iside]+Form(" Paddle %d", ipaddle+1)+"; Pulse Amplitude (mV) / 1 mV;  TDC-ADC Time (ns) / 100 ps", 1000, 0, 1000, 500, -20, 30);
   
 } // generatePlots()
 
-void timeWalkHistos() {
+void timeWalkHistos(Int_t runNum) {
 
   // Global ROOT settings
   gStyle->SetOptFit();
@@ -192,8 +192,8 @@ void timeWalkHistos() {
 
   // Obtain the replay data file and create new output ROOT file
     
-  // replayFile = new TFile("ROOTfiles/shms_replay_production_all_1625_-1.root", "READ");
-  replayFile = new TFile("ROOTfiles/shms_coin_replay_production_2210_-1.root", "READ");
+  replayFile = new TFile(Form("ROOTfiles/shms_replay_production_all_%d_-1.root", runNum), "READ");
+  // replayFile = new TFile(Form("ROOTfiles/shms_coin_replay_production_%d_-1.root", runNum), "READ");
   
   outFile    = new TFile("timeWalkHistos_temp.root", "RECREATE");
   // Obtain the tree
@@ -266,8 +266,8 @@ void timeWalkHistos() {
   } // Plane loop
 
   // Loop over the events and fill histograms
-  nentries = rawDataTree->GetEntries();
-  // nentries = 10000;
+  // nentries = rawDataTree->GetEntries();
+  nentries = 100000;
   cout << "\n******************************************"    << endl;
   cout << nentries << " Events Will Be Processed"           << endl;
   cout << "******************************************\n"    << endl;

@@ -12,14 +12,14 @@ static const UInt_t nTwFitPars = 3;
 
 static const Double_t tdcThresh      = 120.0;  // 30 mV in units of FADC channels
 static const Double_t twFitRangeLow  = 20.0;
-static const Double_t twFitRangeHigh = 300.0;
+static const Double_t twFitRangeHigh = 400.0;
 static const Double_t c0twParInit    = -35.0;
 static const Double_t c1twParInit    = 5.0;
 static const Double_t c2twParInit    = 0.25;
 
-static const Double_t fontSize       = 0.05;
-static const Double_t yTitleOffset   = 0.75;
-static const Double_t markerSize     = 2.0;
+static const Double_t fontSize     = 0.05;
+static const Double_t yTitleOffset = 0.75;
+static const Double_t markerSize   = 2.0;
 static const Double_t minScale     = 0.75;
 static const Double_t maxScale     = 0.75;
 
