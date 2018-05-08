@@ -1,8 +1,13 @@
 // Macro to perform time-walk fits and extract the calibration parameters
 // Author: Eric Pooser, pooser@jlab.org
 
+
+
 // Declare ROOT files
 TFile *histoFile, *outFile;
+
+// Declare Output  Parameter File
+ofstream outParam;
 
 // Declare constants
 static const UInt_t nPlanes    = 4;
@@ -16,6 +21,12 @@ static const Double_t twFitRangeHigh = 600.0;
 static const Double_t c0twParInit    = -15.0;
 static const Double_t c1twParInit    = 5.0;
 static const Double_t c2twParInit    = 0.25;
+
+//Parameter values to be written to param file
+Double_t c0[nPlanes][nSides][nBarsMax] = {0.};
+Double_t c1[nPlanes][nSides][nBarsMax] = {0.};
+Double_t c2[nPlanes][nSides][nBarsMax] = {0.};
+
 
 static const Double_t fontSize       = 0.05;
 static const Double_t yTitleOffset   = 0.75;
@@ -222,11 +233,85 @@ void drawParams(UInt_t iplane) {
   return;
 } // drawParams
 
+//Add a method to Get Fit Parameters
+void WriteFitParam()
+{
+
+  TString outPar_Name = "./hms_hodo.param";
+  outParam.open(outPar_Name);
+  outParam << ";HMS Hodoscopes Output Parameter File" << endl;
+  outParam << " " << endl;
+ 
+  
+  //Fill 3D Par array
+  for (UInt_t iplane=0; iplane < nPlanes; iplane++)
+    {
+      
+      for (UInt_t iside=0; iside < nSides; iside++) {
+	      
+
+	for(UInt_t ipaddle = 0; ipaddle < nbars[iplane]; ipaddle++) {
+	 
+	  c0[iplane][iside][ipaddle] = twFit[iplane][iside][ipaddle]->GetParameter("c_{0}");
+	  c1[iplane][iside][ipaddle] = twFit[iplane][iside][ipaddle]->GetParameter("c_{1}");
+	  c2[iplane][iside][ipaddle] = twFit[iplane][iside][ipaddle]->GetParameter("c_{2}");
+
+	} //end paddle loop
+
+      } //end side loop
+    
+    } //end plane loop
+
+  //Wrtie to Param FIle
+   
+  outParam << ";Param c1-Pos" << endl;
+  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  //Loop over all paddles
+  for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) {
+    //Write c1-Pos values
+    outParam << c1[0][0][ipaddle] << setw(15) << c1[1][0][ipaddle]  << setw(15) << c1[2][0][ipaddle] << setw(15) << c1[3][0][ipaddle] << fixed << endl; 
+  } //end loop over paddles
+  
+  outParam << " " << endl;
+  outParam << ";Param c1-Neg" << endl;
+  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  //Loop over all paddles
+  for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
+    //Write c1-Pos values
+    outParam << c1[0][1][ipaddle] << setw(15) << c1[1][1][ipaddle]  << setw(15) << c1[2][1][ipaddle] << setw(15) << c1[3][1][ipaddle] << fixed << endl; 
+  } //end loop over paddles
+  
+  outParam << " " << endl;
+  outParam << ";Param c2-Pos" << endl;
+  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  //Loop over all paddles
+  for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
+    //Write c2-Pos values
+    outParam << c2[0][0][ipaddle] << setw(15) << c2[1][0][ipaddle]  << setw(15) << c2[2][0][ipaddle] << setw(15) << c2[3][0][ipaddle] << fixed << endl; 
+  } //end loop over paddles
+  
+  outParam << " " << endl;
+  outParam << ";Param c2-Neg" << endl;
+  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  //Loop over all paddles
+  for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
+    //Write c2-Neg values
+    outParam << c2[0][1][ipaddle] << setw(15) << c2[1][1][ipaddle]  << setw(15) << c2[2][1][ipaddle] << setw(15) << c2[3][1][ipaddle] << fixed << endl; 
+  } //end loop over paddles
+  
+  outParam.close();
+} //end method
+
 //=:=:=:=:=
 //=: Main
 //=:=:=:=:=
 
 void timeWalkCalib() {
+
+using namespace std;
+
+//prevent root from displaying graphs while executing
+  gROOT->SetBatch(1);
 
   // ROOT settings
   gStyle->SetTitleFontSize(fontSize);
@@ -285,9 +370,11 @@ void timeWalkCalib() {
     // Draw the time-walk parameter graphs
     drawParams(iplane);
   } // Plane loop 
-  return;
-} // timeWalkFits()
+  
+  //Write to a param file
+  WriteFitParam();
 
+}
 
 
 
