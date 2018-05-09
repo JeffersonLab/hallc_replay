@@ -12,7 +12,7 @@ ofstream outParam;
 // Declare constants
 static const UInt_t nPlanes    = 4;
 static const UInt_t nSides     = 2;
-static const UInt_t nBarsMax   = 21;
+static const UInt_t nBarsMax   = 16;
 static const UInt_t nTwFitPars = 3;
 
 static const Double_t tdcThresh      = 120.0;  // 30 mV in units of FADC channels
@@ -234,14 +234,17 @@ void drawParams(UInt_t iplane) {
 } // drawParams
 
 //Add a method to Get Fit Parameters
-void WriteFitParam()
+void WriteFitParam(int runNUM)
 {
 
-  TString outPar_Name = "./hms_hodo.param";
+  TString outPar_Name = Form("../../PARAM/HMS/HODO/hhodo_calib_%d.param", runNUM);
   outParam.open(outPar_Name);
   outParam << ";HMS Hodoscopes Output Parameter File" << endl;
   outParam << " " << endl;
- 
+  outParam << " ; use htofusinginvadc=1 if want invadc_offset " << endl;
+  outParam << " ;  invadc_linear, and invadc_adc to be used " << endl;
+  outParam << "htofusinginvadc=1 " << endl;
+  outParam << " " << endl;
   
   //Fill 3D Par array
   for (UInt_t iplane=0; iplane < nPlanes; iplane++)
@@ -265,38 +268,63 @@ void WriteFitParam()
   //Wrtie to Param FIle
    
   outParam << ";Param c1-Pos" << endl;
-  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "; " << setw(12) << "1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "c1_Pos = ";
   //Loop over all paddles
   for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) {
     //Write c1-Pos values
+    if(ipaddle==0){
     outParam << c1[0][0][ipaddle] << setw(15) << c1[1][0][ipaddle]  << setw(15) << c1[2][0][ipaddle] << setw(15) << c1[3][0][ipaddle] << fixed << endl; 
+    }
+    else {
+      outParam << setw(17) << c1[0][0][ipaddle] << setw(15) << c1[1][0][ipaddle]  << setw(15) << c1[2][0][ipaddle] << setw(15) << c1[3][0][ipaddle] << fixed << endl;    
+    }
   } //end loop over paddles
   
   outParam << " " << endl;
   outParam << ";Param c1-Neg" << endl;
-  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "; " << setw(12) << "1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "c1_Neg = ";                                                                                                                                                                            
   //Loop over all paddles
   for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
-    //Write c1-Pos values
+    //Write c1-Neg values
+    if(ipaddle==0){
     outParam << c1[0][1][ipaddle] << setw(15) << c1[1][1][ipaddle]  << setw(15) << c1[2][1][ipaddle] << setw(15) << c1[3][1][ipaddle] << fixed << endl; 
-  } //end loop over paddles
+    }
+    else {
+      outParam << setw(17) << c1[0][1][ipaddle] << setw(15) << c1[1][1][ipaddle]  << setw(15) << c1[2][1][ipaddle] << setw(15) << c1[3][1][ipaddle] << fixed << endl;
+    }
+} //end loop over paddles
   
   outParam << " " << endl;
   outParam << ";Param c2-Pos" << endl;
-  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "; " << setw(12) << "1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "c2_Pos = ";                                                                                                                                                                            
   //Loop over all paddles
   for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
     //Write c2-Pos values
-    outParam << c2[0][0][ipaddle] << setw(15) << c2[1][0][ipaddle]  << setw(15) << c2[2][0][ipaddle] << setw(15) << c2[3][0][ipaddle] << fixed << endl; 
+    if(ipaddle==0)
+      {
+	outParam << c2[0][0][ipaddle] << setw(15) << c2[1][0][ipaddle]  << setw(15) << c2[2][0][ipaddle] << setw(15) << c2[3][0][ipaddle] << fixed << endl; 
+      }
+    else {
+      outParam << setw(17) << c2[0][0][ipaddle] << setw(15) << c2[1][0][ipaddle]  << setw(15) << c2[2][0][ipaddle] << setw(15) << c2[3][0][ipaddle] << fixed << endl;                                            
+    }
   } //end loop over paddles
   
   outParam << " " << endl;
   outParam << ";Param c2-Neg" << endl;
-  outParam << ";1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "; " << setw(12) << "1x " << setw(15) << "1y " << setw(15) << "2x " << setw(15) << "2y " << endl;
+  outParam << "c2_Neg = ";                                                                                                                                                                            
   //Loop over all paddles
   for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
     //Write c2-Neg values
+    if (ipaddle==0){
     outParam << c2[0][1][ipaddle] << setw(15) << c2[1][1][ipaddle]  << setw(15) << c2[2][1][ipaddle] << setw(15) << c2[3][1][ipaddle] << fixed << endl; 
+    }
+    else{
+      outParam << setw(17) << c2[0][1][ipaddle] << setw(15) << c2[1][1][ipaddle]  << setw(15) << c2[2][1][ipaddle] << setw(15) << c2[3][1][ipaddle] << fixed << endl;
+    }
   } //end loop over paddles
   
   outParam.close();
@@ -306,7 +334,7 @@ void WriteFitParam()
 //=: Main
 //=:=:=:=:=
 
-void timeWalkCalib() {
+void timeWalkCalib(int run) {
 
 using namespace std;
 
@@ -372,7 +400,7 @@ using namespace std;
   } // Plane loop 
   
   //Write to a param file
-  WriteFitParam();
+  WriteFitParam(run);
 
 }
 
