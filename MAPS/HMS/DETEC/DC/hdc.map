@@ -842,6 +842,9 @@ REFINDEX=0
 82,11,62 ! Plane U', wire 62
 81,11,63 ! Plane U', wire 63
 80,11,64 ! Plane U', wire 64
+SLOT=2
+REFINDEX=0
+127, 1000, 0, 4
 SLOT=17
 REFINDEX=0
 80,11,65 ! Plane U', wire 65
