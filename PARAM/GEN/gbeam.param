@@ -5,9 +5,9 @@
 ; average beam positions:
 ; Use the Hall C EPICS BPM values in units of cm
   gbeam_x  = +0.00
-  gbeam_xp = +1.00E-05
+  gbeam_xp = +0.00
   gbeam_y  = +0.00
-  gbeam_yp = +1.00E-05
+  gbeam_yp = +0.00
 
 ; Add new variables for Hall C BPM A, B, and C, based on HARP calibration
 ; Edward Brash - August 5, 2018
