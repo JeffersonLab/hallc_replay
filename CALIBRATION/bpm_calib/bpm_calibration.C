@@ -722,7 +722,22 @@ bpm_calibration(const char* finname  = "harp_info.txt"){
     cout << "BPM Cy:  Slope = " << bpmCy_p1 << " +/- " << bpmCy_e1 << endl;
     cout << "BPM Cy:  Constant = " << bpmCy_p0 << " +/- " << bpmCy_e0 << endl;
     cout << endl;
-  
+
+    cout << "Add/Change the following lines in ~/PARAM/GEN/gbeam.param" << endl;
+    cout << endl;
+    cout << "  gbpmxa_slope = " << bpmAx_p1 << endl; 
+    cout << "  gbpmxa_off   = " << bpmAx_p0 << endl; 
+    cout << "  gbpmxb_slope = " << bpmBx_p1 << endl; 
+    cout << "  gbpmxb_off   = " << bpmBx_p0 << endl; 
+    cout << "  gbpmxc_slope = " << bpmCx_p1 << endl; 
+    cout << "  gbpmxc_off   = " << bpmCx_p0 << endl; 
+    cout << "  gbpmya_slope = " << bpmAy_p1 << endl; 
+    cout << "  gbpmya_off   = " << bpmAy_p0 << endl; 
+    cout << "  gbpmyb_slope = " << bpmBy_p1 << endl; 
+    cout << "  gbpmyb_off   = " << bpmBy_p0 << endl; 
+    cout << "  gbpmyc_slope = " << bpmCy_p1 << endl; 
+    cout << "  gbpmyc_off   = " << bpmCy_p0 << endl; 
+    cout << endl; 
 
 }
 
