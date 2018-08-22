@@ -2,18 +2,42 @@
 #include "TFile.h"
 #include "TH1D.h"
 
-void ped_tracking(TString golden_file="", TString detector=""){
+void ped_tracking(TString golden_file="", TString detector="", TString spect="", Double_t polarity=0){
 
   if (golden_file=="") {
     cout << "Enter golden run root file name: " << endl;
     cin >> golden_file;
   }
   if (detector=="") {
-    cout << "Enter detector prefix (hodo,hgcer,aero,cal,ngcer): " << endl;
-    cin >> detector;
+    cout << "Enter detector prefix (hodo_1x (etc.), hgcer, aero, cal_prshwr, cal_shwr, ngcer, cal_hA (etc.)): " << endl;
+    cin >> detector;    
+  }
+  if (spect=="") {
+    cout << "Enter a spectrometer (p or h): " << endl;
+    cin >> spect;
+  }
+  if (polarity==0) {
+    cout << "Enter a detector polarity (pos = 1, neg = 2): " << endl;
+    cin >> polarity;
   }
 
-  TString histname = Form("p%s",detector.Data());
+  TString histname = Form("%s%s",spect.Data(),detector.Data());
+  if (histname.Contains("hodo") && histname.Contains("1x") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("hodo") && histname.Contains("1x") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
+  if (histname.Contains("hodo") && histname.Contains("1y") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("hodo") && histname.Contains("1y") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
+  if (histname.Contains("hodo") && histname.Contains("2x") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("hodo") && histname.Contains("2x") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
+  if (histname.Contains("hodo") && histname.Contains("2y") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("hodo") && histname.Contains("2y") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
+  if (histname.Contains("aero") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("aero") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
+  if (histname.Contains("cer")) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt");
+  if (histname.Contains("_prshwr") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("_prshwr") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
+  if (histname.Contains("_shwr")) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt");
+  if (histname.Contains("hcal_h") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
+  if (histname.Contains("hcal_h") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
 
   TFile* f1= new TFile(golden_file,"READ");
   if (f1->IsZombie()) {
@@ -47,7 +71,9 @@ void ped_tracking(TString golden_file="", TString detector=""){
   for (Int_t ipmt = 0; ipmt < (H1_pmt->GetSize()-2); ipmt++) {
     if (H1_ped[ipmt]->GetEntries() != 0) {
       TSpectrum *s = new TSpectrum(1);
+      gSystem->RedirectOutput("/dev/null","a");
       s->Search(H1_ped[ipmt], 1.0, "nobackground&&nodraw", 0.001);
+      gSystem->RedirectOutput(0);
       TList *functions = H1_ped[ipmt]->GetListOfFunctions();
       TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
       if (pm) {
@@ -62,7 +88,9 @@ void ped_tracking(TString golden_file="", TString detector=""){
     }
     if (H2_ped[ipmt]->GetEntries() != 0) {
       TSpectrum *s = new TSpectrum(1);
+      gSystem->RedirectOutput("/dev/null","a");
       s->Search(H2_ped[ipmt], 1.0, "nobackground&&nodraw", 0.001);
+      gSystem->RedirectOutput(0);
       TList *functions = H2_ped[ipmt]->GetListOfFunctions();
       TPolyMarker *pm = (TPolyMarker*)functions->FindObject("TPolyMarker");
       if (pm) {
@@ -83,11 +111,15 @@ void ped_tracking(TString golden_file="", TString detector=""){
 
   for (Int_t ipmt = 0; ipmt < (H1_pmt->GetSize()-2); ipmt++) {
     Gaussian->SetParameter(1,H1_ped_peak[ipmt]);
+    gSystem->RedirectOutput("/dev/null","a");
     H1_ped[ipmt]->Fit(Gaussian,"QMN");
+    gSystem->RedirectOutput(0);
     H1_pmt->SetBinContent(ipmt+1,Gaussian->GetParameter(1));
     H1_pmt->SetBinError(ipmt+1,Gaussian->GetParameter(2));
     Gaussian->SetParameter(1,H2_ped_peak[ipmt]);
+    gSystem->RedirectOutput("/dev/null","a");
     H2_ped[ipmt]->Fit(Gaussian,"QMN");
+    gSystem->RedirectOutput(0);
     H2_pmt->SetBinContent(ipmt+1,Gaussian->GetParameter(1));
     H2_pmt->SetBinError(ipmt+1,Gaussian->GetParameter(2));
   }
