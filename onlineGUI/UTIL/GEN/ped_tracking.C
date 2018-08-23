@@ -2,7 +2,9 @@
 #include "TFile.h"
 #include "TH1D.h"
 
-void ped_tracking(TString golden_file="",TString detector="", TString spect="", Double_t polarity=0){
+
+void ped_tracking(TString golden_file="", TString detector="", TString spect="", Double_t polarity=0){
+
 
   if (golden_file=="") {
     cout << "Enter golden run root file name: " << endl;
@@ -39,6 +41,7 @@ void ped_tracking(TString golden_file="",TString detector="", TString spect="", 
   if (histname.Contains("hcal_h") && polarity==1) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_pos");
   if (histname.Contains("hcal_h") && polarity==2) histname = Form("%s%s",histname.Data(),"_good_pped_vs_pmt_neg");
 
+
   TH2F* H1_ped_vs_pmt; 
   TH2F* H2_ped_vs_pmt; 
 
@@ -74,6 +77,7 @@ void ped_tracking(TString golden_file="",TString detector="", TString spect="", 
   Double_t H1_ped_peak[H1_pmt->GetSize()-2];
   Double_t H2_ped_peak[H2_pmt->GetSize()-2];
   for (Int_t ipmt = 0; ipmt < (H1_pmt->GetSize()-2); ipmt++) {
+
     if (H1_ped[ipmt]->GetEntries() > 25) {
       TSpectrum *s = new TSpectrum(1);
       gSystem->RedirectOutput("/dev/null","a");
@@ -91,6 +95,7 @@ void ped_tracking(TString golden_file="",TString detector="", TString spect="", 
     else {
       H1_ped_peak[ipmt] = 1e+38;
     }
+
     if (H2_ped[ipmt]->GetEntries() > 25) {
       TSpectrum *s = new TSpectrum(1);
       gSystem->RedirectOutput("/dev/null","a");
