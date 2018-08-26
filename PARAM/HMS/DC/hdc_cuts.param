@@ -1,6 +1,10 @@
 ;Utilize per wire tzero offsets, 1 means true
 h_using_tzero_per_wire = 1
 
+;Flag to fix HMS TDC SLot 2 Out-of-Sync problem
+h_fix_tdc_problem = 0
+
+
 ; TEST STAND PARAMETER
 ; Custom parameter which should be loaded when aiming to analyze HMS DC
 ; data with no tracking 
