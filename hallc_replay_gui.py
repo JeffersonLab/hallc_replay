@@ -473,7 +473,7 @@ tk.Checkbutton(root,
               variable=hpid_histos).grid(row=irow,column=icol,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="PID",
+              text="EXTCOR",
               padx = 20, 
               variable=hextcor_histos).grid(row=irow,column=icol,sticky=tk.W)
 irow=irow+4
@@ -492,7 +492,7 @@ tk.Label(root,
         padx = 20).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 EPICS",
+              text="EPICS",
               padx = 20, 
               variable=hepics_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
@@ -501,23 +501,23 @@ tk.Checkbutton(root,
               variable=hthms_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
+              text="PID",
+              padx = 20, 
+              variable=hpid_vars).grid(row=irow,column=icol,sticky=tk.W)
+tk.Checkbutton(root, 
               text="Calorimeter",
               padx = 20, 
               variable=hcal_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 PID",
+              text="Kinematics",
               padx = 20, 
-              variable=hpid_vars).grid(row=irow,column=icol,sticky=tk.W)
+              variable=hf2kin_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
               text="Cerenkov",
               padx = 20, 
               variable=hcer_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
-tk.Checkbutton(root, 
-              text="F2 Kinematics",
-              padx = 20, 
-              variable=hf2kin_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
               text="Drift Chambers",
               padx = 20, 
@@ -684,7 +684,7 @@ tk.Label(root,
         padx = 20).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 EPICS",
+              text="EPICS",
               padx = 20, 
               variable=pepics_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
@@ -693,7 +693,7 @@ tk.Checkbutton(root,
               variable=ptshms_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 Tracking",
+              text="Tracking",
               padx = 20, 
               variable=pf2gtr_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
@@ -702,7 +702,7 @@ tk.Checkbutton(root,
               variable=paero_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 PID",
+              text="PID",
               padx = 20, 
               variable=ppid_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
@@ -711,7 +711,7 @@ tk.Checkbutton(root,
               variable=pcal_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 Drift Chambers",
+              text="Drift Chambers",
               padx = 20, 
               variable=pf2dc_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
@@ -720,7 +720,7 @@ tk.Checkbutton(root,
               variable=pdc_vars).grid(row=irow,column=icol+1,sticky=tk.W)
 irow=irow+1
 tk.Checkbutton(root, 
-              text="F2 Kinematics",
+              text="Kinematics",
               padx = 20, 
               variable=pf2kin_vars).grid(row=irow,column=icol,sticky=tk.W)
 tk.Checkbutton(root, 
