@@ -10,32 +10,21 @@
 ;  gbeam_yp = +0.00
 
 ; Add new variables for Hall C BPM A, B, and C, based on HARP calibration
-; Updated  by Dave Gaskell
+; Updated  by Mark Jones , Fit to Dec 8 2019 harp versus bpm scan
 ;
-  gbpmxa_slope = -0.98
-  gbpmxa_off   = +0.21
-  gbpmxa_off   = -0.05+0.32
-  gbpmxa_off   = 0.28 
-  gbpmxb_slope = -1.12
-  gbpmxb_off   = +0.08+0.12
-  gbpmxb_off   = +0.08+0.38
-  gbpmxb_off   = 0.47
-  gbpmxc_slope = -0.96
-  gbpmxc_off   = -0.89-0.29
-  gbpmxc_off   = -0.89+.09
-  gbpmxc_off   = -0.63
-  gbpmya_slope = 0.97
-  gbpmya_off   = -0.20+0.36
-  gbpmya_off   = -0.20+0.38
-  gbpmya_off   = -0.09
-  gbpmyb_slope = 1.17
-  gbpmyb_off   = 0.38+0.36
-  gbpmyb_off   = 0.38-.13
-  gbpmyb_off   = 0.02
-  gbpmyc_slope = 0.87
-  gbpmyc_off   = 0.47+0.31
-  gbpmyc_off   = 0.47-.76
-  gbpmyc_off   = -0.13
+  gbpmxa_slope =  0.97
+  gbpmxa_off   = -0.07
+  gbpmxb_slope =  1.09
+  gbpmxb_off   = -0.19
+  gbpmxc_slope =  0.96
+  gbpmxc_off   =  1.1
+  gbpmya_slope = 0.95
+  gbpmya_off   = -0.9
+  gbpmyb_slope = 1.16
+  gbpmyb_off   = -0.31
+  gbpmyc_slope = 0.85
+  gbpmyc_off   =  -0.81
+;
 
 ;positions of BPMs relative to target (from Fall 2018 survey)
 gbpma_zpos = 320.17 ; cm
@@ -57,10 +46,11 @@ gfrxa_adc_zero_offset = 64310
 gfrxb_adc_zero_offset = 67210
 gfrya_adc_zero_offset = 67500
 gfryb_adc_zero_offset = 61840
-gfrxa_adcpercm = 96000
-gfrxb_adcpercm = 97086
-gfrya_adcpercm = 88300
-gfryb_adcpercm = 84800
+; for 1-pass running need factor of 2 since only one coil is used
+gfrxa_adcpercm = 96000*2
+gfrxb_adcpercm = 97086*2
+gfrya_adcpercm = 88300*2
+gfryb_adcpercm = 84800*2
 
  
  
