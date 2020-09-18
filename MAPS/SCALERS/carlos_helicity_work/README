@@ -1,0 +1,62 @@
+                                              ======================
+                                              ==     HOW TO       ==
+                                              ======================
+					      
+The make_scaler_db.py python code reads in a .map file and generates a db_HScalevt.dat and db_PScalevt.dat file which
+is read in by the analysis replay script. To generate the .dat file,  load the desired .map file. This is done by changing
+the xscalerMapName filename within the make_scaler_db.py script.  Then, do:  >> ./make_scaler_db.py.  Make sure that the
+.dat files are placed in the correct directory for the replay script to read them.
+
+
+                                              ======================
+                                              ==Scaler Map History==
+                                              ======================
+
+Here is a summary of the scaler hardware/software changes,
+and the corresponding map files that should be used depending
+on the experimental run period.
+
+============================
+
+3/29/2018 : Pooser installed +Hel, -Hel, MPS, signals in slots 14/15 of hcvme08 crate : https://logbooks.jlab.org/entry/3549997
+
+8/17/2018 : SIS3801 scaler to be used for helicity installed physically in slot 4 of hcvme08: https://logbooks.jlab.org/entry/3588509
+
+8/23/2018 : a copy of the pre-trigger input signals was fanned out into slots 14/15 of hcvme08: https://logbooks.jlab.org/entry/3590581
+
+10/23/2018 : S. Wood added new scaler (hcvme08, slot4) to deal with delayed helicity reporting: https://logbooks.jlab.org/entry/3613942
+
+************************************
+* scaler_prior_october24_2018.map  *  ----> USE THIS SCALER MAP FILE FOR EXPERIMENTS BEFORE 10/24/2018
+************************************
+
+10/24/2018 : 1) removed hcvme08 slots 14/15 non-delayed helicity scaler,
+             2) install new scaler in hcvme08 slot3, (this log entry should say "slot4", NOT "slot3")
+	     3) install equivalent scaler in hcvme05 slot19,
+	     4) added QRT signal to ROC02::slot14::Ch07. H-, H+, MPS were
+	        already present in Ch:08-10 of said slot. Added QRT, H-, H+,
+		MPS to ROC01::slot18::Ch07-10 : https://logbooks.jlab.org/entry/3614445
+
+10/25/2018 : 1) S. Wood added helicity readout to hcvme05, so there would be redundant readout of Helicity scalers in both HMS/SHMS scaler crates.
+             2) changed inputs in helicity scalers (hcvme05/08) such that inputs 0-15 were BCM-related scaler signals and 16-31 were trigger-related
+	        scaler signal, however, the latter was left unplugged (thought it was not useful), but can be plugged back
+		reference log: https://logbooks.jlab.org/entry/3614778
+
+10/25/2018 : 1) S. Wood plugged back the trigger-related scalers and updated software to readout 16-32 for both HMS/SHMS
+                reference log: https://logbooks.jlab.org/entry/3614836
+
+************************************
+*   scaler_prior_june20_2019.map   *  ----> USE THIS SCALER MAP FILE FOR EXPERIMENTS BETWEEN 10/24/2018 AND 06/20/2019 
+************************************
+
+
+06/20/2019 : 1) M.K.Jones added Hall A beam modulation status to scalers and updated the scaler maps:
+                reference log: https://logbooks.jlab.org/entry/3690562
+
+************************************
+*     scaler_june20_2019.map       *  ----> USE THIS SCALER MAP FILE FOR EXPERIMENTS AFTER 06/20/2019
+************************************
+
+
+12/21/2019 : 1) S. Wood added beam-charge-asymmetry calculation in hcana helicity scaler class
+                reference log: https://logbooks.jlab.org/entry/3757052

@@ -2,10 +2,9 @@
 
 # Generate hcana scaler definition files from the xscaler scaler map file
 
-#xscalerMapName = 'scaler.map'
 #xscalerMapName = 'scaler_prior_october24_2018.map'
-#xscalerMapName = 'scaler_prior_june20_2019.map'
-xscalerMapName = 'scaler_june20_2019.map'
+xscalerMapName = 'scaler_prior_june20_2019.map'
+#xscalerMapName = 'scaler_june20_2019.map'
 
 if xscalerMapName == 'scaler_prior_october24_2018.map':
     cratemap = {
@@ -23,11 +22,12 @@ nperslot   = 32
 clockrate  = 1000000
 
 class Channel:
-    def __init__(self, spec, slot, chan, comment=''):
+    def __init__(self, spec, slot, chan, helicity, comment=''):
         self.spec = spec
         self.slot = slot
         self.chan = chan
         self.comment = comment
+        self.helicity = helicity
     def __str__(self):
         string = self.spec+"."+str(self.slot)+"."+str(self.chan)+"."+self.comment
         return string
@@ -54,6 +54,7 @@ with open(xscalerMapName, 'r') as fi:
         start = int(splitline[4])
         nchan = splitline[5] # This better be 1
         page = splitline[6] # We ignore this here
+
         comment = splitline[7]
         if comment == "Empty":  # Overwrite name used by xscaler
             name = spec+"Empty"
@@ -62,7 +63,7 @@ with open(xscalerMapName, 'r') as fi:
         while chandict.has_key(uniquename):
             uniquename = name+"_"+str(count)
             count += 1
-        chandict[uniquename] = Channel(cratemap[splitline[2]]["spec"],slot,start,comment)
+        chandict[uniquename] = Channel(cratemap[splitline[2]]["spec"],slot,start,helicity,comment)
 
     for spec in cratemap:
         firstslot = cratemap[spec]["firstslot"]
@@ -71,9 +72,10 @@ with open(xscalerMapName, 'r') as fi:
         lastslot = firstslot + nslots - 1
         offset = cratemap[spec]["offset"]
         specprefix = cratemap[spec]["spec"]
-        hcanaMapName = 'db_'+specprefix+'Scalevt.dat'
+        hcanaMapName = 'db_'+specprefix+'Scalevt.dat'  
         clockChan = cratemap[spec]["clockChan"]
         clockSlot = cratemap[spec]["clockSlot"]
+        
         with open(hcanaMapName, 'w') as fo:
             for slot in range(firstslot,firstslot+nslots):
                 if slot == clockSlot:
@@ -83,7 +85,9 @@ with open(xscalerMapName, 'r') as fi:
                 print >>fo, 'map 3801 {0} {1} {2:04x}{1:02x}{3:02x} ffffffff {4}'.\
                 format(roc, slot, offset+(slot-firstslot)*nperslot,nperslot,clockSlot)\
                 +rateinfo
-
+               
+                
+        
             for name in chandict:
                 channel = chandict[name]
                 slot = channel.slot-firstslot
@@ -94,16 +98,18 @@ with open(xscalerMapName, 'r') as fi:
                     # slot = channel.slot-firstslot
                     slot = channel.slot
                     comment = channel.comment
+                    helicity = channel.helicity
                     if detPrefix == "hod":
                         printHodoName = "." + detPrefix + "." + name[5:10] + "."
                         if printHodoName.find("+") != -1:
                             printname = printHodoName.replace("+", "")+"posScaler"
                         if printHodoName.find("-") != -1:
                             printname = printHodoName.replace("-", "")+"negScaler"
-                    print >>fo, 'variable', slot, chan, 1, printname, comment
-                    print >>fo, 'variable', slot, chan, 2, printname+'Rate', comment
+                    print >>fo, 'variable', slot, chan, 1, helicity, printname, comment
+                    print >>fo, 'variable', slot, chan, 2, helicity, printname+'Rate', comment
                     if name[1:4] == "BCM" or name[1:6] == "Unser":
-                        print >>fo, 'variable', slot, chan, 3, printname+'Current', comment
-                        print >>fo, 'variable', slot, chan, 4, printname+'Charge', comment
+                        print >>fo, 'variable', slot, chan, 3, helicity, printname+'Current', comment
+                        print >>fo, 'variable', slot, chan, 4, helicity, printname+'Charge', comment
                     elif name[1:5] == "1MHz":
-                        print >>fo, 'variable', slot, chan, 5, printname+'Time', comment
+                        print >>fo, 'variable', slot, chan, 5, helicity, printname+'Time', comment
+        

@@ -628,7 +628,7 @@ hTRIG4_posHel  1    5     8    29    1    -1  HMS TRIG4 Hel+
 hTRIG5_posHel  1    5     8    30    1    -1  HMS TRIG5 Hel+
 hTRIG6_posHel  1    5     8    31    1    -1  HMS TRIG6 Hel+
 
-# desc        hel crate slot start nchan page long-description  (SHMS -HELICITY SCALER: SLOT 14, VALID prior to 10/24/2018)
+# desc        hel crate slot start nchan page long-description  (SHMS -HELICITY SCALER: SLOT 15, VALID prior to 10/24/2018)
 BCM1_negHel    1    5     9    0     1    -1  SHMS BCM1 Hel-
 15/01          1    5     9    1     1    -1  Empty
 BCM2_negHel    1    5     9    2     1    -1  SHMS BCM2 Hel-
