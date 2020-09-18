@@ -3,8 +3,8 @@
 # Generate hcana scaler definition files from the xscaler scaler map file
 
 #xscalerMapName = 'scaler_prior_october24_2018.map'
-xscalerMapName = 'scaler_prior_june20_2019.map'
-#xscalerMapName = 'scaler_june20_2019.map'
+#xscalerMapName = 'scaler_prior_june20_2019.map'
+xscalerMapName = 'scaler_june20_2019.map'
 
 if xscalerMapName == 'scaler_prior_october24_2018.map':
     cratemap = {
@@ -105,11 +105,11 @@ with open(xscalerMapName, 'r') as fi:
                             printname = printHodoName.replace("+", "")+"posScaler"
                         if printHodoName.find("-") != -1:
                             printname = printHodoName.replace("-", "")+"negScaler"
-                    print >>fo, 'variable', slot, chan, 1, helicity, printname, comment
-                    print >>fo, 'variable', slot, chan, 2, helicity, printname+'Rate', comment
+                    print >>fo, 'variable', slot, chan, 1, printname, comment, helicity
+                    print >>fo, 'variable', slot, chan, 2, printname+'Rate', comment, helicity
                     if name[1:4] == "BCM" or name[1:6] == "Unser":
-                        print >>fo, 'variable', slot, chan, 3, helicity, printname+'Current', comment
-                        print >>fo, 'variable', slot, chan, 4, helicity, printname+'Charge', comment
+                        print >>fo, 'variable', slot, chan, 3, printname+'Current', comment, helicity
+                        print >>fo, 'variable', slot, chan, 4, printname+'Charge', comment, helicity
                     elif name[1:5] == "1MHz":
-                        print >>fo, 'variable', slot, chan, 5, helicity, printname+'Time', comment
+                        print >>fo, 'variable', slot, chan, 5, printname+'Time', comment, helicity
         
