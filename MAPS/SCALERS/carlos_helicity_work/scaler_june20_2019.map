@@ -26,14 +26,15 @@ xscaler-pagename HMS 4:'HMS Trigger & Beamline'
 xscaler-pagename HMS 5:'HMS Trigger'
 xscaler-pagename HMS 6:'HMS Trigger'
 
-xscaler-clock HMS slot:7 chan:1 rate:60 
+xscaler-clock HMS slot:6 chan:31 rate:1000000
+#xscaler-clock HMS slot:7 chan:1 rate:60 
 #####################################################################
 
 # Setup for Hall C testing SHMS hodoscopes, etc.
 
-xscaler-tabs     SHMS 0:1X      1:1Y      2:2X      3:2Y      4:Trigger   5:Trigger   6:Trigger   7:Helicity+   8:Helicity-
-xscaler-layout   SHMS 0:8x4     1:8x4     2:8x4     3:8x4     4:8x4       5:8x4       6:8x4       7:8x4         8:8x4
-xscaler-pageslot SHMS 0:page0   1:page1   2:page2   3:page3   4:slot7     5:slot6     6:slot5     7:slot8       8:slot9
+xscaler-tabs     SHMS 0:1X      1:1Y      2:2X      3:2Y      4:Trigger   5:Trigger   6:Trigger   
+xscaler-layout   SHMS 0:8x4     1:8x4     2:8x4     3:8x4     4:8x4       5:8x4       6:8x4      
+xscaler-pageslot SHMS 0:page0   1:page1   2:page2   3:page3   4:slot7     5:slot6     6:slot5     
 
 xscaler-pagename SHMS 0:'SHMS Hodoscope Plane 1X'
 xscaler-pagename SHMS 1:'SHMS Hodoscope Plane 1Y'
@@ -42,9 +43,8 @@ xscaler-pagename SHMS 3:'SHMS Hodoscope Plane 2Y'
 xscaler-pagename SHMS 4:'SHMS Trigger & Beamline'
 xscaler-pagename SHMS 5:'SHMS Trigger'
 xscaler-pagename SHMS 6:'SHMS Trigger'
-xscaler-pagename SHMS 7:'SHMS Helicity+'
-xscaler-pagename SHMS 8:'SHMS Helicity-'
 
+xscaler-clock SHMS slot:7 chan:31 rate:1000000
 xscaler-clock SHMS slot:10 chan:1 rate:60
 #####################################################################
 
@@ -332,9 +332,6 @@ hTRIG3_posHel 	     1	  4    7     28	   1	-1  HMS TRIG3 Hel+
 hTRIG4_posHel 	     1	  4    7     29	   1	-1  HMS TRIG4 Hel+	    
 hTRIG5_posHel 	     1	  4    7     30	   1	-1  HMS TRIG5 Hel+	    
 hTRIG6_posHel  	     1	  4    7     31	   1	-1  HMS TRIG6 Hel+    
-
-# desc      hel crate slot start nchan page long-description
-clock        0    4     8    1     1    -1  clock   
 
 # SHMS tabs
 # for SHMS the crate is 5 
@@ -661,6 +658,3 @@ hTRIG3_posHel  1    5     8    28    1    -1  HMS TRIG3 Hel+
 hTRIG4_posHel  1    5     8    29    1    -1  HMS TRIG4 Hel+
 hTRIG5_posHel  1    5     8    30    1    -1  HMS TRIG5 Hel+
 hTRIG6_posHel  1    5     8    31    1    -1  HMS TRIG6 Hel+
-
-# desc      hel crate slot start nchan page long-description
-clock        0    5    9    1     1    -1  clock

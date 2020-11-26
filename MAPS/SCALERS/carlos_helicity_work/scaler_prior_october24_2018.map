@@ -26,7 +26,8 @@ xscaler-pagename HMS 4:'HMS Trigger & Beamline'
 xscaler-pagename HMS 5:'HMS Trigger'
 xscaler-pagename HMS 6:'HMS Trigger'
 
-xscaler-clock HMS slot:7 chan:1 rate:60 
+xscaler-clock HMS slot:6 chan:31 rate:1000000
+#xscaler-clock HMS slot:7 chan:1 rate:60 
 #####################################################################
 
 # Setup for Hall C testing SHMS hodoscopes, etc.
@@ -45,7 +46,8 @@ xscaler-pagename SHMS 6:'SHMS Trigger'
 xscaler-pagename SHMS 7:'SHMS Helicity+'
 xscaler-pagename SHMS 8:'SHMS Helicity-'
 
-xscaler-clock SHMS slot:10 chan:1 rate:60
+xscaler-clock SHMS slot:7 chan:31 rate:1000000
+#xscaler-clock SHMS slot:10 chan:1 rate:60
 #####################################################################
 
 # HMS tabs
@@ -299,9 +301,6 @@ BCM4B        0    4     6    29    1    -1  BCM4B
 Unser        0    4     6    30    1    -1  Unser
 1MHz         0    4     6    31    1    -1  1MHz
                                         
-# desc      hel crate slot start nchan page long-description
-clock        0    4     7    1     1    -1  clock   
-
 # SHMS tabs
 # for SHMS the crate is 5 
 # let hel=0 always
@@ -629,38 +628,35 @@ hTRIG5_posHel  1    5     8    30    1    -1  HMS TRIG5 Hel+
 hTRIG6_posHel  1    5     8    31    1    -1  HMS TRIG6 Hel+
 
 # desc        hel crate slot start nchan page long-description  (SHMS -HELICITY SCALER: SLOT 15, VALID prior to 10/24/2018)
-BCM1_negHel    1    5     9    0     1    -1  SHMS BCM1 Hel-
-15/01          1    5     9    1     1    -1  Empty
-BCM2_negHel    1    5     9    2     1    -1  SHMS BCM2 Hel-
-15/03          1    5     9    3     1    -1  Empty
-BCM4B_negHel   1    5     9    4     1    -1  SHMS BCM4B Hel-
-15/05          1    5     9    5     1    -1  Empty
-Unser_negHel   1    5     9    6     1    -1  SHMS Unser Hel-
-15/07          1    5     9    7     1    -1  Empty
-1MHz_negHel    1    5     9    8     1    -1  SHMS 1MHz Hel-
-15/09          1    5     9    9     1    -1  Empty
-BCM4A_negHel   1    5     9    10    1    -1  SHMS BCM4A Hel-
-15/11          1    5     9    11    1    -1  Empty
-BCM4C_negHel   1    5     9    12    1    -1  SHMS BCM4C Hel-
-15/13          1    5     9    13    1    -1  Empty
-15/14          1    5     9    14    1    -1  Empty
-pL1ACCP_negHel 1    5     9    15    1    -1  SHMS L1 Accept Hel-
-pTRIG1_negHel  1    5     9    16    1    -1  SHMS TRIG1 Hel-
-pTRIG2_negHel  1    5     9    17    1    -1  SHMS TRIG2 Hel-
-pTRIG3_negHel  1    5     9    18    1    -1  SHMS TRIG3 Hel-
-pTRIG4_negHel  1    5     9    19    1    -1  SHMS TRIG4 Hel-
-pTRIG5_negHel  1    5     9    20    1    -1  SHMS TRIG5 Hel-
-pTRIG6_negHel  1    5     9    21    1    -1  SHMS TRIG6 Hel-
-15/22          1    5     9    22    1    -1  Empty
-15/23          1    5     9    23    1    -1  Empty
-15/24          1    5     9    24    1    -1  Empty
-15/25          1    5     9    25    1    -1  Empty
-hTRIG1_negHel  1    5     9    26    1    -1  HMS TRIG1 Hel-
-hTRIG2_negHel  1    5     9    27    1    -1  HMS TRIG2 Hel-
-hTRIG3_negHel  1    5     9    28    1    -1  HMS TRIG3 Hel-
-hTRIG4_negHel  1    5     9    29    1    -1  HMS TRIG4 Hel-
-hTRIG5_negHel  1    5     9    30    1    -1  HMS TRIG5 Hel-
-hTRIG6_negHel  1    5     9    31    1    -1  HMS TRIG6 Hel-
-
-# desc      hel crate slot start nchan page long-description
-clock        0    5     10    1     1    -1  clock
+BCM1_negHel    -1    5     9    0     1    -1  SHMS BCM1 Hel-
+15/01          -1    5     9    1     1    -1  Empty
+BCM2_negHel    -1    5     9    2     1    -1  SHMS BCM2 Hel-
+15/03          -1    5     9    3     1    -1  Empty
+BCM4B_negHel   -1    5     9    4     1    -1  SHMS BCM4B Hel-
+15/05          -1    5     9    5     1    -1  Empty
+Unser_negHel   -1    5     9    6     1    -1  SHMS Unser Hel-
+15/07          -1    5     9    7     1    -1  Empty
+1MHz_negHel    -1    5     9    8     1    -1  SHMS 1MHz Hel-
+15/09          -1    5     9    9     1    -1  Empty
+BCM4A_negHel   -1    5     9    10    1    -1  SHMS BCM4A Hel-
+15/11          -1    5     9    11    1    -1  Empty
+BCM4C_negHel   -1    5     9    12    1    -1  SHMS BCM4C Hel-
+15/13          -1    5     9    13    1    -1  Empty
+15/14          -1    5     9    14    1    -1  Empty
+pL1ACCP_negHel -1    5     9    15    1    -1  SHMS L1 Accept Hel-
+pTRIG1_negHel  -1    5     9    16    1    -1  SHMS TRIG1 Hel-
+pTRIG2_negHel  -1    5     9    17    1    -1  SHMS TRIG2 Hel-
+pTRIG3_negHel  -1    5     9    18    1    -1  SHMS TRIG3 Hel-
+pTRIG4_negHel  -1    5     9    19    1    -1  SHMS TRIG4 Hel-
+pTRIG5_negHel  -1    5     9    20    1    -1  SHMS TRIG5 Hel-
+pTRIG6_negHel  -1    5     9    21    1    -1  SHMS TRIG6 Hel-
+15/22          -1    5     9    22    1    -1  Empty
+15/23          -1    5     9    23    1    -1  Empty
+15/24          -1    5     9    24    1    -1  Empty
+15/25          -1    5     9    25    1    -1  Empty
+hTRIG1_negHel  -1    5     9    26    1    -1  HMS TRIG1 Hel-
+hTRIG2_negHel  -1    5     9    27    1    -1  HMS TRIG2 Hel-
+hTRIG3_negHel  -1    5     9    28    1    -1  HMS TRIG3 Hel-
+hTRIG4_negHel  -1    5     9    29    1    -1  HMS TRIG4 Hel-
+hTRIG5_negHel  -1    5     9    30    1    -1  HMS TRIG5 Hel-
+hTRIG6_negHel  -1    5     9    31    1    -1  HMS TRIG6 Hel-

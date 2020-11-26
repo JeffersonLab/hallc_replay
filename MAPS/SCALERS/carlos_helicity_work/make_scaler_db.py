@@ -11,7 +11,7 @@ if xscalerMapName == 'scaler_prior_october24_2018.map':
         "4":{"spec":"H", "firstslot":6, "nslots":7, "roc":5, "offset":0, "clockChan":31, "clockSlot":12},
         "5":{"spec":"P", "firstslot":6, "nslots":10, "roc":8, "offset":640, "clockChan":31, "clockSlot":13}
     }
-elif xscalerMapName == 'scaler_prior_june20_2019.map' or xscalerMapName == 'scaler_june20_2019.map' :
+elif xscalerMapName == 'scaler_prior_june20_2019.map' or xscalerMapName == 'scaler_june20_2019.map' or xscalerMapName == 'scaler_test.map'  :
     cratemap = {
         "4":{"spec":"H", "firstslot":6, "nslots":8, "roc":5, "offset":0, "clockChan":31, "clockSlot":12},
         "5":{"spec":"P", "firstslot":6, "nslots":9, "roc":8, "offset":640, "clockChan":31, "clockSlot":13}
@@ -105,11 +105,11 @@ with open(xscalerMapName, 'r') as fi:
                             printname = printHodoName.replace("+", "")+"posScaler"
                         if printHodoName.find("-") != -1:
                             printname = printHodoName.replace("-", "")+"negScaler"
-                    print >>fo, 'variable', slot, chan, 1, printname, comment, helicity
-                    print >>fo, 'variable', slot, chan, 2, printname+'Rate', comment, helicity
+                    print >>fo, 'variable', slot, chan, 1, printname, helicity, comment
+                    print >>fo, 'variable', slot, chan, 2, printname+'Rate', helicity, comment
                     if name[1:4] == "BCM" or name[1:6] == "Unser":
-                        print >>fo, 'variable', slot, chan, 3, printname+'Current', comment, helicity
-                        print >>fo, 'variable', slot, chan, 4, printname+'Charge', comment, helicity
+                        print >>fo, 'variable', slot, chan, 3, printname+'Current', helicity, comment
+                        print >>fo, 'variable', slot, chan, 4, printname+'Charge', helicity, comment
                     elif name[1:5] == "1MHz":
-                        print >>fo, 'variable', slot, chan, 5, printname+'Time', comment, helicity
+                        print >>fo, 'variable', slot, chan, 5, printname+'Time', helicity, comment
         
