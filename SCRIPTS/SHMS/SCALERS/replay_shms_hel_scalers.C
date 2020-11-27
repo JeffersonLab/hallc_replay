@@ -1,4 +1,4 @@
-void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
+void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -23,7 +23,7 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   pathList.push_back("./raw/../raw.copiedtotape");
   pathList.push_back("./cache");
 
-  const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_scalers_%d_%d.root";
+  const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_hel_scalers_%d_%d.root";
 
   // Load global parameters
   // Add variables to global list.
@@ -56,15 +56,15 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   pscaler->SetUseFirstEvent(kTRUE);
   gHaEvtHandlers->Add(pscaler);
 
-  //====== C.Y. 11/26/2020 | Add handler for helicity scaler events (TESTING) =======
-  
-  THcHelcityScaler *phelscaler = new THcHelicityScaler("P","HC helicity scalers");
-  // hscaler->SetDebugFile("HHelScaler.txt");
+  //C.Y. Add event handler for helicity scalers
+  THcHelicityScaler *phelscaler = new THcHelicityScaler("P", "Hall C helicity scaler");
+  phelscaler->AddEvtType(1);                                                                                                                                      
+  phelscaler->AddEvtType(129);
+  phelscaler->SetDebugFile("PHelScaler.txt");
   phelscaler->SetROC(8);   // 5 for HMS defaults to 8 for SHMS
-  phelscaler->SetBankID(0x9801); // Will default to this
-  gHaEvtHandlers->Add(phelscaler);
+  phelscaler->SetBankID(0x9801); // Will default to this  
+  gHaEvtHandlers->Add (phelscaler); 
 
-  //==================================================================================
   // Add event handler for DAQ configuration event
   THcConfigEvtHandler *pconfig = new THcConfigEvtHandler("pconfig", "Hall C configuration event handler");
   gHaEvtHandlers->Add(pconfig);
@@ -112,11 +112,11 @@ void replay_shms_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Define cuts file
   analyzer->SetCutFile("DEF-files/SHMS/SCALERS/pscaler_cuts.def");  // optional
   // File to record accounting information for cuts
-  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/SCALERS/summary_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/SCALERS/summary_hel_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
   // Create report file from template
   analyzer->PrintReport("TEMPLATES/SHMS/SCALERS/pscalers.template",
-  			Form("REPORT_OUTPUT/SHMS/SCALERS/replay_shms_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional  
+  			Form("REPORT_OUTPUT/SHMS/SCALERS/replay_shms_hel_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional  
 
 }
