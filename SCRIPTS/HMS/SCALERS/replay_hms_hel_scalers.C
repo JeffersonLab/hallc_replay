@@ -1,4 +1,4 @@
-void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
+void replay_hms_hel_scalers(Int_t RunNumber=0, Int_t MaxEvent=0) {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -16,59 +16,58 @@ void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   }
 
   // Create file name patterns.
-  const char* RunFileNamePattern = "shms_all_%05d.dat";
+  const char* RunFileNamePattern = "hms_all_%05d.dat";
   vector<TString> pathList;
   pathList.push_back(".");
   pathList.push_back("./raw");
   pathList.push_back("./raw/../raw.copiedtotape");
   pathList.push_back("./cache");
 
-  const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_hel_scalers_%d_%d.root";
-
+  const char* ROOTFileNamePattern = "ROOTfiles/hms_replay_hel_scalers_%d_%d.root";
+  
   // Load global parameters
-  // Add variables to global list.
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
-  gHcParms->AddString("g_ctp_database_filename", "DBASE/SHMS/standard.database");
+  gHcParms->AddString("g_ctp_database_filename", "DBASE/HMS/standard.database");
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
-  gHcParms->Load("PARAM/TRIG/tshms.param");
+  gHcParms->Load("PARAM/TRIG/thms.param");
 
-  // Load the Hall C detector map
+  // Load the Hall C style detector map
   gHcDetectorMap = new THcDetectorMap();
-  gHcDetectorMap->Load("MAPS/SHMS/DETEC/STACK/shms_stack.map");
-
+  gHcDetectorMap->Load("MAPS/HMS/DETEC/STACK/hms_stack.map");
+  
   // Add trigger apparatus
   THaApparatus* TRG = new THcTrigApp("T", "TRG");
   gHaApps->Add(TRG);
   // Add trigger detector to trigger apparatus
-  THcTrigDet* shms = new THcTrigDet("shms", "SHMS Trigger Information");
-  TRG->AddDetector(shms);
+  THcTrigDet* hms = new THcTrigDet("hms", "HMS Trigger Information");
+  TRG->AddDetector(hms);
 
-  // Add handler for EPICS events
+  // Add event handler for EPICS events
   THaEpicsEvtHandler *hcepics = new THaEpicsEvtHandler("epics", "HC EPICS event type 180");
   gHaEvtHandlers->Add(hcepics);
-  // Add handler for scaler events
-  THcScalerEvtHandler *pscaler = new THcScalerEvtHandler("P","Hall C scaler event type 1");
-  pscaler->AddEvtType(1);
-  pscaler->AddEvtType(129);
-  pscaler->SetDelayedType(129);
-  pscaler->SetDebugFile("PScaler.txt");         
-  pscaler->SetUseFirstEvent(kTRUE);
-  gHaEvtHandlers->Add(pscaler);
+  // Add event handler for scaler events
+  THcScalerEvtHandler *hscaler = new THcScalerEvtHandler("H","Hall C scaler event type 129");
+  hscaler->AddEvtType(2);
+  hscaler->AddEvtType(129);
+  hscaler->SetDelayedType(129);
+  hscaler->SetUseFirstEvent(kTRUE);
+  gHaEvtHandlers->Add(hscaler);
+ 
+  //C.Y. Add event handler for helicity scalers                                                                                             
+  THcHelicityScaler *hhelscaler = new THcHelicityScaler("H", "Hall C helicity scaler");                                                                      
+  hhelscaler->AddEvtType(2);                                                                                                                           
+  hhelscaler->AddEvtType(129);                                                                                                                                  
+  hhelscaler->SetDebugFile("HHelScaler.txt");                                                                                                                      
+  hhelscaler->SetROC(5);   // 5 for HMS defaults to 8 for SHMS                                                                                              
+  hhelscaler->SetBankID(9801); // Will default to this                                                                                                             
+  gHaEvtHandlers->Add(hhelscaler); 
 
-  //C.Y. Add event handler for helicity scalers
-  THcHelicityScaler *phelscaler = new THcHelicityScaler("P", "Hall C helicity scaler");
-  phelscaler->AddEvtType(1);                                                   
-  phelscaler->AddEvtType(129);
-  phelscaler->SetDebugFile("PHelScaler.txt");
-  phelscaler->SetROC(8);   // 5 for HMS defaults to 8 for SHMS
-  phelscaler->SetBankID(9801); // Will default to this  
-  gHaEvtHandlers->Add(phelscaler); 
 
   // Add event handler for DAQ configuration event
-  THcConfigEvtHandler *pconfig = new THcConfigEvtHandler("pconfig", "Hall C configuration event handler");
-  gHaEvtHandlers->Add(pconfig);
+  THcConfigEvtHandler *hconfig = new THcConfigEvtHandler("hconfig", "Hall C configuration event handler");
+  gHaEvtHandlers->Add(hconfig);
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -77,7 +76,7 @@ void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // and executes the output routines.
   THcAnalyzer* analyzer = new THcAnalyzer;
 
-  // A simple event class to be output to the resulting tree.
+  // A simple event class to be output to the resulting tree. 
   // Creating your own descendant of THaEvent is one way of
   // defining and controlling the output.
   THaEvent* event = new THaEvent;
@@ -109,15 +108,15 @@ void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Define output ROOT file
   analyzer->SetOutFile(ROOTFileName.Data());
   // Define DEF-file
-  analyzer->SetOdefFile("DEF-files/SHMS/EPICS/epics_short.def");
+  analyzer->SetOdefFile("DEF-files/HMS/EPICS/epics_short.def");
   // Define cuts file
-  analyzer->SetCutFile("DEF-files/SHMS/SCALERS/pscaler_cuts.def");  // optional
+  analyzer->SetCutFile("DEF-files/HMS/SCALERS/hscaler_cuts.def");  // optional
   // File to record accounting information for cuts
-  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/SCALERS/summary_hel_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/HMS/SCALERS/summary_hel_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional
   // Start the actual analysis.
   analyzer->Process(run);
   // Create report file from template
-  analyzer->PrintReport("TEMPLATES/SHMS/SCALERS/pscalers.template",
-  			Form("REPORT_OUTPUT/SHMS/SCALERS/replay_shms_hel_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional  
+  analyzer->PrintReport("TEMPLATES/HMS/SCALERS/hscalers.template",
+  			Form("REPORT_OUTPUT/HMS/SCALERS/replay_hms_hel_scalers_%d_%d.report", RunNumber, MaxEvent));  // optional  
 
 }
