@@ -53,7 +53,7 @@ void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   pscaler->AddEvtType(1);
   pscaler->AddEvtType(129);
   pscaler->SetDelayedType(129);
-  pscaler->SetDebugFile("PScaler.txt");         
+  //pscaler->SetDebugFile("PScaler.txt");         
   pscaler->SetUseFirstEvent(kTRUE);
   gHaEvtHandlers->Add(pscaler);
 
@@ -61,7 +61,8 @@ void replay_shms_hel_scalers (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THcHelicityScaler *phelscaler = new THcHelicityScaler("P", "Hall C helicity scaler");
   phelscaler->AddEvtType(1);                                                   
   phelscaler->AddEvtType(129);
-  phelscaler->SetDebugFile("PHelScaler.txt");
+  phelscaler->SetDelayedType(129);
+  //phelscaler->SetDebugFile("PHelScaler.txt");
   phelscaler->SetROC(8);   // 5 for HMS defaults to 8 for SHMS
   phelscaler->SetBankID(9801); // Will default to this  
   gHaEvtHandlers->Add(phelscaler); 
