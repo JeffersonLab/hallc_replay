@@ -8,27 +8,52 @@ Run #: {gen_run_number}
 1 MHZ Pulses : {P.1MHz.scaler}
 Run Length   : {P.1MHz.scalerTime:%.3f} sec
 
----Helicity Scalers---
-1 MHZ Pulses per read (hel) : {P.1MHz_Hel.scaler}                                                                       
-Run Length (hel)            : {P.1MHz_Hel.scalerTime:%.3f} sec   
-1 MHz Pulses (hel)          : {P.1MHz_Hel.scalerTime * 1e6 } 
+---Helicity Gated Scalers---
 
-*********************************************
-* Steve Wood's Helicity Scalers Information
-*********************************************
+NOTE: (Helicity Gated refers to ONLY '+' or '-' helicity states being counted.
+       MPS states (undefined helicity) are no counted)
 
-Total Helicity Scaler Triggers: {gP_hscaler_triggers:%.6E}
+1 MHz Pulses (hel)          : {gP_hscaler_time * 1e6 } 
+Run Length (hel)            : {gP_hscaler_time:%.3f} sec   
+
+***********************************************
+* Helicity Scalers Information (excluding MPS)
+***********************************************
+
+For information on the indices used below, please refer to:
+Helicty Scaler Channel Map: hallc_replay/MAPS/SCALERS/scaler_hel.map
+BCM number index map: hallc_replay/PARAM/GEN/gscalers.param
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:  
+= Helicity Scaler Trigger
+=:=:=:=:=:=:=:=:=:=:=:=:=:
+Total Helicity Scaler Triggers (includes MPS): {gP_hscaler_triggers:%.6E}
 Positive Helicity Scaler Triggers: {gP_hscaler_triggers_plus:%.6E}
 Negative Helicity Scaler Triggers: {gP_hscaler_triggers_minus:%.6E} 
+Helicity Trigger Asymmetry: {gP_hscaler_trigger_asy:%.6E}
 
-Comment: Helicity Gated refers to ONLY '+' or '-' helicity states being counted
-BCM1 Total Helicity Gated Charge: {(gP_hscaler_charge[0]):%.3f} uC
-BCM2 Total Helicity Gated Charge: {gP_hscaler_charge[1]:%.3f} uC 
-Unser Total Helicity Gated Charge: {gP_hscaler_charge[2]:%.3f} uC
-BCM4A Total Helicity Gated Charge: {gP_hscaler_charge[3]:%.3f} uC 
-BCM4B Total Helicity Gated Charge: {gP_hscaler_charge[4]:%.3f} uC
-BCM4C Total Helicity Gated Charge: {gP_hscaler_charge[5]:%.3f} uC
+=:=:=:=:=:=:=:=:=:=:=:=:  
+= Helicity Scaler Time
+=:=:=:=:=:=:=:=:=:=:=:=:
+Positive Helicity Time (sec): {gP_hscaler_time_plus:%.6f}
+Negative Helicity Time (sec): {gP_hscaler_time_minus:%.6f}
+Helicity Gated Time (sec): {gP_hscaler_time:%.6f}
+Helicity Gated Time Asymmetry: {gP_hscaler_time_asy:%.6E}
 
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:  
+= Helicity Gated Beam Charge
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+BCM1  Helicity Gated Charge: {gP_hscaler_charge[0]:%.3f} uC
+BCM2  Helicity Gated Charge: {gP_hscaler_charge[1]:%.3f} uC 
+Unser Helicity Gated Charge: {gP_hscaler_charge[2]:%.3f} uC
+BCM4A Helicity Gated Charge: {gP_hscaler_charge[3]:%.3f} uC 
+BCM4B Helicity Gated Charge: {gP_hscaler_charge[4]:%.3f} uC
+BCM4C Helicity Gated Charge: {gP_hscaler_charge[5]:%.3f} uC
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=: 
+= Helicity Gated Charge Asymmetries
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
 BCM1 Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[0]:%.6E}
 BCM2 Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[1]:%.6E}  
 Unser Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[2]:%.6E}  
@@ -36,39 +61,81 @@ BCM4A Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[3]:%.6E}
 BCM4B Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[4]:%.6E} 
 BCM4C Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[5]:%.6E} 
 
-Helicity Gated Time (sec): {gP_hscaler_time:%.3f}
-Helicity Gated Time Asymmetry: {gP_hscaler_time_asy:%.6E}
-Helicity Trigger Asymmetry: {gP_hscaler_trigger_asy:%.6E}
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=: 
+= Helicity Gated Beam Current
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+BCM1  Helicity Gated Current: {gP_hscaler_charge[0]/gP_hscaler_time:%.3f} uA
+BCM2  Helicity Gated Current: {gP_hscaler_charge[1]/gP_hscaler_time:%.3f} uA 
+Unser Helicity Gated Current: {gP_hscaler_charge[2]/gP_hscaler_time:%.3f} uA
+BCM4A Helicity Gated Current: {gP_hscaler_charge[3]/gP_hscaler_time:%.3f} uA 
+BCM4B Helicity Gated Current: {gP_hscaler_charge[4]/gP_hscaler_time:%.3f} uA
+BCM4C Helicity Gated Current: {gP_hscaler_charge[5]/gP_hscaler_time:%.3f} uA
 
-************************************************************
-* Helicity Scaler Intormation (Using Helicity ROOTTree)
-(Helicities have NOT been gated, so it accepts +, - and MPS)
-************************************************************
+=:=:=:=:=:=:=:=:=:=:=:=: 
+=Trigger Scaler Counts
+=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1  Hel Scaler Counts:  {gP_hscaler_sum[16]:%.3f}
+pTRIG2  Hel Scaler Counts:  {gP_hscaler_sum[17]:%.3f}
+pTRIG3  Hel Scaler Counts:  {gP_hscaler_sum[17]:%.3f}
+pTRIG4  Hel Scaler Counts:  {gP_hscaler_sum[18]:%.3f}
+pTRIG5  Hel Scaler Counts:  {gP_hscaler_sum[20]:%.3f}
+pTRIG6  Hel Scaler Counts:  {gP_hscaler_sum[21]:%.3f}
 
-Total Helicity Scaler Triggers:
-(Just look at the helicity scaler histograms for now)
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+= +/- Helicity Trigger Scaler Counts
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1 +Hel Scaler Counts:  {gP_hscaler_plus[16]:%.3f}
+pTRIG2 +Hel Scaler Counts:  {gP_hscaler_plus[17]:%.3f}
+pTRIG3 +Hel Scaler Counts:  {gP_hscaler_plus[18]:%.3f}
+pTRIG4 +Hel Scaler Counts:  {gP_hscaler_plus[19]:%.3f}
+pTRIG5 +Hel Scaler Counts:  {gP_hscaler_plus[20]:%.3f}
+pTRIG6 +Hel Scaler Counts:  {gP_hscaler_plus[21]:%.3f}
 
-Total Helicity Scaler Time (sec): {P.1MHz_Hel.scalerTime:%.3f} 
+pTRIG1 -Hel Scaler Counts:  {gP_hscaler_minus[16]:%.3f}
+pTRIG1 -Hel Scaler Counts:  {gP_hscaler_minus[17]:%.3f}
+pTRIG1 -Hel Scaler Counts:  {gP_hscaler_minus[18]:%.3f}
+pTRIG1 -Hel Scaler Counts:  {gP_hscaler_minus[19]:%.3f}
+pTRIG1 -Hel Scaler Counts:  {gP_hscaler_minus[20]:%.3f}
+pTRIG1 -Hel Scaler Counts:  {gP_hscaler_minus[21]:%.3f}
 
------------------------------
-Total Helicity Scaler Charge
------------------------------
-BCM1 Total Charge:  {P.BCM1_Hel.scalerCharge:%.3f} uC 
-BCM2 Total Charge:  {P.BCM2_Hel.scalerCharge:%.3f} uC 
-Unser Total Charge:  {P.Unser_Hel.scalerCharge:%.3f} uC 
-BCM4A Total Charge: {P.BCM4A_Hel.scalerCharge:%.3f} uC     
-BCM4B Total Charge: {P.BCM4B_Hel.scalerCharge:%.3f} uC        
-BCM4C Total Charge: {P.BCM4C_Hel.scalerCharge:%.3f} uC  
 
------------------------------- 
-Total Helicity Scaler Current 
-------------------------------
-BCM1 Current: {P.BCM1_Hel.scalerCharge/P.1MHz_Hel.scalerTime:%.3f} uA  
-BCM2 Current: {P.BCM2_Hel.scalerCharge/P.1MHz_Hel.scalerTime:%.3f} uA    
-Unser Current: {P.Unser_Hel.scalerCharge/P.1MHz_Hel.scalerTime:%.3f} uA
-BCM4A Current: {P.BCM4A_Hel.scalerCharge/P.1MHz_Hel.scalerTime:%.3f} uA  
-BCM4B Current: {P.BCM4B_Hel.scalerCharge/P.1MHz_Hel.scalerTime:%.3f} uA     
-BCM4C Current: {P.BCM4C_Hel.scalerCharge/P.1MHz_Hel.scalerTime:%.3f} uA      
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+= Trigger Scaler Asymmetries
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1  Hel Scaler Asy    : {gP_hscaler_asy[16]:%.6E} +- {gP_hscaler_asyerr[16]:%.6E}
+pTRIG2  Hel Scaler Asy    : {gP_hscaler_asy[17]:%.6E} +- {gP_hscaler_asyerr[17]:%.6E}
+pTRIG3  Hel Scaler Asy    : {gP_hscaler_asy[18]:%.6E} +- {gP_hscaler_asyerr[18]:%.6E}
+pTRIG4  Hel Scaler Asy    : {gP_hscaler_asy[19]:%.6E} +- {gP_hscaler_asyerr[19]:%.6E}
+pTRIG5  Hel Scaler Asy    : {gP_hscaler_asy[20]:%.6E} +- {gP_hscaler_asyerr[20]:%.6E}
+pTRIG6  Hel Scaler Asy    : {gP_hscaler_asy[21]:%.6E} +- {gP_hscaler_asyerr[21]:%.6E}
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:
+= Helicity Trigger Rates
+=:=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1  Hel Scaler Rates:  {(gP_hscaler_sum[16]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG2  Hel Scaler Rates:  {(gP_hscaler_sum[17]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG3  Hel Scaler Rates:  {(gP_hscaler_sum[18]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG4  Hel Scaler Rates:  {(gP_hscaler_sum[19]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG5  Hel Scaler Rates:  {(gP_hscaler_sum[20]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG6  Hel Scaler Rates:  {(gP_hscaler_sum[21]/gP_hscaler_time)/1000.:%.3E} kHz
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+= +/- Helicity Trigger Rates
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1 +Hel Scaler Rates:  {(gP_hscaler_plus[16]/gP_hscaler_time_plus)/1000.:%.3E} kHz  
+pTRIG2 +Hel Scaler Rates:  {(gP_hscaler_plus[17]/gP_hscaler_time_plus)/1000.:%.3E} kHz  
+pTRIG3 +Hel Scaler Rates:  {(gP_hscaler_plus[18]/gP_hscaler_time_plus)/1000.:%.3E} kHz  
+pTRIG4 +Hel Scaler Rates:  {(gP_hscaler_plus[19]/gP_hscaler_time_plus)/1000.:%.3E} kHz  
+pTRIG5 +Hel Scaler Rates:  {(gP_hscaler_plus[20]/gP_hscaler_time_plus)/1000.:%.3E} kHz  
+pTRIG6 +Hel Scaler Rates:  {(gP_hscaler_plus[21]/gP_hscaler_time_plus)/1000.:%.3E} kHz  
+
+pTRIG1 -Hel Scaler Rates:  {(gP_hscaler_minus[16]/gP_hscaler_time_minus)/1000.:%.3E} kHz
+pTRIG2 -Hel Scaler Rates:  {(gP_hscaler_minus[17]/gP_hscaler_time_minus)/1000.:%.3E} kHz
+pTRIG3 -Hel Scaler Rates:  {(gP_hscaler_minus[18]/gP_hscaler_time_minus)/1000.:%.3E} kHz
+pTRIG4 -Hel Scaler Rates:  {(gP_hscaler_minus[19]/gP_hscaler_time_minus)/1000.:%.3E} kHz
+pTRIG5 -Hel Scaler Rates:  {(gP_hscaler_minus[20]/gP_hscaler_time_minus)/1000.:%.3E} kHz
+pTRIG6 -Hel Scaler Rates:  {(gP_hscaler_minus[21]/gP_hscaler_time_minus)/1000.:%.3E} kHz
+
    
 
 ***********
@@ -104,7 +171,8 @@ BCM4A Beam Cut Charge: {P.BCM4A.scalerChargeCut:%.3f} uC
 BCM4B Beam Cut Charge: {P.BCM4B.scalerChargeCut:%.3f} uC		 
 BCM4C Beam Cut Charge: {P.BCM4C.scalerChargeCut:%.3f} uC		 
 Unser Beam Cut Charge: {P.Unser.scalerChargeCut:%.3f} uC
-  
+
+
 
 ********************
 * DAQ Configuration

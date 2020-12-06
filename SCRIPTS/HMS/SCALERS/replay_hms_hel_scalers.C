@@ -59,10 +59,11 @@ void replay_hms_hel_scalers(Int_t RunNumber=0, Int_t MaxEvent=0) {
   THcHelicityScaler *hhelscaler = new THcHelicityScaler("H", "Hall C helicity scaler");                                                                      
   hhelscaler->AddEvtType(2);                                                                                                                           
   hhelscaler->AddEvtType(129);                                                                                                                                  
-  hhelscaler->SetDebugFile("HHelScaler.txt");                                                                                                                      
-  hhelscaler->SetROC(5);   // 5 for HMS defaults to 8 for SHMS                                                                                              
-  hhelscaler->SetBankID(9801); // Will default to this                                                                                                             
-  gHaEvtHandlers->Add(hhelscaler); 
+  hhelscaler->SetDelayedType(129);
+  //hhelscaler->SetDebugFile("HHelScaler.txt");                                                                                                                      
+  hhelscaler->SetROC(5);                                                                                              
+  //hhelscaler->SetBankID(9801);       //source code defaults to this                                                                                                 
+  gHaEvtHandlers->Add(hhelscaler);  
 
 
   // Add event handler for DAQ configuration event
