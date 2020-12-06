@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Generate hcana scaler definition files from the xscaler scaler map file
+# Generate hcana helicity scaler definition files from the xscaler scaler map file
 
 xscalerMapName = 'scaler_hel.map'
 
