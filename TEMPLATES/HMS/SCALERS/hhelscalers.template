@@ -31,10 +31,11 @@ Run Length (hel)            : {gH_hscaler_time:%.3f} sec
 =:=:=:=:=:=:=:=:=:=:=:=:=:  
 = Helicity Scaler Trigger
 =:=:=:=:=:=:=:=:=:=:=:=:=:
-Total Helicity Scaler Triggers (includes MPS) : {gH_hscaler_triggers:%.6E}
-Positive Helicity Scaler Triggers             : {gH_hscaler_triggers_plus:%.6E}
-Negative Helicity Scaler Triggers             : {gH_hscaler_triggers_minus:%.6E} 
-Helicity Trigger Asymmetry                    : {gH_hscaler_trigger_asy:%.6E}
+Total Helicity Scaler Triggers (# of MPS signals) : {gH_hscaler_triggers:%.6E}
+Positive Helicity Scaler Triggers                 : {gH_hscaler_triggers_plus:%.6E}
+Negative Helicity Scaler Triggers                 : {gH_hscaler_triggers_minus:%.6E} 
+Undetermined Helicity Triggers                    : {(gH_hscaler_triggers-gH_hscaler_triggers_plus-gH_hscaler_triggers_minus):%.3f}
+Helicity Trigger Asymmetry                        : {gH_hscaler_trigger_asy:%.6E}
 
 =:=:=:=:=:=:=:=:=:=:=:=:  
 = Helicity Scaler Time

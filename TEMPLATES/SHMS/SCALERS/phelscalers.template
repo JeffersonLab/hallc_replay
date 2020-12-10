@@ -25,16 +25,17 @@ NOTE: (Helicity Gated refers to ONLY '+' or '-' helicity states being counted.
 Run Length (hel)            : {gP_hscaler_time:%.3f} sec
 
 ***********************************************
-* Helicity Scalers Information (excluding MPS)
+* Helicity Scalers Information (ecluding MPS)
 ***********************************************
 
 =:=:=:=:=:=:=:=:=:=:=:=:=:  
 = Helicity Scaler Trigger
 =:=:=:=:=:=:=:=:=:=:=:=:=:
-Total Helicity Scaler Triggers (includes MPS) : {gP_hscaler_triggers:%.6E}
-Positive Helicity Scaler Triggers             : {gP_hscaler_triggers_plus:%.6E}
-Negative Helicity Scaler Triggers             : {gP_hscaler_triggers_minus:%.6E} 
-Helicity Trigger Asymmetry                    : {gP_hscaler_trigger_asy:%.6E}
+Total Helicity Scaler Triggers (# of MPS signals) : {gP_hscaler_triggers:%.6E}
+Positive Helicity Scaler Triggers                 : {gP_hscaler_triggers_plus:%.6E}
+Negative Helicity Scaler Triggers                 : {gP_hscaler_triggers_minus:%.6E} 
+Undetermined Helicity Triggers                    : {(gP_hscaler_triggers-gP_hscaler_triggers_plus-gP_hscaler_triggers_minus):%.3f}
+Helicity Trigger Asymmetry                        : {gP_hscaler_trigger_asy:%.6E}
 
 =:=:=:=:=:=:=:=:=:=:=:=:  
 = Helicity Scaler Time
