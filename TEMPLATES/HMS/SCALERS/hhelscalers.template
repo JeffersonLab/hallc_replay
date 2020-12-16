@@ -28,22 +28,22 @@ Run Length (hel)            : {gH_hscaler_time:%.3f} sec
 * Helicity Scalers Information (excluding MPS)
 ***********************************************
 
-=:=:=:=:=:=:=:=:=:=:=:=:=:  
-= Helicity Scaler Trigger
-=:=:=:=:=:=:=:=:=:=:=:=:=:
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:       
+= Helicity Scaler Trigger (no bcm cut)
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
 Total Helicity Scaler Triggers (# of MPS signals) : {gH_hscaler_triggers:%.6E}
 Positive Helicity Scaler Triggers                 : {gH_hscaler_triggers_plus:%.6E}
 Negative Helicity Scaler Triggers                 : {gH_hscaler_triggers_minus:%.6E} 
 Undetermined Helicity Triggers                    : {(gH_hscaler_triggers-gH_hscaler_triggers_plus-gH_hscaler_triggers_minus):%.3f}
-Helicity Trigger Asymmetry                        : {gH_hscaler_trigger_asy:%.6E}
+Helicity Trigger Asymmetry                        : {gH_hscaler_trigger_asy:%.6E} ({gH_hscaler_trigger_asy*1e6:%.3f} ppm)
+
+The variables below were calculated with BCM{gBCM_Current_threshold_index+1} current > {gBCM_Current_threshold} uA.
 
 =:=:=:=:=:=:=:=:=:=:=:=:  
 = Helicity Scaler Time
 =:=:=:=:=:=:=:=:=:=:=:=:
-Positive Helicity Time        : {gH_hscaler_time_plus:%.6f}  sec
-Negative Helicity Time        : {gH_hscaler_time_minus:%.6f} sec
-Helicity Gated Time           : {gH_hscaler_time:%.6f}       sec
-Helicity Gated Time Asymmetry : {gH_hscaler_time_asy:%.6E}
+Helicity Gated Time           : {gH_hscaler_time:%.3f}       sec
+Helicity Gated Time Asymmetry : {gH_hscaler_time_asy:%.6E} +-  {gH_hscaler_time_asyerr:%.6E} ({gH_hscaler_time_asy*1e6:%.3f} +- {gH_hscaler_time_asyerr*1e6:%.3f} ppm)
 
 
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:  
@@ -59,12 +59,12 @@ BCM4C Helicity Gated Charge: {gH_hscaler_charge[5]:%.3f} uC
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=: 
 = Helicity Gated Charge Asymmetries
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
-BCM1  Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[0]:%.6E}
-BCM2  Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[1]:%.6E}  
-Unser Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[2]:%.6E}  
-BCM4A Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[3]:%.6E}  
-BCM4B Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[4]:%.6E} 
-BCM4C Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[5]:%.6E} 
+BCM1  Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[0]:%.6E} +- {gH_hscaler_charge_asyerr[0]:%.6E} ({gH_hscaler_charge_asy[0]*1e6:%.3f} +- {gH_hscaler_charge_asyerr[0]*1e6:%.3f} ppm)
+BCM2  Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[1]:%.6E} +- {gH_hscaler_charge_asyerr[1]:%.6E} ({gH_hscaler_charge_asy[1]*1e6:%.3f} +- {gH_hscaler_charge_asyerr[1]*1e6:%.3f} ppm)
+Unser Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[2]:%.6E} +- {gH_hscaler_charge_asyerr[2]:%.6E} ({gH_hscaler_charge_asy[2]*1e6:%.3f} +- {gH_hscaler_charge_asyerr[2]*1e6:%.3f} ppm)
+BCM4A Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[3]:%.6E} +- {gH_hscaler_charge_asyerr[3]:%.6E} ({gH_hscaler_charge_asy[3]*1e6:%.3f} +- {gH_hscaler_charge_asyerr[3]*1e6:%.3f} ppm)
+BCM4B Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[4]:%.6E} +- {gH_hscaler_charge_asyerr[4]:%.6E} ({gH_hscaler_charge_asy[4]*1e6:%.3f} +- {gH_hscaler_charge_asyerr[4]*1e6:%.3f} ppm)
+BCM4C Helicity Gated Charge Asymmetry: {gH_hscaler_charge_asy[5]:%.6E} +- {gH_hscaler_charge_asyerr[5]:%.6E} ({gH_hscaler_charge_asy[5]*1e6:%.3f} +- {gH_hscaler_charge_asyerr[5]*1e6:%.3f} ppm)
 
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=: 
 = Helicity Gated Beam Current
@@ -86,33 +86,15 @@ hTRIG4  Helicity Scaler Counts:  {gH_hscaler_sum[29]:%.3f}
 hTRIG5  Helicity Scaler Counts:  {gH_hscaler_sum[30]:%.3f}
 hTRIG6  Helicity Scaler Counts:  {gH_hscaler_sum[31]:%.3f}
 
-=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
-= +/- Helicity Trigger Scaler Counts
-=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
-hTRIG1 +Helicity Scaler Counts:  {gH_hscaler_plus[26]:%.3f}
-hTRIG2 +Helicity Scaler Counts:  {gH_hscaler_plus[27]:%.3f}
-hTRIG3 +Helicity Scaler Counts:  {gH_hscaler_plus[28]:%.3f}
-hTRIG4 +Helicity Scaler Counts:  {gH_hscaler_plus[29]:%.3f}
-hTRIG5 +Helicity Scaler Counts:  {gH_hscaler_plus[30]:%.3f}
-hTRIG6 +Helicity Scaler Counts:  {gH_hscaler_plus[31]:%.3f}
-
-hTRIG1 -Helicity Scaler Counts:  {gH_hscaler_minus[26]:%.3f}
-hTRIG1 -Helicity Scaler Counts:  {gH_hscaler_minus[27]:%.3f}
-hTRIG1 -Helicity Scaler Counts:  {gH_hscaler_minus[28]:%.3f}
-hTRIG1 -Helicity Scaler Counts:  {gH_hscaler_minus[29]:%.3f}
-hTRIG1 -Helicity Scaler Counts:  {gH_hscaler_minus[30]:%.3f}
-hTRIG1 -Helicity Scaler Counts:  {gH_hscaler_minus[31]:%.3f}
-
-
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
 = Trigger Scaler Asymmetries
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
-hTRIG1  Helicity Scaler Asymmetry    : {gH_hscaler_asy[26]:%.6E} +- {gH_hscaler_asyerr[26]:%.6E}
-hTRIG2  Helicity Scaler Asymmetry    : {gH_hscaler_asy[27]:%.6E} +- {gH_hscaler_asyerr[27]:%.6E}
-hTRIG3  Helicity Scaler Asymmetry    : {gH_hscaler_asy[28]:%.6E} +- {gH_hscaler_asyerr[28]:%.6E}
-hTRIG4  Helicity Scaler Asymmetry    : {gH_hscaler_asy[29]:%.6E} +- {gH_hscaler_asyerr[29]:%.6E}
-hTRIG5  Helicity Scaler Asymmetry    : {gH_hscaler_asy[30]:%.6E} +- {gH_hscaler_asyerr[30]:%.6E}
-hTRIG6  Helicity Scaler Asymmetry    : {gH_hscaler_asy[31]:%.6E} +- {gH_hscaler_asyerr[31]:%.6E}
+hTRIG1  Helicity Scaler Asymmetry    : {gH_hscaler_asy[26]:%.6E} +- {gH_hscaler_asyerr[26]:%.6E} ({gH_hscaler_asy[26]*1e6:%.3f} +- {gH_hscaler_asyerr[26]*1e6:%.3f} ppm)
+hTRIG2  Helicity Scaler Asymmetry    : {gH_hscaler_asy[27]:%.6E} +- {gH_hscaler_asyerr[27]:%.6E} ({gH_hscaler_asy[27]*1e6:%.3f} +- {gH_hscaler_asyerr[27]*1e6:%.3f} ppm)
+hTRIG3  Helicity Scaler Asymmetry    : {gH_hscaler_asy[28]:%.6E} +- {gH_hscaler_asyerr[28]:%.6E} ({gH_hscaler_asy[28]*1e6:%.3f} +- {gH_hscaler_asyerr[28]*1e6:%.3f} ppm)
+hTRIG4  Helicity Scaler Asymmetry    : {gH_hscaler_asy[29]:%.6E} +- {gH_hscaler_asyerr[29]:%.6E} ({gH_hscaler_asy[29]*1e6:%.3f} +- {gH_hscaler_asyerr[29]*1e6:%.3f} ppm)
+hTRIG5  Helicity Scaler Asymmetry    : {gH_hscaler_asy[30]:%.6E} +- {gH_hscaler_asyerr[30]:%.6E} ({gH_hscaler_asy[30]*1e6:%.3f} +- {gH_hscaler_asyerr[30]*1e6:%.3f} ppm)
+hTRIG6  Helicity Scaler Asymmetry    : {gH_hscaler_asy[31]:%.6E} +- {gH_hscaler_asyerr[31]:%.6E} ({gH_hscaler_asy[31]*1e6:%.3f} +- {gH_hscaler_asyerr[31]*1e6:%.3f} ppm)
 
 =:=:=:=:=:=:=:=:=:
 =  Trigger Rates
@@ -124,19 +106,3 @@ hTRIG4  Helicity Scaler Rates:  {(gH_hscaler_sum[29]/gH_hscaler_time)/1000.:%.3E
 hTRIG5  Helicity Scaler Rates:  {(gH_hscaler_sum[30]/gH_hscaler_time)/1000.:%.3E} kHz
 hTRIG6  Helicity Scaler Rates:  {(gH_hscaler_sum[31]/gH_hscaler_time)/1000.:%.3E} kHz
 
-=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
-= +/- Helicity Trigger Rates
-=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
-hTRIG1 +Helicity Scaler Rates:  {(gH_hscaler_plus[26]/gH_hscaler_time_plus)/1000.:%.3E} kHz  
-hTRIG2 +Helicity Scaler Rates:  {(gH_hscaler_plus[27]/gH_hscaler_time_plus)/1000.:%.3E} kHz  
-hTRIG3 +Helicity Scaler Rates:  {(gH_hscaler_plus[28]/gH_hscaler_time_plus)/1000.:%.3E} kHz  
-hTRIG4 +Helicity Scaler Rates:  {(gH_hscaler_plus[29]/gH_hscaler_time_plus)/1000.:%.3E} kHz  
-hTRIG5 +Helicity Scaler Rates:  {(gH_hscaler_plus[30]/gH_hscaler_time_plus)/1000.:%.3E} kHz  
-hTRIG6 +Helicity Scaler Rates:  {(gH_hscaler_plus[31]/gH_hscaler_time_plus)/1000.:%.3E} kHz  
-
-hTRIG1 -Helicity Scaler Rates:  {(gH_hscaler_minus[26]/gH_hscaler_time_minus)/1000.:%.3E} kHz
-hTRIG2 -Helicity Scaler Rates:  {(gH_hscaler_minus[27]/gH_hscaler_time_minus)/1000.:%.3E} kHz
-hTRIG3 -Helicity Scaler Rates:  {(gH_hscaler_minus[28]/gH_hscaler_time_minus)/1000.:%.3E} kHz
-hTRIG4 -Helicity Scaler Rates:  {(gH_hscaler_minus[29]/gH_hscaler_time_minus)/1000.:%.3E} kHz
-hTRIG5 -Helicity Scaler Rates:  {(gH_hscaler_minus[30]/gH_hscaler_time_minus)/1000.:%.3E} kHz
-hTRIG6 -Helicity Scaler Rates:  {(gH_hscaler_minus[31]/gH_hscaler_time_minus)/1000.:%.3E} kHz
