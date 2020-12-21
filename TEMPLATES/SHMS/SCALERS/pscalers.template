@@ -4,11 +4,7 @@ Run #: {gen_run_number}
 * General Run Information
 **************************
 
-=:=:=:=:=:=:=:=:=:=:
-= Standard Scalers
-=:=:=:=:=:=:=:=:=:=:
-
-1 MHZ Pulses : {P.1MHz.scaler}
+1 MhZ Pulses : {P.1MHz.scaler}
 Run Length   : {P.1MHz.scalerTime:%.3f} sec
 
 ***********
@@ -16,12 +12,12 @@ Run Length   : {P.1MHz.scalerTime:%.3f} sec
 ***********
 With no cuts on BCM{gBCM_Current_threshold_index+1}.
   
-BCM1 Current: {P.BCM1.scalerCharge/P.1MHz.scalerTime:%.3f} uA
-BCM2 Current: {P.BCM2.scalerCharge/P.1MHz.scalerTime:%.3f} uA
-BCM4A Current: {P.BCM4A.scalerCharge/P.1MHz.scalerTime:%.3f} uA
-BCM4B Current: {P.BCM4B.scalerCharge/P.1MHz.scalerTime:%.3f} uA
-BCM4C Current: {P.BCM4C.scalerCharge/P.1MHz.scalerTime:%.3f} uA
-Unser Current: {P.Unser.scalerCharge/P.1MHz.scalerTime:%.3f} uA
+BCM1 Current: {P.BCM1.scalerCharge/P.1MHz.scalerTime:%.3f} uA		  
+BCM2 Current: {P.BCM2.scalerCharge/P.1MHz.scalerTime:%.3f} uA		 
+BCM4A Current: {P.BCM4A.scalerCharge/P.1MHz.scalerTime:%.3f} uA		  
+BCM4B Current: {P.BCM4B.scalerCharge/P.1MHz.scalerTime:%.3f} uA		 
+BCM4C Current: {P.BCM4C.scalerCharge/P.1MHz.scalerTime:%.3f} uA		 
+Unser Current: {P.Unser.scalerCharge/P.1MHz.scalerTime:%.3f} uA		  
 
 BCM1  Charge: {P.BCM1.scalerCharge:%.3f} uC
 BCM2  Charge: {P.BCM2.scalerCharge:%.3f} uC	
@@ -44,8 +40,7 @@ BCM4A Beam Cut Charge: {P.BCM4A.scalerChargeCut:%.3f} uC
 BCM4B Beam Cut Charge: {P.BCM4B.scalerChargeCut:%.3f} uC		 
 BCM4C Beam Cut Charge: {P.BCM4C.scalerChargeCut:%.3f} uC		 
 Unser Beam Cut Charge: {P.Unser.scalerChargeCut:%.3f} uC
-
-
+  
 
 ********************
 * DAQ Configuration
