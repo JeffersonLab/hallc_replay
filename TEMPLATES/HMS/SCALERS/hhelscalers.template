@@ -18,15 +18,12 @@ Run # : {gen_run_number}
 = Helicity Gated Scalers
 =:=:=:=:=:=:=:=:=:=:=:=:=:
 
-NOTE: (Helicity Gated refers to ONLY '+' or '-' helicity states being counted.
-       MPS states (undefined helicity) are no counted)
-
 1 MHz Pulses (hel)          : {gH_hscaler_time * 1e6 } 
 Run Length (hel)            : {gH_hscaler_time:%.3f} sec
 
-***********************************************
-* Helicity Scalers Information (excluding MPS)
-***********************************************
+*******************************
+* Helicity Scalers Information 
+*******************************
 
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:       
 = Helicity Scaler Trigger (no bcm cut)
