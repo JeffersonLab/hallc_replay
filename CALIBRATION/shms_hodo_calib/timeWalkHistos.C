@@ -367,7 +367,7 @@ void timeWalkHistos(TString inputname, Int_t runNum, string SPEC_flg) {  //SPEC_
   Bool_t good_two_ended_hits_2y;
   
     // Loop over the events and fill histograms
-  nentries = 10000; //rawDataTree->GetEntries();
+  nentries = rawDataTree->GetEntries();
   
   cout << "\n******************************************"    << endl;
   cout << nentries << " Events Will Be Processed"           << endl;
