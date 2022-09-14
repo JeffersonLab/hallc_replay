@@ -1,0 +1,14 @@
+;General NPS parameter files
+#include "PARAM/NPS/GEN/npsflags.param"
+#include "PARAM/NPS/GEN/nps_fadc_debug.param"
+
+;NPS default geometry parameter files
+#include "PARAM/NPS/CAL/nps_geom.param"
+
+;NPS default cut parameter files
+#include "PARAM/NPS/CAL/nps_cuts_translation.param"
+;#include "PARAM/NPS/CAL/nps_cuts_original.param"
+
+;NPS default calibration parameter files
+#include "PARAM/NPS/CAL/nps_calib_translation.param"
+;#include "PARAM/NPS/CAL/nps_calib_original.param"

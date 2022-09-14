@@ -1,0 +1,57 @@
+# NPS
+# Need to set ptheta_lab to a POSITIVE value
+# 1h gtargmass_amu=1.00794
+# 12C gtargmass_amu=12.0107
+# 27Al gtargmass_amu=26.98
+
+#SHMS de-focused run
+9654
+gpbeam = 10.3834
+gtargmass_amu = 12.0107
+stheta_lab = 30.0
+nps_pcentral = 2.0
+ppartmass = 0.000511
+
+10300 - 10300
+gpbeam = 10.386077023902068
+gtargmass_amu = 12.0107
+stheta_lab = 29.99
+nps_pcentral = 2.6
+ppartmass = 0.000511
+hpartmass = 0.000511
+
+10301 - 10301
+gpbeam = 10.386077023902068
+gtargmass_amu = 12.0107
+stheta_lab = 29.99
+nps_pcentral = 2.
+ppartmass = 0.000511
+hpartmass = 0.000511
+
+
+10398 - 10398
+gpbeam = 10.386077023902068
+gtargmass_amu = 12.0107
+stheta_lab = 29.99
+nps_pcentral = 2.6
+ppartmass = 0.000511
+hpartmass = 0.000511
+
+7111
+gpbeam = 10.386077023902068
+gtargmass_amu = 12.0107
+stheta_lab = 29.99
+nps_pcentral = 2.6
+ppartmass = 0.000511
+hpartmass = 0.000511
+
+7112 - 99999
+gpbeam = 10.386077023902068
+gtargmass_amu = 12.0107
+stheta_lab = 29.99
+nps_pcentral = 2.6
+ppartmass = 0.000511
+hpartmass = 0.000511
+
+nps_cal_ADCMode = 3
+nps_cal_arr_ADCMode = 3
