@@ -1,0 +1,11 @@
+Standalone NPS Calorimeter analysis report template
+
+**************************
+* General Run Information
+**************************
+
+1 MhZ Pulses : {NPS.1MHz.scaler}
+Run Length   : {NPS.1MHz.scalerTime:%.3f} sec
+
+
+#Needs to be updated with other variables for NPS standalone tests

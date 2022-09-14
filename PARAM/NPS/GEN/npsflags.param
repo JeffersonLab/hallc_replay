@@ -1,0 +1,3 @@
+; NPS flags (requested by THcNPSApparatus.cxx)
+
+nps_theta_offset = 0
