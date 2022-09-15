@@ -10,15 +10,19 @@ nps_cal_layer_names = "fly"
 ;in any of the 4 "fake NPS" calorimeter quadrants via translation (=1) or reflection (=2)
 ;When using this parameter (1 or 2), make sure to set the calorimeter size to
 ;SHMS (32x28) as well as the calib/cuts files should have 224x4=896 calib. parameters
-nps_cal_replicate = 1
+nps_cal_replicate = 0
 
 ;set number of rows and columns for NPS tests (using 4x quadrants translation / reflection maps), as well as "nps_cal_replicate>0" option
-nps_cal_arr_nrows = 32
-nps_cal_arr_ncolumns = 28
+;nps_cal_arr_nrows = 32
+;nps_cal_arr_ncolumns = 28
 
 ;set number of rows and columns for standard SHMS fly's eye tests (make sure to set nps_cal_replicate = 0, for this geometry)
 ;nps_cal_arr_nrows = 16
 ;nps_cal_arr_ncolumns = 14
+
+;set number of rows and columns for NPS EEL108 tests
+nps_cal_arr_nrows = 16
+nps_cal_arr_ncolumns = 16
 
 ;Set the coordinates of the calorimeter relative to the focal plane (used SHMS for now)
 nps_cal_arr_front_x = 0.

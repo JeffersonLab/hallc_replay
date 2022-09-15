@@ -6,9 +6,11 @@
 #include "PARAM/NPS/CAL/nps_geom.param"
 
 ;NPS default cut parameter files
-#include "PARAM/NPS/CAL/nps_cuts_translation.param"
+;#include "PARAM/NPS/CAL/nps_cuts_translation.param"
 ;#include "PARAM/NPS/CAL/nps_cuts_original.param"
+#include "PARAM/NPS/CAL/nps_cuts_eel108.param"
 
 ;NPS default calibration parameter files
-#include "PARAM/NPS/CAL/nps_calib_translation.param"
+;#include "PARAM/NPS/CAL/nps_calib_translation.param"
 ;#include "PARAM/NPS/CAL/nps_calib_original.param"
+#include "PARAM/NPS/CAL/nps_calib_eel108.param"

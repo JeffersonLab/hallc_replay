@@ -1,4 +1,4 @@
-void eel108_replay(Int_t RunNumber=7, Int_t MaxEvent=-1)
+void eel108_replay(Int_t RunNumber=7, Int_t MaxEvent=100)
 {
 
   // Get RunNumber and MaxEvent if not provided.
