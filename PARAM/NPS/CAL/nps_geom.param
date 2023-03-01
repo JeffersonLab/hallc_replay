@@ -13,16 +13,16 @@ nps_cal_layer_names = "fly"
 nps_cal_replicate = 0
 
 ;set number of rows and columns for NPS tests (using 4x quadrants translation / reflection maps), as well as "nps_cal_replicate>0" option
-;nps_cal_arr_nrows = 32
-;nps_cal_arr_ncolumns = 28
+nps_cal_arr_nrows = 32
+nps_cal_arr_ncolumns = 28
 
 ;set number of rows and columns for standard SHMS fly's eye tests (make sure to set nps_cal_replicate = 0, for this geometry)
 ;nps_cal_arr_nrows = 16
 ;nps_cal_arr_ncolumns = 14
 
-;set number of rows and columns for NPS EEL108 tests
-nps_cal_arr_nrows = 16
-nps_cal_arr_ncolumns = 16
+;set number of rows and columns for NPS EEL108 tests (single crate, 15 modules)
+;nps_cal_arr_nrows = 16
+;nps_cal_arr_ncolumns = 15
 
 ;Set the coordinates of the calorimeter relative to the focal plane (used SHMS for now)
 nps_cal_arr_front_x = 0.
@@ -38,4 +38,10 @@ nps_cal_arr_zsize = 50.0
 ; Parameters copied from HMS
 ; Slope in x position.  Allowed distance between track and edge of block
 nps_cal_slop = 7.5 
+
+;
+nps_cal_arr_SampNSA = 15
+nps_cal_arr_SampNSB = 3
+nps_cal_arr_UseSampWaveform = 1 
+nps_cal_arr_SampThreshold = 4
 

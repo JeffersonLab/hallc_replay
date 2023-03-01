@@ -1,4 +1,4 @@
-void Plot_NPS_EEL108_FADC( Int_t nrun=7 ) {
+void Plot_NPS_EEL108_FADC( Int_t nrun=47 ) {
 
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -33,12 +33,15 @@ void Plot_NPS_EEL108_FADC( Int_t nrun=7 ) {
 
   // --------------------------------------------------------------------------------
 
-  const int maxSamp = 28;
+  //const int maxSamp = 28;
+  const int maxSamp = 1+1+100; // 100 samples for run 23+
   const int nrows = 16;
   const int ncols = 16;
   int nblocks = nrows*ncols;
 
   int slot, col;
+  cout << "assumed run = "<<nrun<<endl;
+
   cout << "Choose FADC module id (1-16)" << endl;
   cin>> col;
   slot = col;
