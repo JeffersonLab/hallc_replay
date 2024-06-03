@@ -226,7 +226,9 @@ void makeAlignmentPlots(){
   FILE *foffsets = fopen("offsets.txt","w");
   fprintf(foffsets,"plane\t x-shift[cm]\t y-shift[cm]\n");
   for (int kk=0;kk<nplanes; kk++){
-    fprintf(foffsets,Form("%d\t %.4f\t %.4f\n",kk+1,shiftValue[kk][0],shiftValue[kk][1]));
+    //We typically use the CERN ROOT Form() command: A const char*, not a string
+    //Make a string literal using fprintf directly to avoid compiler warnings.
+    fprintf(foffsets, "%d\t %.4f\t %.4f\n", kk+1, shiftValue[kk][0], shiftValue[kk][1]); 
   }
   
   TCanvas *cexit = new TCanvas("cexit","",1);
