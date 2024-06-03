@@ -92,9 +92,6 @@ void hcal_calib(string Prefix, int nstop=-1, int nstart=0) {
  theShowerCalib.hCaloPosNorm->SetTitle("Normalized E/p at Calorimeter");
   theShowerCalib.hCaloPosNorm->Draw("COLZ");
  
- // Save canvas in a pdf format.
- Canvas->Print(Form("%s_%d_%d.pdf",Prefix.c_str(),nstart,nstop));
-
 // A bunch of diagnostic plots added Oct. 2019
 //wph
  if(DRAW==1){ 
@@ -282,6 +279,7 @@ void hcal_calib(string Prefix, int nstop=-1, int nstart=0) {
  }
  
  // Save canvases
+ Canvas->Print(Form("PDFs/%s_%d_%d.pdf",Prefix.c_str(),nstart,nstop));
  Canvas2->Print(Form("PDFs/hits_%s_%d_%d.pdf",Prefix.c_str(),nstart,nstop));
  Canvas3->Print(Form("PDFs/cuts_%s_%d_%d.pdf",Prefix.c_str(),nstart,nstop));
  Canvas3->Print(Form("PDFs/pInt_%s_%d_%d.pdf",Prefix.c_str(),nstart,nstop));
