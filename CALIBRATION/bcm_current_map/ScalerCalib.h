@@ -2,6 +2,7 @@
 #define __SCLAERCALIB_H__
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 
