@@ -180,15 +180,18 @@ void replay_production_all_shms (int RunNumber=0, int MaxEvent=0, int FirstEvent
   //THcRun* run = new THcRun( pathList, Form(RunFileNamePattern, RunNumber) );
   //Could lead to an infinite loop, all segments in range analyzed.
   vector<string> fileNames = {};
-  for(Int_t iseg = FirstSegment; iseg <= MaxSegment; iseg++) {
-    TString codafilename;
-    if(MaxSegment == -1) {
-      codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber);  
-      break;
-    }
-    codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber, iseg);
+  TString codafilename;
+  if(MaxSegment == -1) {
+    cout << RunFileNamePattern;
+    codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber);  
     cout << "codafilename = " << codafilename << endl;
     fileNames.emplace_back(codafilename.Data());
+  } else {
+    for(Int_t iseg = FirstSegment; iseg <= MaxSegment; iseg++) {
+      codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber, iseg);
+      cout << "codafilename = " << codafilename << endl;
+      fileNames.emplace_back(codafilename.Data());
+    }
   }
   auto* run = new Podd::MultiFileRun( pathList, fileNames);
 
