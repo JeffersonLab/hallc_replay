@@ -1,4 +1,7 @@
-void replay_production_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
+#include "MultiFileRun.h"
+
+void replay_production_all_shms (int RunNumber=0, int MaxEvent=0, int FirstEvent = 1, int MaxSegment = 1,
+  int FirstSegment = 0, const char* fname_prefix = "shms_all") {
 
   // Get RunNumber and MaxEvent if not provided.
   if(RunNumber == 0) {
@@ -11,19 +14,60 @@ void replay_production_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
     cin >> MaxEvent;
     if(MaxEvent == 0) {
       cerr << "...Invalid entry\n";
-      exit;
+      return;
     }
   }
 
   // Create file name patterns.
-  const char* RunFileNamePattern = "shms_all_%05d.dat";
+  //fname_prefix, RunNumber, iseg.  
+  //To replay files with no segment number, use -1 for MaxSegment.
+  const char* RunFileNamePattern, SummaryFileNamePattern, REPORTFileNamePattern;
+  if(MaxSegment == -1) {}
+    RunFileNamePattern = "%s_%05d.dat";
+  else {
+    RunFileNamePattern = "%s_%05d.dat.%u";
+  }
   vector<TString> pathList;
   pathList.push_back(".");
   pathList.push_back("./raw");
   pathList.push_back("./raw/../raw.copiedtotape");
   pathList.push_back("./cache");
 
-  const char* ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d.root";
+  //Many experiments use separate path for each spectrometer SHMS, HMS, COIN
+  //There are subdirectories for PRODUCTION, SCALER, 50K, etc.
+  //This is similar to the pathing for REPORT_OUTPUT and Summary files
+  //Changing the 50K replay loaction will effect run_ scripts in UTIL_OL
+  //All other replays, save to production
+  //50K and default format: runNumber, FirstEvent, MaxEvent
+  //For the segment format: runNumber, FirstSegment, FirstEvent, MaxEvent
+  //Segments have different naming to avoid name collisions
+  const char* ROOTFileNamePattern;
+  if (MaxEvent == 50000 && FirstEvent == 1){
+    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d.report"
+    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d.report"
+    ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d_%d.root";
+  }
+  else if (MaxEvent == -1 && (FirstSegment - MaxSegment) == 0) {
+    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d_%d.report"
+    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d_%d.report"
+    ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d_%d_%d.root";
+  } 
+   else{
+    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d.report"
+    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d.report"
+    ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d_%d.root";
+  }
+  // Define the analysis parameters
+  TString ROOTFileName, REPORTFileName, SummaryFileName;
+  if(MaxEvent == -1 && (FirstSegment - MaxSegment) == 0) {
+    REPORTFileName = Form(REPORTFileNamePattern, RunNumber, FirstSegment, FirstEvent, MaxEvent);
+    SummaryFileName = Form(SummaryFileNamePattern, RunNumber, FirstSegment, FirstEvent, MaxEvent);
+    ROOTFileName = Form(ROOTFileNamePattern, RunNumber, FirstSegment, FirstEvent, MaxEvent);
+  } else {
+    REPORTFileName = Form(REPORTFileNamePattern, RunNumber, FirstEvent, MaxEvent);
+    SummaryFileName = Form(SummaryFileNamePattern, RunNumber, FirstEvent, MaxEvent);
+    ROOTFileName = Form(ROOTFileNamePattern, RunNumber, FirstEvent, MaxEvent);
+  }
   
   // Load global parameters
   gHcParms->Define("gen_run_number", "Run Number", RunNumber);
@@ -133,8 +177,20 @@ void replay_production_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   THaEvent* event = new THaEvent;
 
   // Define the run(s) that we want to analyze.
-  // We just set up one, but this could be many.
-  THcRun* run = new THcRun( pathList, Form(RunFileNamePattern, RunNumber) );
+  //THcRun* run = new THcRun( pathList, Form(RunFileNamePattern, RunNumber) );
+  //Could lead to an infinite loop, all segments in range analyzed.
+  vector<string> fileNames = {};
+  for(Int_t iseg = FirstSegment; iseg <= MaxSegment; iseg++) {
+    if(MaxSegment == -1) {
+      codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber);  
+      break;
+    }
+    TString codafilename;
+    codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber, iseg);
+    cout << "codafilename = " << codafilename << endl;
+    fileNames.emplace_back(codafilename.Data());
+  }
+  auto* run = new Podd::MultiFileRun( pathList, fileNames);
 
   // Set to read in Hall C run database parameters
   run->SetRunParamClass("THcRunParameters");
@@ -144,9 +200,9 @@ void replay_production_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   run->SetNscan(1);
   run->SetDataRequired(0x7);
   run->Print();
+  
+  //Moved file naming from here to top of script for transparency.
 
-  // Define the analysis parameters
-  TString ROOTFileName = Form(ROOTFileNamePattern, RunNumber, MaxEvent);
   analyzer->SetCountMode(2);  // 0 = counter is # of physics triggers
                               // 1 = counter is # of all decode reads
                               // 2 = counter is event number
@@ -162,11 +218,11 @@ void replay_production_all_shms (Int_t RunNumber = 0, Int_t MaxEvent = 0) {
   // Define cuts file
   analyzer->SetCutFile("DEF-files/SHMS/PRODUCTION/CUTS/pstackana_production_cuts.def");  // optional
   // File to record accounting information for cuts
-  analyzer->SetSummaryFile(Form("REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d.report", RunNumber, MaxEvent));  // optional
+  analyzer->SetSummaryFile(SummaryFileName.Data());  // optional
   // Start the actual analysis.
   analyzer->Process(run);
   // Create report file from template
-  analyzer->PrintReport("TEMPLATES/SHMS/PRODUCTION/pstackana_production.template",
-  			Form("REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d.report", RunNumber, MaxEvent));  // optional
+
+  analyzer->PrintReport("TEMPLATES/SHMS/PRODUCTION/pstackana_production.template", REPORTFileName.Data());  // optional
 
 }
