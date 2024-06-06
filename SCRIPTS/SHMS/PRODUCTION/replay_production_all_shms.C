@@ -21,13 +21,13 @@ void replay_production_all_shms (int RunNumber=0, int MaxEvent=0, int FirstEvent
   // Create file name patterns.
   //fname_prefix, RunNumber, iseg.  
   //To replay files with no segment number, use -1 for MaxSegment.
-  const char* RunFileNamePattern, SummaryFileNamePattern, REPORTFileNamePattern;
-  if(MaxSegment == -1) {}
+  const char* RunFileNamePattern;  const char* SummaryFileNamePattern;  const char* REPORTFileNamePattern;
+  if(MaxSegment == -1) {
     RunFileNamePattern = "%s_%05d.dat";
-  else {
+  } else {
     RunFileNamePattern = "%s_%05d.dat.%u";
   }
-  vector<TString> pathList;
+  vector<string> pathList;
   pathList.push_back(".");
   pathList.push_back("./raw");
   pathList.push_back("./raw/../raw.copiedtotape");
@@ -43,22 +43,22 @@ void replay_production_all_shms (int RunNumber=0, int MaxEvent=0, int FirstEvent
   //Segments have different naming to avoid name collisions
   const char* ROOTFileNamePattern;
   if (MaxEvent == 50000 && FirstEvent == 1){
-    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d.report"
-    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d.report"
+    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d.report";
+    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d.report";
     ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d_%d.root";
   }
   else if (MaxEvent == -1 && (FirstSegment - MaxSegment) == 0) {
-    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d_%d.report"
-    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d_%d.report"
+    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d_%d.report";
+    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d_%d.report";
     ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d_%d_%d.root";
   } 
    else{
-    REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d.report"
-    SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d.report"
+     REPORTFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/replay_shms_all_production_%d_%d_%d.report";
+     SummaryFileNamePattern = "REPORT_OUTPUT/SHMS/PRODUCTION/summary_all_production_%d_%d_%d.report";
     ROOTFileNamePattern = "ROOTfiles/shms_replay_production_all_%d_%d_%d.root";
   }
   // Define the analysis parameters
-  TString ROOTFileName, REPORTFileName, SummaryFileName;
+  TString ROOTFileName;  TString REPORTFileName;  TString SummaryFileName;
   if(MaxEvent == -1 && (FirstSegment - MaxSegment) == 0) {
     REPORTFileName = Form(REPORTFileNamePattern, RunNumber, FirstSegment, FirstEvent, MaxEvent);
     SummaryFileName = Form(SummaryFileNamePattern, RunNumber, FirstSegment, FirstEvent, MaxEvent);
@@ -181,11 +181,11 @@ void replay_production_all_shms (int RunNumber=0, int MaxEvent=0, int FirstEvent
   //Could lead to an infinite loop, all segments in range analyzed.
   vector<string> fileNames = {};
   for(Int_t iseg = FirstSegment; iseg <= MaxSegment; iseg++) {
+    TString codafilename;
     if(MaxSegment == -1) {
       codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber);  
       break;
     }
-    TString codafilename;
     codafilename.Form(RunFileNamePattern, fname_prefix, RunNumber, iseg);
     cout << "codafilename = " << codafilename << endl;
     fileNames.emplace_back(codafilename.Data());
