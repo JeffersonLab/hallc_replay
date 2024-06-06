@@ -25,7 +25,10 @@ void replay_production_all_shms (int RunNumber=0, int MaxEvent=0, int FirstEvent
   if(MaxSegment == -1) {
     RunFileNamePattern = "%s_%05d.dat";
   } else {
+    //This will not pick up NPS runs since the run number was not padded
     RunFileNamePattern = "%s_%05d.dat.%u";
+    //NPS Segment Pattern, for testing
+    //RunFileNamePattern = "%s_%d.dat.%u";
   }
   vector<string> pathList;
   pathList.push_back(".");
