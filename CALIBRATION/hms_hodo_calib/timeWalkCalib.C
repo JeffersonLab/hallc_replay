@@ -25,9 +25,13 @@
 #include <TF1.h>
 
 
-
+//============Modified by rparvez: Begin============//
 // Declare ROOT files
-TFile *histoFile, *outFile;
+TFile *histoFile; 
+TFile *histOutFile;
+//============Modified by rparvez: End============//
+
+
 
 // Declare Output  Parameter File
 ofstream outParam;
@@ -260,6 +264,63 @@ void drawParams(UInt_t iplane) {
 } // drawParams
 
 
+
+//============Modified by rparvez: Begin============//
+
+//Add method for writing summary plots to ROOT File
+void writePlots(int runNUM) 
+{
+  
+  const char* dir_log = "mkdir -p Calibration_Plots/";     
+  const char* dir_log2 = "mkdir -p Calibration_Plots/TWpng";  
+  //Check if directory exists
+  if (system(dir_log) != 0) 
+    {
+      cout << "Creating Directory to store SHMS Hodo TW Calibration Plots . . ." << endl;   
+      system(dir_log);  //create directory to log calibration results 
+    }
+
+  if (system(dir_log2) != 0)                                                                                                            
+    {                                                       
+      system(dir_log2);
+    } 
+  
+
+  TDirectory *PSUM = histOutFile->mkdir("Param_Summary");
+  TDirectory *FSUM = histOutFile->mkdir("Fit_Summary");
+  TDirectory *FSUBSUM = FSUM->mkdir("Histos");
+  TString outputpng= Form("Calibration_Plots/TWpng/twFit_run_%d_",runNUM);
+  
+
+  for (UInt_t ipar = 0; ipar < nTwFitPars; ipar++) {
+    //Parameter Summary Canvases
+    PSUM->WriteObject(twFitParCan[ipar], Form("twFitParCan%d", ipar));
+    }
+    
+    for (UInt_t iplane = 0; iplane < nPlanes; iplane++)
+    {
+    for(UInt_t iside = 0; iside < nSides; iside++)
+    {
+    TString outputpng= Form("Calibration_Plots/TWpng/twFit_run_%d",runNUM);
+    //TW Fit summary Canvases
+    FSUM->WriteObject(twFitCan[iplane][iside], "twFitCan_"+planeNames[iplane]+"_"+sideNames[iside]);
+    outputpng += "_"+planeNames[iplane]+"_"+sideNames[iside]+".png";
+    twFitCan[iplane][iside]->Print(outputpng);
+    //TW Fit Individual Canvases
+    for (int ibar = 0; ibar < nBarsMax; ibar++)
+    {
+    FSUBSUM->WriteObject(twFitCan[iplane][iside]->cd(ibar+1)->GetPadPointer(), "twFitCan_"+planeNames[iplane]+"_"+Form("Bar%d", ibar)+"_"+sideNames[iside]);
+    }
+    }
+    }
+  
+  return;
+}
+
+//============Modified by rparvez: End============//
+
+
+
 //Add a method to Get Fit Parameters
 void WriteFitParam(int runNUM)
 {
@@ -357,6 +418,82 @@ void WriteFitParam(int runNUM)
 } //end method
 
 
+
+
+//============Modified by rparvez: Begin============//
+
+// This is to write all the parrameters with there errors, so that they may be checked against other Runs - NH 21/05/06
+void WriteFitParamErr(int runNUM)
+{
+
+  TString outPar_Name = Form("Calibration_Plots/hhodo_TWcalib_Err_%d.param", runNUM); //note could put this where ever you wanted to
+  outParam.open(outPar_Name);
+  Double_t c2err[nPlanes][nSides][nBarsMax] = {0.};
+  //Fill 3D Par array
+  for (UInt_t iplane=0; iplane < nPlanes; iplane++)
+    {
+      
+      for (UInt_t iside=0; iside < nSides; iside++) {
+	      
+
+	for(UInt_t ipaddle = 0; ipaddle < nbars[iplane]; ipaddle++) {
+	 
+	  //c1[iplane][iside][ipaddle] = twFit[iplane][iside][ipaddle]->GetParameter("c_{1}");
+	  c2[iplane][iside][ipaddle] = twFit[iplane][iside][ipaddle]->GetParameter("c_{2}");
+	  c2err[iplane][iside][ipaddle] = twFit[iplane][iside][ipaddle]->GetParError(1);
+	  chi2ndf[iplane][iside][ipaddle] =  twFit[iplane][iside][ipaddle]->GetChisquare()/twFit[iplane][iside][ipaddle]->GetNDF();
+      
+	} //end paddle loop
+
+      } //end side loop
+    
+    } //end plane loop
+
+  //Wrtie to Param FIle
+                                                                                                                                                                            
+  //Loop over all paddles
+  for (UInt_t iplane = 0; iplane < nPlanes; iplane++)
+  {  
+  	for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
+    //Write c2-Pos values
+     
+		outParam << c2[iplane][0][ipaddle] << " " << fixed; 
+                                              
+	    }//end loop paddles
+	outParam << endl;
+	//write errors
+	for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) {
+		outParam << c2err[iplane][0][ipaddle] << " " << fixed;
+	}
+	outParam << endl;
+  } //end loop over planes
+  
+                                                                                                                                                                           
+  //Loop over all paddles
+  for (UInt_t iplane = 0; iplane < nPlanes; iplane++)
+  {  
+  	for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) { 
+    //Write c2-Neg values
+     
+		outParam << c2[iplane][1][ipaddle] << " " << fixed; 
+                                              
+	    }//end loop paddles
+	outParam << endl;
+	//write errors
+	for(UInt_t ipaddle = 0; ipaddle < nBarsMax; ipaddle++) {
+		outParam << c2err[iplane][1][ipaddle] << " " << fixed;
+	}
+	outParam << endl;
+  } //end loop over planes
+  
+  outParam.close();
+
+} //WriteFitParamErr
+
+//============Modified by rparvez: End============//
+
+
+
 //=:=:=:=:=
 //=: Main
 //=:=:=:=:=
@@ -378,7 +515,8 @@ using namespace std;
   gStyle->SetOptStat(0);
 
   // Read the ROOT file containing the time-walk histos
-  histoFile = new TFile("timeWalkHistos.root", "READ");
+  histoFile = new TFile(Form("timeWalkHistos_%d.root", run), "READ");
+
   // Obtain the top level directory
   dataDir = dynamic_cast <TDirectory*> (histoFile->FindObjectAny("hodoUncalib"));
   // Create the parameter canvases
@@ -424,9 +562,33 @@ using namespace std;
     } // Side loop
     // Draw the time-walk parameter graphs
     drawParams(iplane);
-  } // Plane loop 
+  } // Plane loop
+
+
+
+  //============Modified by rparvez: Begin============//
+
+  //histoFile->Close();
+
+  // NH 25/03/2021 - Create Root File for output plots
+  TString histOutFileName = Form("timeWalkCalib_%d.root", run);
+  histOutFile = new TFile(histOutFileName, "RECREATE");
+  //make sure current file is output file
+  gFile = histOutFile;
+  //write to ROOT file
+  writePlots(run);
+
+  histOutFile->Close();
+  //Write parrameters with errors out to seperate file
+  WriteFitParamErr(run);
+
+
   //Write to a param file
   WriteFitParam(run);
+
+  return;
+
+  //============Modified by rparvez: End============//
 
 }
 

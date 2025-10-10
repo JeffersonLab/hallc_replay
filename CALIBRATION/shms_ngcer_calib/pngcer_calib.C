@@ -14,7 +14,7 @@ root -l pngcer_calib.C
 
 int pngcer_calib() {
 	// Input file format
-	std::string replay_file_form = "../../ROOTfiles/SHMS/CALIBRATION/shms_replay_cer_%i_-1.root";
+	std::string replay_file_form = "../../ROOTfiles/coin_replay_production_%i_200000.root";
 
 	// Taking user input
 	std::string raw_run_input;

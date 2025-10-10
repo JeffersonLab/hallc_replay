@@ -13,3 +13,5 @@ TH2F pgtr_xtar_vs_yptar  'SHMS Golden Track X_{tar} vs Y'_{tar}; Y'_{tar} / 0.00
 TH2F pgtr_xtar_vs_xptar  'SHMS Golden Track X_{tar} vs X'_{tar}; X'_{tar} / 0.002 rad; X_{tar} / 0.25 cm' P.gtr.th P.gtr.x 100 -.1 .1 60 -7.5 7.5 pcut_CleanTrack
 TH2F pgtr_ytar_vs_yptar  'SHMS Golden Track Y_{tar} vs Y'_{tar}; Y'_{tar} / 0.002 rad; Y_{tar} / 0.25 cm'  P.gtr.ph P.gtr.y 100 -.1 .1 60 -7.5 7.5 pcut_CleanTrack
 TH2F pgtr_ytar_vs_xptar  'SHMS Golden Track Y_{tar} vs X'_{tar}; X'_{tar} / 0.002 rad; Y_{tar} / 0.25 cm' P.gtr.th P.gtr.y 100 -.1 .1 60 -7.5 7.5 pcut_CleanTrack
+
+TH2F pgtr_delta_vs_yptar  'SHMS Golden Track Y'_{tar} vs Delta; Delta; Y'_{tar} / 0.002 rad cm' P.gtr.dp P.gtr.ph 40 -15. 40. 60 -.05 .05 pcut_cal_elec

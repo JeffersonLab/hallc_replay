@@ -32,7 +32,7 @@
 std::string anacuts = "1"; //"abs(CTime.ePiCoinTime_ROC1)<100&&P.aero.npeSum>4&&abs(H.cal.etottracknorm-1)<0.3&&P.cal.etottracknorm<0.8&&H.cer.npeSum>1&&abs(P.gtr.dp-5.)<15.&&abs(H.gtr.dp)<8.&&abs(H.gtr.ph)<0.15&&abs(H.gtr.th)<0.2&&abs(P.gtr.ph)<0.15&&abs(P.gtr.th)<0.2";
 // 2. histo ranges - Convention: {nbin,hmin,hmax}
 std::vector<double> hcoin_range{200,10,80}; //hcoin_range{400,-200,200}; 
-std::vector<double> hQ2_range{200,0.1,10},hx_range{200,0.01,1.2},hW_range{200,0.1,3},hz_range{200,0.01,1};
+std::vector<double> hQ2_range{200,0.1,10},hx_range{200,0.01,1.2},hW_range{200,0.1,3},hz_range{200,0.5,1.5};
 // ---
 // --- Advanced (for experts) ---
 // ---
@@ -54,14 +54,14 @@ void PlotPtAccHisto(TH2* h2);
 void DetermineCoinCutRegion(TH1F* hcoin, double *fitparams, int verbosity, std::vector<double> &cutregion);
 void PlotCutRegion(double xmin, double xmax, EColor fcolor, double alpha);
 void ExtractCoinEvCounts(TH1F *hcoin, std::vector<double> const &cutregion, int verbosity, std::vector<double> &counts);
-double ExtractValueFromReportFile(const std::string& filename, const std::string& key, const char delimiter);
+double ExtractValueFromReportFile(const std::string& filename, const std::string& key, const char delimiter, int skipCount);
 void PredictNoOfTriggersNeeded(std::string const &inrepfile, std::vector<double> const &counts, double descoinev, int verbosity, std::vector<double> &outputs);
 double CalcNormYield(std::string const &inrepfile, double Nrealcoinev, int verbosity);
 std::vector<std::string> SplitString(char const delim, std::string const myStr);
 TPaveText* CreateSummaryPaveText(int rnum, const std::string& anacuts, const std::vector<double>& counts, double normyield, double descoinev, const std::vector<double>& predtrig, TStopwatch* sw);
 
 // Main function
-int get_good_coin_ev_heep(int rnum,                 // Run number to analyze
+int get_good_heep_ev(int rnum,                 // Run number to analyze
 		     int nevent=-1,            // # of events replayed
 		     double descoinev=100000., // desired number of real coin events
 		     std::string indirroot="ROOTfiles", // Path to directory containing input ROOT file
@@ -397,10 +397,11 @@ std::string normalizeSpaces(const std::string& str) {
   return std::regex_replace(str, std::regex("\\s+"), " ");
 }
 //----------------------------------------------------------
-double ExtractValueFromReportFile(const std::string& filename, const std::string& key, const char delimiter)
+double ExtractValueFromReportFile(const std::string& filename, const std::string& key, const char delimiter, int skipCount = 0)
 /*
   Reads the hcana report file and extracts the number (int or double) associated with
-  a given string and delimiter (: or =) ignoing any extra input (unit etc.) after the number  
+  a given string and delimiter (: or =), skipping `skipCount` number of valid matches
+  before returning the number.
 */
 {
   std::ifstream file(filename);
@@ -411,6 +412,7 @@ double ExtractValueFromReportFile(const std::string& filename, const std::string
 
   std::string line;
   std::string normalizedKey = normalizeSpaces(trim(key));  // Normalize the key once
+  int matchCount = 0;
 
   while (std::getline(file, line)) {
     std::string normalizedLine = normalizeSpaces(trim(line));  // Normalize spaces and trim
@@ -421,34 +423,32 @@ double ExtractValueFromReportFile(const std::string& filename, const std::string
     if (pos != std::string::npos) {
       bool validMatch = false;
 
-      // The key must either:
-      // - Be at the start of the line (pos == 0)
-      // - Be preceded by a space (to avoid substring issues like "SHMS" matching "HMS")
       if (pos == 0 || std::isspace(normalizedLine[pos - 1])) {
         size_t searchPos = pos + normalizedKey.length();
-
-        // Skip any spaces between key and delimiter
         while (searchPos < normalizedLine.length() && std::isspace(normalizedLine[searchPos])) {
           searchPos++;
         }
-
-        // Check if the next character is the delimiter
         if (searchPos < normalizedLine.length() && normalizedLine[searchPos] == delimiter) {
           validMatch = true;
         }
       }
 
       if (validMatch) {
-        std::istringstream iss(normalizedLine.substr(normalizedLine.find(delimiter) + 1));  // Extract substring after delimiter
+        if (matchCount < skipCount) {
+          matchCount++;
+          continue;  // Skip this occurrence
+        }
+
+        std::istringstream iss(normalizedLine.substr(normalizedLine.find(delimiter) + 1));
         double number;
-        if (iss >> number) {  // Read the number
+        if (iss >> number) {
           return number;
         }
       }
     }
   }
 
-  std::cerr << "Error: Key '" << key << "' doesn't exist!" << std::endl;
+  std::cerr << "Error: Key '" << key << "' not found after skipping " << skipCount << " occurrences." << std::endl;
   return -1;  // Indicate failure
 }
 //----------------------------------------------------------
@@ -488,8 +488,8 @@ double CalcNormYield(std::string const &inrepfile, // Input report file name wit
 {
   double charge = ExtractValueFromReportFile(inrepfile, "HMS BCM4A Beam Cut Charge", ':'); //mC
   double compdeadtime = ExtractValueFromReportFile(inrepfile, "HMS Computer Dead Time", ':')/100.0;
-  double treffiHMS = ExtractValueFromReportFile(inrepfile, "HMS E SING FID TRACK EFFIC", ':');  
-  double treffiSHMS = ExtractValueFromReportFile(inrepfile, "SHMS HADRON SING FID TRACK EFFIC", ':');
+  double treffiHMS = ExtractValueFromReportFile(inrepfile, "E SING FID TRACK EFFIC", ':', 1);  
+  double treffiSHMS = ExtractValueFromReportFile(inrepfile, "HADRON SING FID TRACK EFFIC", ':', 0);
   double trigeffi = 1.0; // assuming 100% efficiency for the moment
 
   double normyield = Nrealcoinev / (charge * compdeadtime * treffiHMS * treffiSHMS * trigeffi); // 1/mC

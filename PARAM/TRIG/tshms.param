@@ -7,11 +7,11 @@ t_shms_adc_tdc_offset = 200.
 t_shms_tdcchanperns = 0.09766
 
 ; cut variable is pT2
-; determined for fall 2019 startup
-t_shms_trig_tdcrefcut = -8000
+; determined by R. Elder for rsidis2025
+t_shms_trig_tdcrefcut = -7850
 ; cut variable is pFADC_TREF_ROC2
 ; determined for fall 2019 startup
-t_shms_trig_adcrefcut = -5500
+t_shms_trig_adcrefcut = -4500
 
 ; bar num:          1      2      3      4         5             6          7         8        9        10       11
 t_shms_adcNames = "pAER pHGCER pNGCER pPSHWR pFADC_TREF_ROC2 pHGCER_MOD pNGCER_MOD pHEL_QRT pHEL_NEG pHEL_POS pHEL_MPS"

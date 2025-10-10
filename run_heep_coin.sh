@@ -14,8 +14,8 @@ lastRun=$( \
     ls raw/rsidis_production_*.dat.0 raw/../raw.copiedtotape/rsidis_production_*.dat.0 cache/rsidis_production_*.dat.0 -R 2>/dev/null | perl -ne 'if(/0*(\d+)/) {print "$1\n"}' | sort -n | tail -1 \
 )
 
-# If no arguments are given, prompt the user for all three
-if [ $# -ne 3 ]; then
+# If no arguments are given, ask the user interactively
+if [ $# -eq 0 ]; then
   read -p "Enter run number (default last run): " runNum
   if [ -z "$runNum" ]; then
     runNum=$lastRun
@@ -24,24 +24,23 @@ if [ $# -ne 3 ]; then
   if [ -z "$numEvents" ]; then
     numEvents=50000
   fi
-  read -p "Enter desired number of good coin events (default 100000): " numCoin
-  if [ -z "$numCoin" ]; then
-    numCoin=100000
-  fi
 else
-  # 1st argument: run number
+  # If 1st argument provided
   runNum=$1
+  if [ -z "$runNum" ]; then
+    runNum=$lastRun
+  fi
 
-  # 2nd argument: number of events
+  # If 2nd argument provided
   numEvents=$2
-
-  # 3rd argument: max events
-  numCoin=$3
+  if [ -z "$numEvents" ]; then
+    numEvents=50000
+  fi
 fi
 
 # Which scripts to run.
 script="SCRIPTS/${SPEC}/PRODUCTION/replay_production_${spec}_pElec_hProt.C"
-analysis="get_good_coin_ev_heep.C"
+analysis="get_good_heep_ev.C"
 config="CONFIG/${SPEC}/PRODUCTION/${spec}_production_rsidis.cfg"
 confighms="CONFIG/${SPEC}/PRODUCTION/${spec}_production_rsidis_hms.cfg"
 configshms="CONFIG/${SPEC}/PRODUCTION/${spec}_production_rsidis_shms.cfg"
@@ -62,7 +61,7 @@ reportMonFile="reportMonitor_${spec}_${runNum}_${numEvents}.txt"
 
 # Which commands to run.
 runHcana="hcana -q \"${script}(${runNum}, ${numEvents})\""
-runAnalysis="hcana -l -b -q \"${analysis}(${runNum},${numEvents},${numCoin},\\\"${rootFileDir}\\\",\\\"${reportFileDir}\\\",\\\"${monPdfDir}\\\")\""
+runAnalysis="hcana -l -b -q \"${analysis}(${runNum},${numEvents},100000,\\\"${rootFileDir}\\\",\\\"${reportFileDir}\\\",\\\"${monPdfDir}\\\")\""
 runOnlineGUI="panguin -f ${config} -r ${runNum} -G ${goldenFile}"
 saveOnlineGUI="panguin -f ${config} -r ${runNum} -P -G ${goldenFile}"
 runOnlineGUIhms="panguin -f ${confighms} -r ${runNum} -G ${goldenFile}"
@@ -83,7 +82,7 @@ monRootFile="${spec}_coin_production_${runNum}.root"
 monPdfFile="${spec}_coin_production_${runNum}.pdf"
 monExpertPdfFile="${spec}_coin_production_expert_${runNum}.pdf"
 latestMonRootFile="${monRootDir}/${spec}_coin_production_latest.root"
-latestMonPdfFile="${monPdfDir}/${spec}_production_latest.pdf"
+latestMonPdfFile="${monPdfDir}/output_get_good_coin_ev_${runNum}_${numEvents}.pdf"
 latestMonPdfFilehms="${monPdfDir}/${spec}_production_hms_latest.pdf"
 latestMonPdfFileshms="${monPdfDir}/${spec}_production_shms_latest.pdf"
 
@@ -231,3 +230,41 @@ replayReport="${reportFileDir}/replayReport_${spec}_production_${runNum}_${numEv
 echo ""
 echo "Launching FID tracking efficiency plot..."
 python3 plot_effic.py "${reportFile}"
+
+
+###########################################################
+function yes_or_no() {
+    while true; do
+	read -p "$* [y/n]: " yn
+	case $yn in
+	    [Yy]*) return 0 ;;
+	    [Nn]*)
+		echo "No entered"
+		return 1
+		;;
+	esac
+    done
+}
+# function used to prompt user for questions
+# post pdfs in hclog
+yes_or_no "Upload these plots to logbook HCLOG? " && {
+    read -p "Enter a text body for the log entry (or leave blank): " logCaption
+    echo "$logCaption" >caption.txt
+   if [ "$numEvents" -eq -1 ]; then
+      title="Full replay plots for run ${runNum}"
+    else
+      title="$((numEvents / 1000))k replay plots for run ${runNum}"
+   fi
+   /site/ace/certified/apps/bin/logentry \
+       -cert /home/cdaq/.elogcert \
+       -t "$title" \
+       -e cdaq \
+       -l HCLOG \
+       -a ${latestMonPdfFilehms} \
+       -a ${latestMonPdfFileshms} \
+       -a ${latestMonPdfFile} \
+       -b "caption.txt"
+
+   
+   rm -rf "caption.txt"
+}

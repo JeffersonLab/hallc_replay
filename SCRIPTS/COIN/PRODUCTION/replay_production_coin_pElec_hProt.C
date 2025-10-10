@@ -11,7 +11,7 @@ void replay_production_coin_pElec_hProt (Int_t RunNumber = 0, Int_t MaxEvent = 0
     cin >> MaxEvent;
     if(MaxEvent == 0) {
       cerr << "...Invalid entry\n";
-      exit;
+      return;
     }
   }
 
@@ -33,6 +33,8 @@ void replay_production_coin_pElec_hProt (Int_t RunNumber = 0, Int_t MaxEvent = 0
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
+  gHcParms->Load(gHcParms->GetString("g_ctp_pcal_calib_filename"));
+  gHcParms->Load(gHcParms->GetString("g_ctp_hcal_calib_filename"));
   // Load params for COIN trigger configuration
   gHcParms->Load("PARAM/TRIG/tcoin.param");
   // Load fadc debug parameters
@@ -106,14 +108,13 @@ void replay_production_coin_pElec_hProt (Int_t RunNumber = 0, Int_t MaxEvent = 0
   pscaler->SetUseFirstEvent(kTRUE);
   gHaEvtHandlers->Add(pscaler);
 
-  /*
+  
   //Add SHMS event handler for helicity scalers
   THcHelicityScaler *phelscaler = new THcHelicityScaler("P", "Hall C helicity scaler");
   //phelscaler->SetDebugFile("PHelScaler.txt");
   phelscaler->SetROC(8);   
   phelscaler->SetUseFirstEvent(kTRUE); 
   gHaEvtHandlers->Add(phelscaler); 
-  */
   
   //=:=:=
   // HMS 
@@ -175,14 +176,13 @@ void replay_production_coin_pElec_hProt (Int_t RunNumber = 0, Int_t MaxEvent = 0
   hscaler->SetUseFirstEvent(kTRUE);
   gHaEvtHandlers->Add(hscaler);
 
-  /*
+  
   // Add HMS event handler for helicity scalers                                                                                             
   THcHelicityScaler *hhelscaler = new THcHelicityScaler("H", "Hall C helicity scaler"); 
   //hhelscaler->SetDebugFile("HHelScaler.txt");                                                                
   hhelscaler->SetROC(5);
   hhelscaler->SetUseFirstEvent(kTRUE); 
   gHaEvtHandlers->Add(hhelscaler);
-  */
   
   //=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=
   // Kinematics Modules
@@ -207,16 +207,20 @@ void replay_production_coin_pElec_hProt (Int_t RunNumber = 0, Int_t MaxEvent = 0
   gHaApps->Add(TRG);
   // Add trigger detector to trigger apparatus
   THcTrigDet* coin = new THcTrigDet("coin", "Coincidence Trigger Information");
+  // Suppress missing reference time warnings for these event types
+  coin->SetEvtType(1);
+  coin->AddEvtType(2);
+  TRG->AddDetector(coin); 
 
+  THcHelicity* helicity = new THcHelicity("helicity", "Helicity Detector");
+  TRG->AddDetector(helicity);
+
+  
   //Add coin physics module
   THcCoinTime* coinTime = new THcCoinTime("CTime", "Coincidende Time Determination", "H", "P", "T.coin");
   gHaPhysics->Add(coinTime);
 
 
-  // Suppress missing reference time warnings for these event types
-  coin->SetEvtType(1);
-  coin->AddEvtType(2);
-  TRG->AddDetector(coin); 
   // Add event handler for prestart event 125.
   THcConfigEvtHandler* ev125 = new THcConfigEvtHandler("HC", "Config Event type 125");
   gHaEvtHandlers->Add(ev125);
@@ -257,7 +261,7 @@ void replay_production_coin_pElec_hProt (Int_t RunNumber = 0, Int_t MaxEvent = 0
 
   analyzer->SetEvent(event);
   // Set EPICS event type
-  analyzer->SetEpicsEvtType(180);
+  analyzer->SetEpicsEvtType(182);
   // Define crate map
   analyzer->SetCrateMapFileName("MAPS/db_cratemap.dat");
   // Define output ROOT file

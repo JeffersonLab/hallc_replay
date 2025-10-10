@@ -58,14 +58,101 @@ g_ctp_kinematics_filename = "DBASE/COIN/standard.kinematics"
 g_ctp_map_filename        = "MAPS/COIN/DETEC/coin_spring19.map"
 g_ctp_trigdet_filename    = "PARAM/TRIG/tcoin_spring19.param"
 
-# phase 2 kinematics
+# ----- ****************** --------
+# ----- ****************** --------
+# Beginning of R-SIDIS (Summer 2025)
+# ----- ****************** --------
+# ----- ****************** --------
 20000-99999
-#g_ctp_parm_filename       = "DBASE/COIN/general_7274.param"
 g_ctp_parm_filename       = "DBASE/COIN/general_rsidis.param"
 g_ctp_kinematics_filename = "DBASE/COIN/standard.kinematics"
-# g_ctp_map_filename        = "MAPS/COIN/DETEC/coin_spring19.map"
-# g_ctp_trigdet_filename    = "PARAM/TRIG/tcoin_spring19.param"
 g_ctp_map_filename        = "MAPS/COIN/DETEC/coin.map"
 g_ctp_trigdet_filename    = "PARAM/TRIG/tcoin.param"
 
+# -----------------------------
+# Run dependent SHMS CAL params
+# -----------------------------
+20000-23833
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_2p62gev_7p87deg_rsidis.param"
 
+23834-23875,23876-23956,24428-24535,24564-24571,24598-24600,24606-24610
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_2p62gev_7p87deg_rsidis.param"
+
+24088-24185,24310-24427,24558-24563,24589-24597,24601-24605
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_7p87deg_rsidis.param"
+
+23977-24087,24213-24309,24553-24557,24582-24588
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_4p87gev_7p87deg_rsidis.param"
+
+23957-23976,24186-24212,24536-24552,24572-24581
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_6p53gev_7p87deg_rsidis.param"
+
+24611-24688,24689-24734,24861-24864,24865-24874
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_11p07deg_rsidis.param"
+
+24735-24778,24779-24828,24829-24832,24833-24860
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_14p37deg_rsidis.param"
+
+24875-24876
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_4p87gev_7p87deg_rsidis.param"
+
+24877-24906, 25009-25043
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_6p54gev_7p51deg_rsidis.param"
+
+24907-24959, 25044-25074
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_4p87gev_7p51deg_rsidis.param"
+
+24960-25008, 25075-25121
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_7p51deg_rsidis.param"
+
+25122-25137, 25223-25253
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_6p54gev_10p31deg_rsidis.param"
+
+25138-25171, 25254-25279
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_4p87gev_10p31deg_rsidis.param"
+
+25172-25204, 25280-25317, 25443-25461, 25467-25468, 25484-25498
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_10p31deg_rsidis.param"
+
+25205-25222, 25318-25345, 25469-25474
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_2p62gev_10p31deg_rsidis.param"
+
+25346-25383, 25434-25442, 25462, 25465-25466
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_13p51deg_rsidis.param"
+
+25384-25422, 25423-25433, 25463, 25464
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_16p81deg_rsidis.param"
+
+25499-25567
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_8p11deg_rsidis.param"
+
+# Below are HEEP runs, I'm skipping these for now.
+
+25475-25483
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_4p87gev_7p87deg_rsidis.param"
+
+25484-25498
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_10p31deg_rsidis.param"
+
+25499-25567
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_3p63gev_8p11deg_rsidis.param"
+
+25568-99999
+g_ctp_pcal_calib_filename = "PARAM/SHMS/CAL/pcal_calib_2p00gev_19p00deg_rsidis.param"
+
+# -----------------------------
+# Run dependent HMS CAL params
+# Currently in development; do not modify without contacting Ryan Elder
+# -----------------------------
+
+20000-23833
+g_ctp_hcal_calib_filename = “PARAM/HMS/CAL/hcal_calib_4p50gev_14p00deg_rsidis.param”
+
+23834-23852, 23853-23860
+g_ctp_hcal_calib_filename = "PARAM/HMS/CAL/hcal_calib_4p50gev_14p00deg_rsidis.param"
+
+23861-24874
+g_ctp_hcal_calib_filename = "PARAM/HMS/CAL/hcal_calib_1p53gev_29p06deg_rsidis.param"
+
+24875-99999
+g_ctp_hcal_calib_filename = "PARAM/HMS/CAL/hcal_calib_2p28gev_42p00deg_rsidis.param"

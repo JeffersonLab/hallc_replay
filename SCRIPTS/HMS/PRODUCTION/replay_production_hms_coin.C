@@ -34,6 +34,8 @@ void replay_production_hms_coin(Int_t RunNumber=0, Int_t MaxEvent=0, Int_t First
   gHcParms->Load(gHcParms->GetString("g_ctp_database_filename"), RunNumber);
   gHcParms->Load(gHcParms->GetString("g_ctp_parm_filename"));
   gHcParms->Load(gHcParms->GetString("g_ctp_kinematics_filename"), RunNumber);
+  gHcParms->Load(gHcParms->GetString("g_ctp_pcal_calib_filename"));
+  gHcParms->Load(gHcParms->GetString("g_ctp_hcal_calib_filename"));
   // Load params for HMS trigger configuration
   gHcParms->Load("PARAM/TRIG/thms.param");
   // Load fadc debug parameters

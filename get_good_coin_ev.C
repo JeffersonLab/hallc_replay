@@ -60,7 +60,7 @@ void CalcNormYield(std::string const &inrepfile, double Nrealcoinev, double Nrea
 std::vector<std::string> SplitString(char const delim, std::string const myStr);
 TPaveText* CreateSummaryPaveText(int rnum, ULong64_t totevintree, const std::string& anacuts, const std::vector<double>& counts, double normyield, double descoinev, const std::vector<double>& predtrig, TStopwatch* sw);
 TPaveText* CreateSummaryPaveText_new(int rnum, const std::string& anacuts, const std::vector<double>& counts, double normyield, double descoinev, const std::vector<double>& predtrig, TStopwatch* sw);
-void PrintCSVLine(std::ofstream &out, int runnum, std::vector<double> const counts, std::vector<double> const normyield);
+void PrintCSVLine(std::ofstream &out, int runnum, std::vector<double> const counts, std::vector<double> const normyield, double * coinfitparams);
 
 // global variables
 bool is_50k = false;
@@ -239,7 +239,7 @@ int get_good_coin_ev(int rnum,                 // Run number to analyze
   // Writing out some useful stuff
   std::string outcsv = Form("%s/%s_%d_%d.csv",indirreport.c_str(),outfilebase.c_str(),rnum,nevent);
   std::ofstream outcsv_data(outcsv.c_str());
-  PrintCSVLine(outcsv_data,rnum,counts,normyield);  
+  PrintCSVLine(outcsv_data,rnum,counts,normyield,fitparams);  
 
   std::cout << "------" << std::endl;
   std::cout << " Output CSV file  : " << outcsv << std::endl;  
@@ -400,19 +400,22 @@ void ExtractCoinEvCounts(TH1F *hcoin, std::vector<double> const &cutregion, int 
   double totalcoin_err = sqrt(totalcoin);
   // total random coincidence events in the selected region away from the main coin peak
   double rndmcoin = hcoin->Integral(hcoin->FindBin(cutregion[2]),hcoin->FindBin(cutregion[3]));
-  double rndmcoin_err = sqrt(rndmcoin);    
+  double rndmcoin_err = sqrt(rndmcoin);
+  // calculated scaled coin
+  double scaledrndmcoin = rndmcoin/rndmscutfactor;
+  double scaledrndmcoin_err = rndmcoin_err/rndmscutfactor;    
   // + hcoin->Integral(hcoin->FindBin(cutregion[4]),hcoin->FindBin(cutregion[5]));  // (not used)
   // radoms-subtrated good coin events    
-  double goodcoin = totalcoin - rndmcoin/rndmscutfactor;
-  double goodcoin_err = sqrt(pow(totalcoin_err,2) + pow(rndmcoin_err/rndmscutfactor,2));  
+  double goodcoin = totalcoin - scaledrndmcoin;
+  double goodcoin_err = sqrt(pow(totalcoin_err,2) + pow(scaledrndmcoin_err,2));  
 
-  counts = {totalcoin,rndmcoin,goodcoin,totalcoin_err,rndmcoin_err,goodcoin_err};
+  counts = {totalcoin,scaledrndmcoin,goodcoin,totalcoin_err,scaledrndmcoin_err,goodcoin_err};
   //counts = {totalcoin,rndmcoin,goodcoin}; //,totalcoin_err,rndmcoin_err,goodcoin_err};  
 
   if (verbosity>0) {
     std::cout << "\n--------\n";
     std::cout << "Total events under the main coin time peak : " << (int)totalcoin << " +/- " << (int)totalcoin_err << "\n";
-    std::cout << "Total random coin events selected          : " << (int)rndmcoin << " +/- " << (int)rndmcoin_err << "\n";
+    std::cout << "Scaled random coin events selected         : " << (int)scaledrndmcoin << " +/- " << (int)scaledrndmcoin_err << "\n";
     std::cout << "Randoms subtracted real coin events        : " << (int)goodcoin << " +/- " << (int)goodcoin_err << "\n";
     std::cout << "--------\n";    
   }
@@ -720,17 +723,20 @@ TPaveText* CreateSummaryPaveText(int rnum,
   return pvtxt;
 }
 //----------------------------------------------------------
-void PrintCSVLine(std::ofstream &out, int runnum, std::vector<double> const counts, std::vector<double> const normyield) {
+void PrintCSVLine(std::ofstream &out, int runnum, std::vector<double> const counts, std::vector<double> const normyield, double * ctfitparams) {
   
   std::ostringstream oss;
-  oss << "runnum,coin,randoms,ransubcoin,ransubcoin_err,normyield,normyield_err\n";
+  oss << "runnum,coin,randoms,ransubcoin,ransubcoin_err,normyield,normyield_err,";
+  oss << "ctmean,ctsigma\n";
   oss << runnum << ","
       << counts[0] << ","
       << counts[1] << ","
       << counts[2] << ","
       << counts[5] << ","        
       << normyield[0] << ","
-      << normyield[1];
+      << normyield[1] << ","
+      << ctfitparams[1] << ","
+      << ctfitparams[2];
 
   out << oss.str() << std::endl;
 }

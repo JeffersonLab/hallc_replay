@@ -1,0 +1,31 @@
+; Cut to select the Reference time when multiple hits in reference time 
+; The units in channels for the module (CAEN tdc or FADC)
+; negative value refcut means that the first reference time greater than the abs(refcut)
+;     is used as reftime. If no ref time is found  greater than the abs(refcut) then first
+;     reference time is used.
+; positive value refcut means that the the first reference time greater than the abs(refcut)
+;     is used as reftime. If no ref time is found  greater than the abs(refcut) then no
+;     reference time is used and warning message is produced.
+; Cut is on reference time per detector.
+
+;JPsi Coincidence KIN 2-0 (verified with run 7221)
+;hdc_tdcrefcut=-14000
+;hhodo_tdcrefcut=-
+;hhodo_adcrefcut=-5000
+;hcer_adcrefcut=-5000.
+;hcal_adcrefcut=-5000.
+
+;Trigger change: PS3 is HMS CLEAN and PS5 SHMS 3/4 & HMS ELREAL
+;hdc_tdcrefcut=-18000
+;hhodo_tdcrefcut=-31000
+;hhodo_adcrefcut=-2600
+;hcer_adcrefcut=-2600
+;hcal_adcrefcut=-2600.
+
+;determined by R. Elder for rsidis2025
+;Trigger change: PS3 is HMS CLEAN and PS5 SHMS 3/4 & HMS ELREAL
+hdc_tdcrefcut=-19000
+hhodo_tdcrefcut=-31000
+hhodo_adcrefcut=-2600
+hcer_adcrefcut=-2600
+hcal_adcrefcut=-2600.

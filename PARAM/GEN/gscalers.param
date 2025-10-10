@@ -22,4 +22,4 @@ gBCM_Offset = 2385.0, 250382.0, 327953,59.57, 1170.92, 254.69
 
 gBCM_Current_threshold = 1.0
 ; index = 0 to gNumBCMs-1
-gBCM_Current_threshold_index = 5
+gBCM_Current_threshold_index = 1

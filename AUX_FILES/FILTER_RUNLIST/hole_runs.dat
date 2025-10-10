@@ -1,0 +1,26 @@
+!-------------------------------------------------------------------------------------------------------------------------------------------------------------
+!**********************HMS NMR not locking from this point on!! Setting by current. Buyer beware!***************************************************************
+!**********************BELOW:SHMS calorimeter crate was in a weird state so will require different parameters when replaying:BELOW**********************************************
+!**********************ABOVE:SHMS calorimeter crate was in a weird state so will require different parameters when replaying:ABOVE**********************************************
+!****** Changed SHMS polarity for pi+**********************
+!*****Starting z=0.5 (pi+ setting)*******************
+!**********Start positron background measurements****************************
+!** Done with positrons. Starting z=0.5, theta_pq=5.2 degrees, pi+ production
+!***** switch to pi-
+!**** Switch to positrons. No comments on runsheets!!!!! Aaargh.
+!***************************Switch to 5 pass************
+!**** Switch to pi- running at 5pass
+!****Starting SHMS at theta_pq=2 deg
+!*** start z=0.5
+!**SHMS polarity change to pi+. Note the first few runs had the SHMS magnets set incorrectly. They are junk
+!****SHMS MOMENTUM CHANGE TO +4.868 for z=0.67
+!***start z=0.5
+!*** start z=0.36
+!**************************Dave tweaked the LH2 fan speed to 45 Hz.  This impacts runs below.************************************************************
+23835     07/15      23:58        8.565	5      C-hole	+2.28	42.00	-7.07	12.47	0,-1,0,-1,-1,-1		HOLE            0    
+23837     07/16      00:43        8.565	5      C-hole	+2.28	42.00	-7.07	12.47	0,-1,0,-1,-1,-1		HOLE		EDTM is off; 3x3 raster look good
+23838     07/16      00:51        8.565	5      C-hole	+2.28	42.00	-7.07	12.47	0,-1,0,-1,-1,-1		HOLE		2X2 raster look good
+24300	  07/28	     05:14	  8.565	5      C-HOLE	-1.531	29.05	+4.868	7.87	 0,-1,0,-1,-1,-1	HOLE		0
+!24875	  08/14      12:31        10.67	5      C-hole  -3.642	16.75	+6.538	7.51	-1,-1,-1,0,-1,-1	HOLE		0
+25009     08/18      19:31        10.67	5      C-HOLE	-3.642	16.75	-6.538	7.51	-1,0,-1,-1,-1,-1	HOLE            0
+25032     08/19      16:52        10.67	5      C-HOLE	-3.642	16.75	-6.538	7.51	-1,-1,-1,0,-1,-1	HOLE            0

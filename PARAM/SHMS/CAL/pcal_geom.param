@@ -25,7 +25,7 @@ pcal_d_cor = 0,0
 
 ; Parameters copied from HMS
 ; Slope in x position.  Allowed distance between track and edge of block
-pcal_slop = 7.5 
+pcal_slop = 7.5
 
 pcal_pr_thick = 10.0
 

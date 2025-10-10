@@ -16,15 +16,17 @@ The two codes have different parameters and it is possible to switch between the
 
 (In case you are calibrating SHMS hodo using a coincidence run, then make sure to include T.coin.*)
 
-2. Determine the time walk correction parameters
+2. Determine the time walk correction parameters. Instead of "root -l", I recommend using "hcana -l".
 
      a. Start "root -l" and then  .x timeWalkHistos.C+("current_dir/to/ROOT_filename.root",Run_Number, "shms") ---> If doing coincidence, then "shms"->"coin"
 
-     b. This creats the file: timeWalkHistos.root
+     b. This creats the file: timeWalkHistos_runnumber.root
 
-     c. Start "root -l" and then .x timeWalkCalib.C+
+     c. Start "root -l" and then .x timeWalkCalib.C(runnumber)
 
-     d. This creates the parameter file "../../PARAM/SHMS/HODO/phodo_TWcalib_runnumber.param"
+     d. This will generate the calibration plots with fit parameters in batch mode and creates Calibration_Plots -> TWpng directories to save these plots
+
+     e. Instruction (2c) also creates timeWalkCalib_runnumber.root and the parameter file "../../PARAM/SHMS/HODO/phodo_TWcalib_runnumber.param"
 
 3.  Replay the data with ptofusinginvadc=0 and the new parameter files (the simplest is to copy phodo_TWcalib_runnumber.param to phodo_TWcalib.param).
 
@@ -32,11 +34,9 @@ The two codes have different parameters and it is possible to switch between the
 puts cuts on P.cal.etracknorm, P.hgcer.npeSum and P.hod.betanotrack to select electrons. These cuts are hard coded as  etrknrm_low_cut = 0.7, npngcer_npeSum_low_cut = 0.7 , betanotrack_low_cut = 0.5 and betanotrack_hi_cut = 1.5. These may need to be modified. The event must have a track. 
 
      a.  Start "root -l" and then  .x  fitHodoCalib.C+("current_dir/to/ROOT_filename.root",Run_Number)     
-
-      b.  This creates the parameter file "../../PARAM/SHMS/HODO/phodo_Vpcalib_runnumber.param"
+     b.  This creates the parameter file "../../PARAM/SHMS/HODO/phodo_Vpcalib_runnumber.param"
 
      c. It also creates the root file HodoCalibPlots_runnumber.root
 
      d. To analyze cosmic data :  .x  fitHodoCalib.C+("current_dir/to/ROOT_filename.root",Run_Number,kTRUE) 
-
      e. For cosmic data the speed of light is set to -30 cm/ns and the PID cut is just on P.hod.betanotrack with the default of betanotrack_low_cut = -1.2 and betanotrack_hi_cut = -.7

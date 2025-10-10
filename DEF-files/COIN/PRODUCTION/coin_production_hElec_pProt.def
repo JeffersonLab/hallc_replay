@@ -125,4 +125,8 @@ end epics
 #include "DEF-files/SHMS/PRODUCTION/REACT/preact_histos.def"
 #include "DEF-files/SHMS/PRODUCTION/PID/ppid_histos.def"
 #include "DEF-files/SHMS/PRODUCTION/EXTCOR/pextcor_histos.def"
+
+# Helicity
+##include "DEF-files/COIN/PRODUCTION/HEL/hel_histos.def
+
 # ---

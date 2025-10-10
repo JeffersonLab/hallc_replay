@@ -34,13 +34,13 @@ cminch=2.54
 
 ; HMS default calibration parameter files
 #include "PARAM/HMS/CER/hcer_calib_rsidis.param"
-#include "PARAM/HMS/DC/hdc_calib_rsidis.param"
+#include "PARAM/HMS/DC/hdc_calib_rsidis_v2.param"
 #include "PARAM/HMS/DC/hdc_tzero_per_wire_rsidis.param"
 #include "PARAM/HMS/HODO/hhodo_calib.param"
 #include "PARAM/HMS/HODO/hhodo_TWcalib_rsidis.param"
 #include "PARAM/HMS/HODO/hhodo_Vpcalib_rsidis.param"
 #include "PARAM/HMS/AERO/haero_calib.param"
-#include "PARAM/HMS/CAL/hcal_calib_rsidis.param"
+;#include "PARAM/HMS/CAL/hcal_calib_5pass_rsidis.param" ;DO NOT uncomment this line.  These parameters are defined directly in the standard.database file.
 
 ; General SHMS parameter files
 ; Note: shmsflags.param includes spectrometer offsets and options.
@@ -75,4 +75,4 @@ cminch=2.54
 #include "PARAM/SHMS/HODO/phodo_Vpcalib_rsidis.param"
 #include "PARAM/SHMS/HGCER/phgcer_calib_rsidis.param"
 #include "PARAM/SHMS/AERO/paero_calib_rsidis.param"
-#include "PARAM/SHMS/CAL/pcal_calib_2p62gev_7p87deg_rsidis.param"
+;#include "PARAM/SHMS/CAL/pcal_calib_4p87gev_7p87deg_rsidis.param" ;DO NOT uncomment this line. These parameters are defined directly in the standard.database file.

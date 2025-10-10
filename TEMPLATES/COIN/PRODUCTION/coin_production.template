@@ -221,44 +221,47 @@ HMS Accepted EDTM Triggers   : {HMS_edtm_accepted.npassed}
 = Live/Dead Time Calculations
 =:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
 
-ROC2 Pre-Scaled Ps1 ROC2 Computer Live Time : {(pTRIG1_ROC2.npassed / (P.pTRIG1.scalerCut/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps1 ROC2 Computer Dead Time : {100.0 - (pTRIG1_ROC2.npassed / (P.pTRIG1.scalerCut/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps1 ROC2 Computer Live Time (no BCM cut) : {(pTRIG1_ROC2.npassed / (P.pTRIG1.scaler/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps1 ROC2 Computer Dead Time (no BCM cut) : {100.0 - (pTRIG1_ROC2.npassed / (P.pTRIG1.scaler/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps2 ROC2 Computer Live Time : {(pTRIG2_ROC2.npassed / (P.pTRIG2.scalerCut/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps2 ROC2 Computer Dead Time : {100.0 - (pTRIG2_ROC2.npassed / (P.pTRIG2.scalerCut/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps2 ROC2 Computer Live Time (no BCM cut) : {(pTRIG2_ROC2.npassed / (P.pTRIG2.scaler/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps2 ROC2 Computer Dead Time (no BCM cut) : {100.0 - (pTRIG2_ROC2.npassed / (P.pTRIG2.scaler/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps3 ROC2 Computer Live Time : {(pTRIG3_ROC2.npassed / (P.pTRIG3.scalerCut/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps3 ROC2 Computer Dead Time : {100.0 - (pTRIG3_ROC2.npassed / (P.pTRIG3.scalerCut/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps3 ROC2 Computer Live Time (no BCM cut) : {(pTRIG3_ROC2.npassed / (P.pTRIG3.scaler/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps3 ROC2 Computer Dead Time (no BCM cut) : {100.0 - (pTRIG3_ROC2.npassed / (P.pTRIG3.scaler/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps4 ROC2 Computer Live Time : {(pTRIG4_ROC2.npassed / (P.pTRIG4.scalerCut/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps4 ROC2 Computer Dead Time : {100.0 - (pTRIG4_ROC2.npassed / (P.pTRIG4.scalerCut/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps4 ROC2 Computer Live Time (no BCM cut) : {(pTRIG4_ROC2.npassed / (P.pTRIG4.scaler/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps4 ROC2 Computer Dead Time (no BCM cut) : {100.0 - (pTRIG4_ROC2.npassed / (P.pTRIG4.scaler/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps6 ROC2 Computer Live Time : {(pTRIG6_ROC2.npassed / (P.pTRIG6.scalerCut/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps6 ROC2 Computer Dead Time : {100.0 - (pTRIG6_ROC2.npassed / (P.pTRIG6.scalerCut/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps5 ROC2 Computer Live Time (no BCM cut) : {(pTRIG5_ROC2.npassed / (P.pTRIG5.scaler/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps5 ROC2 Computer Dead Time (no BCM cut) : {100.0 - (pTRIG5_ROC2.npassed / (P.pTRIG5.scaler/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps1 Total Live Time (EDTM) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps1 Total Dead Time (EDTM) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps6 ROC2 Computer Live Time (no BCM cut) : {(pTRIG6_ROC2.npassed / (P.pTRIG6.scaler/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps6 ROC2 Computer Dead Time (no BCM cut) : {100.0 - (pTRIG6_ROC2.npassed / (P.pTRIG6.scaler/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps2 Total Live Time (EDTM) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps2 Total Dead Time (EDTM) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps1 Total Live Time (EDTM) (no BCM cut) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps1 Total Dead Time (EDTM) (no BCM cut) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[0]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps3 Total Live Time (EDTM) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps3 Total Dead Time (EDTM) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps2 Total Live Time (EDTM) (no BCM cut) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps2 Total Dead Time (EDTM) (no BCM cut) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[1]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps4 Total Live Time (EDTM) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps4 Total Dead Time (EDTM) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps3 Total Live Time (EDTM) (no BCM cut) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps3 Total Dead Time (EDTM) (no BCM cut) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[2]))*100.0:%3.4f} %
 
-ROC2 Pre-Scaled Ps6 Total Live Time (EDTM) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
-ROC2 Pre-Scaled Ps6 Total Dead Time (EDTM) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scalerCut/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps4 Total Live Time (EDTM) (no BCM cut) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps4 Total Dead Time (EDTM) (no BCM cut) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[3]))*100.0:%3.4f} %
 
-ROC2 OG 6 GeV Electronic Live Time (100, 150) : {100.0 - ((P.pPRE100.scalerCut - P.pPRE150.scalerCut)/P.pPRE100.scalerCut):%3.4f} %
-ROC2 OG 6 GeV Electronic Dead Time (100, 150) : {((P.pPRE100.scalerCut - P.pPRE150.scalerCut)/P.pPRE100.scalerCut):%3.4f} %
+ROC2 Pre-Scaled Ps6 Total Live Time (EDTM) (no BCM cut) : {(SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
+ROC2 Pre-Scaled Ps6 Total Dead Time (EDTM) (no BCM cut) : {100.0 - (SHMS_edtm_accepted.npassed / (P.EDTM.scaler/gHC_ti_ps_factors[5]))*100.0:%3.4f} %
 
-ROC2 OG 6 GeV Electronic Live Time (100, 200) : {100.0 - ((P.pPRE100.scalerCut - P.pPRE200.scalerCut)/P.pPRE100.scalerCut):%3.4f} %
-ROC2 OG 6 GeV Electronic Dead Time (100, 200) : {((P.pPRE100.scalerCut - P.pPRE200.scalerCut)/P.pPRE100.scalerCut):%3.4f} %
+ROC2 OG 6 GeV Electronic Live Time (100, 150) (no BCM cut) : {100.0 - ((P.pPRE100.scaler - P.pPRE150.scaler)/P.pPRE100.scaler):%3.4f} %
+ROC2 OG 6 GeV Electronic Dead Time (100, 150) (no BCM cut) : {((P.pPRE100.scaler - P.pPRE150.scaler)/P.pPRE100.scaler):%3.4f} %
 
-ROC2 OG 6 GeV Electronic Live Time (150, 200) : {100.0 - ((P.pPRE150.scalerCut - P.pPRE200.scalerCut)/P.pPRE150.scalerCut):%3.4f} %
-ROC2 OG 6 GeV Electronic Dead Time (150, 200) : {((P.pPRE150.scalerCut - P.pPRE200.scalerCut)/P.pPRE150.scalerCut):%3.4f} %
+ROC2 OG 6 GeV Electronic Live Time (100, 200) (no BCM cut) : {100.0 - ((P.pPRE100.scaler - P.pPRE200.scaler)/P.pPRE100.scaler):%3.4f} %
+ROC2 OG 6 GeV Electronic Dead Time (100, 200) (no BCM cut) : {((P.pPRE100.scaler - P.pPRE200.scaler)/P.pPRE100.scaler):%3.4f} %
+
+ROC2 OG 6 GeV Electronic Live Time (150, 200) (no BCM cut) : {100.0 - ((P.pPRE150.scaler - P.pPRE200.scaler)/P.pPRE150.scaler):%3.4f} %
+ROC2 OG 6 GeV Electronic Dead Time (150, 200) (no BCM cut) : {((P.pPRE150.scaler - P.pPRE200.scaler)/P.pPRE150.scaler):%3.4f} %
 
 =:=:=:=:=:=:=:
 = Hodoscopes
@@ -1170,3 +1173,109 @@ H2Y7-:  {H.hod.2y7.negScalerCut} [ {(H.hod.2y7.negScalerCut/H.1MHz.scalerTimeCut
 H2Y8-:  {H.hod.2y8.negScalerCut} [ {(H.hod.2y8.negScalerCut/H.1MHz.scalerTimeCut)/1000.:%.3f} kHz ]
 H2Y9-:  {H.hod.2y9.negScalerCut} [ {(H.hod.2y9.negScalerCut/H.1MHz.scalerTimeCut)/1000.:%.3f} kHz ]
 H2Y10-: {H.hod.2y10.negScalerCut} [ {(H.hod.2y10.negScalerCut/H.1MHz.scalerTimeCut)/1000.:%.3f} kHz ]
+
+------------------------------------------------------------------------
+
+For information on the helicity channels and indices, refer to:
+Helicty Scaler Channel Map: hallc_replay/MAPS/SCALERS/scaler_hel.map
+BCM number index map: hallc_replay/PARAM/GEN/gscalers.param
+
+The relevant helicity information from this file may be copied to
+the user's template file, or it may be loaded as a separate template
+file in the replay script.
+
+For the DAQ in coin. mode, it is sufficient to look at the SHMS helicity
+scalers as the 32-channel inputs of the module are daisy-chained via two
+16-channel ribbon cables, and each module receives an identical copy of the
+other for redundancy. Furthermore, the relevant scaler signals in coin. mode
+are pTRIG1-6 and the BCMs, but NOT hTRIG1-6.
+
+------------------------------------------------------------------------
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:
+= Helicity Gated Scalers
+=:=:=:=:=:=:=:=:=:=:=:=:=:
+
+1 MHz Pulses (hel)          : {gP_hscaler_time * 1e6 }
+Run Length (hel)            : {gP_hscaler_time:%.3f} sec
+
+*******************************
+* Helicity Scalers Information
+*******************************
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+= Helicity Scaler Trigger (no bcm cut)
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+Total Helicity Scaler Triggers (# of MPS signals) : {gP_hscaler_triggers:%.6E}
+Positive Helicity Scaler Triggers                 : {gP_hscaler_triggers_plus:%.6E}
+Negative Helicity Scaler Triggers                 : {gP_hscaler_triggers_minus:%.6E}
+Undetermined Helicity Triggers                    : {(gP_hscaler_triggers-gP_hscaler_triggers_plus-gP_hscaler_triggers_minus):%.3f}
+Helicity Trigger Asymmetry                        : {gP_hscaler_trigger_asy:%.6E} ({gP_hscaler_trigger_asy*1e6:%.3f} ppm)
+The variables below were calculated with BCM{gBCM_Current_threshold_index+1} current > {gBCM_Current_threshold} uA.
+
+=:=:=:=:=:=:=:=:=:=:=:=:  
+= Helicity Scaler Time
+=:=:=:=:=:=:=:=:=:=:=:=:
+Helicity Gated Time           : {gP_hscaler_time:%.3f}       sec
+Helicity Gated Time Asymmetry : {gP_hscaler_time_asy:%.6E} +-  {gP_hscaler_time_asyerr:%.6E} ({gP_hscaler_time_asy*1e6:%.3f} +- {gP_hscaler_time_asyerr*1e6:%.3f} ppm)
+
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:  
+= Helicity Gated Charge
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+BCM1  Helicity Gated Charge: {gP_hscaler_charge[0]:%.3f} uC
+BCM2  Helicity Gated Charge: {gP_hscaler_charge[1]:%.3f} uC
+Unser Helicity Gated Charge: {gP_hscaler_charge[2]:%.3f} uC
+BCM4A Helicity Gated Charge: {gP_hscaler_charge[3]:%.3f} uC
+BCM4B Helicity Gated Charge: {gP_hscaler_charge[4]:%.3f} uC
+BCM4C Helicity Gated Charge: {gP_hscaler_charge[5]:%.3f} uC
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+= Helicity Gated Charge Asymmetries
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+BCM1  Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[0]:%.6E} +- {gP_hscaler_charge_asyerr[0]:%.6E} ({gP_hscaler_charge_asy[0]*1e6:%.3f} +- {gP_hscaler_charge_asyerr[0]*1e6:%.3f} ppm)
+BCM2  Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[1]:%.6E} +- {gP_hscaler_charge_asyerr[1]:%.6E} ({gP_hscaler_charge_asy[1]*1e6:%.3f} +- {gP_hscaler_charge_asyerr[1]*1e6:%.3f} ppm) 
+Unser Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[2]:%.6E} +- {gP_hscaler_charge_asyerr[2]:%.6E} ({gP_hscaler_charge_asy[2]*1e6:%.3f} +- {gP_hscaler_charge_asyerr[2]*1e6:%.3f} ppm) 
+BCM4A Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[3]:%.6E} +- {gP_hscaler_charge_asyerr[3]:%.6E} ({gP_hscaler_charge_asy[3]*1e6:%.3f} +- {gP_hscaler_charge_asyerr[3]*1e6:%.3f} ppm) 
+BCM4B Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[4]:%.6E} +- {gP_hscaler_charge_asyerr[4]:%.6E} ({gP_hscaler_charge_asy[4]*1e6:%.3f} +- {gP_hscaler_charge_asyerr[4]*1e6:%.3f} ppm)
+BCM4C Helicity Gated Charge Asymmetry: {gP_hscaler_charge_asy[5]:%.6E} +- {gP_hscaler_charge_asyerr[5]:%.6E} ({gP_hscaler_charge_asy[5]*1e6:%.3f} +- {gP_hscaler_charge_asyerr[5]*1e6:%.3f} ppm)
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=: 
+= Helicity Gated Beam Current
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+BCM1  Helicity Gated Current: {gP_hscaler_charge[0]/gP_hscaler_time:%.3f} uA
+BCM2  Helicity Gated Current: {gP_hscaler_charge[1]/gP_hscaler_time:%.3f} uA 
+Unser Helicity Gated Current: {gP_hscaler_charge[2]/gP_hscaler_time:%.3f} uA
+BCM4A Helicity Gated Current: {gP_hscaler_charge[3]/gP_hscaler_time:%.3f} uA 
+BCM4B Helicity Gated Current: {gP_hscaler_charge[4]/gP_hscaler_time:%.3f} uA
+BCM4C Helicity Gated Current: {gP_hscaler_charge[5]/gP_hscaler_time:%.3f} uA
+
+=:=:=:=:=:=:=:=:=:=:=:=: 
+=Trigger Scaler Counts
+=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1  Helicity Scaler Counts:  {gP_hscaler_sum[16]:%.3f}
+pTRIG2  Helicity Scaler Counts:  {gP_hscaler_sum[17]:%.3f}
+pTRIG3  Helicity Scaler Counts:  {gP_hscaler_sum[18]:%.3f}
+pTRIG4  Helicity Scaler Counts:  {gP_hscaler_sum[19]:%.3f}
+pTRIG5  Helicity Scaler Counts:  {gP_hscaler_sum[20]:%.3f}
+pTRIG6  Helicity Scaler Counts:  {gP_hscaler_sum[21]:%.3f}
+
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+= Trigger Scaler Asymmetries
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:
+pTRIG1  Helicity Scaler Asymmetry    : {gP_hscaler_asy[16]:%.6E} +- {gP_hscaler_asyerr[16]:%.6E} ({gP_hscaler_asy[16]*1e6:%.3f} +- {gP_hscaler_asyerr[16]*1e6:%.3f} ppm)
+pTRIG2  Helicity Scaler Asymmetry    : {gP_hscaler_asy[17]:%.6E} +- {gP_hscaler_asyerr[17]:%.6E} ({gP_hscaler_asy[17]*1e6:%.3f} +- {gP_hscaler_asyerr[17]*1e6:%.3f} ppm)
+pTRIG3  Helicity Scaler Asymmetry    : {gP_hscaler_asy[18]:%.6E} +- {gP_hscaler_asyerr[18]:%.6E} ({gP_hscaler_asy[18]*1e6:%.3f} +- {gP_hscaler_asyerr[18]*1e6:%.3f} ppm)
+pTRIG4  Helicity Scaler Asymmetry    : {gP_hscaler_asy[19]:%.6E} +- {gP_hscaler_asyerr[19]:%.6E} ({gP_hscaler_asy[19]*1e6:%.3f} +- {gP_hscaler_asyerr[19]*1e6:%.3f} ppm)
+pTRIG5  Helicity Scaler Asymmetry    : {gP_hscaler_asy[20]:%.6E} +- {gP_hscaler_asyerr[20]:%.6E} ({gP_hscaler_asy[20]*1e6:%.3f} +- {gP_hscaler_asyerr[20]*1e6:%.3f} ppm)
+pTRIG6  Helicity Scaler Asymmetry    : {gP_hscaler_asy[21]:%.6E} +- {gP_hscaler_asyerr[21]:%.6E} ({gP_hscaler_asy[21]*1e6:%.3f} +- {gP_hscaler_asyerr[21]*1e6:%.3f} ppm)
+
+=:=:=:=:=:=:=:=:=:
+=  Trigger Rates
+=:=:=:=:=:=:=:=:=:
+pTRIG1  Helicity Scaler Rates:  {(gP_hscaler_sum[16]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG2  Helicity Scaler Rates:  {(gP_hscaler_sum[17]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG3  Helicity Scaler Rates:  {(gP_hscaler_sum[18]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG4  Helicity Scaler Rates:  {(gP_hscaler_sum[19]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG5  Helicity Scaler Rates:  {(gP_hscaler_sum[20]/gP_hscaler_time)/1000.:%.3E} kHz
+pTRIG6  Helicity Scaler Rates:  {(gP_hscaler_sum[21]/gP_hscaler_time)/1000.:%.3E} kHz
