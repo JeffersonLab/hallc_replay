@@ -1,7 +1,4 @@
-; all stat from run 7078
-;pngcer_adc_to_npe = 0.4010, 0.4947, 0.3556, 0.3704
-;pngcer_adc_to_npe = 1./4.8, 1./5.34, 1./4.4, 1./5.97
-;pngcer_adc_to_npe = 1./4.97, 1./5.66, 1./4.28, 1./6.81
-; calib from run 7120
+; calib from run 24018
 ;pngcer_adc_to_npe = 1./4.95, 1./4.13, 1./4.17, 1./4.29
-pngcer_adc_to_npe = 1./4.609, 1./7.399, 1./4.840, 1./4.5.974
+;pngcer_adc_to_npe = 1/4.60969, 1/7.39889, 1/4.84009, 1/5.97473
+pngcer_adc_to_npe = 1./3.47522, 1./6.17959, 1./4.77741, 1./6.03365

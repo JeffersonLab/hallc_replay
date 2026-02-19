@@ -1,4 +1,2 @@
-;hcer_adc_to_npe = 1./5.735, 1./5.741
-;hcer_adc_to_npe = 1./10.69, 1./9.81
-;hcer_adc_to_npe = 1./9.069, 1./9.035
+; Calibration performed using run 23853 RSIDIS
 hcer_adc_to_npe = 1./7.638 , 1./9.332
